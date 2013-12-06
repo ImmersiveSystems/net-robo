@@ -1,3 +1,5 @@
+//george's code
+
 #include <Servo.h>
 #include "IOpins.h"
 #include "Constants.h"
@@ -95,37 +97,10 @@ void turn_R (char a,char b)             //Turn Right
   Serial.println("Turned Right");
 }
 
-void loop()
-{
-    char ch = Serial.read();
-    if(ch != 1)
-    {
-      switch(ch)
-      {
-        case 'w':
-          advance(127,127);
-          Serial.println("Forward");
-          break;
-        case 's':
-          back_off(127,127);
-          Serial.println("Backwards");
-          break;
-        case 'd':
-          turn_L(127,100);
-          Serial.println("Left");
-          break;
-        case 'a':
-          turn_R(100,127);
-          Serial.println("Right");
-          break;
-      }
-      delay(40); 
-    }
-    else stop();
-  
-  //------------------------------------------------------------ Check battery voltage and current draw of motors ---------------------
 
-  /*Volts=analogRead(Battery);                                  // read the battery voltage
+void print_I_V()
+{
+  Volts=analogRead(Battery);                                  // read the battery voltage
   LeftAmps=analogRead(LmotorC);                               // read left motor current draw
   RightAmps=analogRead(RmotorC);                              // read right motor current draw
 
@@ -135,7 +110,45 @@ void loop()
   Serial.print(LeftAmps);
   Serial.print("   Right motor current:");
   Serial.println(RightAmps);
+}
 
+void loop()
+{
+    char ch = Serial.read();
+    if(ch != 1)
+    {
+      switch(ch)
+      {
+        case 'w':
+          advance(0,127);
+          Serial.println("Forward L");
+          break;
+        case 's':
+          advance(127,0);
+          Serial.println("Forward R");
+          break;
+        case 'd':
+          turn_L(127,100);
+          Serial.println("Left");
+          break;
+        case 'a':
+          turn_R(100,127);
+          Serial.println("Right");
+          break;   
+        case 'q':
+          stop();
+          break; 
+      }
+      delay(40); 
+      print_I_V();
+    }
+    else stop();
+  
+  //------------------------------------------------------------ Check battery voltage and current draw of motors ---------------------
+
+
+}
+ /*
   Servo0.writeMicroseconds(data);                             // set servo to default position
   Servo1.writeMicroseconds(data);                             // set servo to default position
   Servo2.writeMicroseconds(data);                             // set servo to default position
@@ -190,10 +203,10 @@ void loop()
     analogWrite(RmotorA,RightPWM);
     analogWrite(RmotorB,0);
     break;
-  }*/
+
 } 
 
-
+*/
 
 
 
