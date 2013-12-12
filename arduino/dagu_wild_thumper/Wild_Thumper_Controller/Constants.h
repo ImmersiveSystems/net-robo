@@ -1,6 +1,6 @@
 //=================================== MODE OF COMMUNICATIONS ========================================================================
 
-#define Cmode                0     // Sets communication mode: 0=RC    1=Serial    2=I2C
+#define Cmode                1     // Sets communication mode: 0=RC    1=Serial    2=I2C
 #define Brate           115200     // Baud rate for serial communications
 
 
@@ -17,7 +17,7 @@
 
 //=================================== BATTERY CHARGER SETTINGS ======================================================================
 
-#define batvolt            487     // This is the nominal battery voltage reading. Peak charge can only occur above this voltage.
+#define batvolt            520     // This is the nominal battery voltage reading. Peak charge can only occur above this voltage.
 #define lowvolt            410     // This is the voltage at which the speed controller goes into recharge mode.
 #define chargetimeout   300000     // If the battery voltage does not change in this number of milliseconds then stop charging.
 

@@ -22,8 +22,8 @@ int Leftmode=1;                                               // 0=reverse, 1=br
 int Rightmode=1;                                              // 0=reverse, 1=brake, 2=forward
 byte Leftmodechange=0;                                        // Left input must be 1500 before brake or reverse can occur
 byte Rightmodechange=0;                                       // Right input must be 1500 before brake or reverse can occur
-int LeftPWM;                                                  // PWM value for left  motor speed / brake
-int RightPWM;                                                 // PWM value for right motor speed / brake
+double LeftPWM;                                                  // PWM value for left  motor speed / brake
+double RightPWM;                                                 // PWM value for right motor speed / brake
 int data;
 int servo[7];
 
@@ -100,7 +100,8 @@ void loop()
     rightoverload=millis();                                   // record time of overload
   }
 
-  if ((Volts<lowvolt) && (Charged==1))                        // check condition of the battery
+  if ((Volts<lowvolt) && (Charged==1))                       // check condition of the battery
+  //if(1 == 1)
   {                                                           // change battery status from charged to flat
 
     //---------------------------------------------------------- FLAT BATTERY speed controller shuts down until battery is recharged ----
@@ -155,7 +156,41 @@ void loop()
 
     // --------------------------------------------------------- Code to drive dual "H" bridges --------------------------------------
 
-    if (Charged==1)                                           // Only power motors if battery voltage is good
+    if (LeftPWM < 0)
+    {
+      analogWrite (LmotorA,(-1 * LeftPWM)); 
+      analogWrite (LmotorB,0);  
+    }
+    else
+    {
+      analogWrite (LmotorA,0);                                // turn off motors
+      analogWrite (LmotorB,LeftPWM);                                // turn off motors
+    }
+    
+    if (RightPWM < 0)
+    {
+      analogWrite (RmotorA,(-1 * RightPWM));                                // turn off motors
+      analogWrite (RmotorB,0);                                // turn off motors
+    }
+    else
+    {
+      analogWrite (RmotorA,0);                                // turn off motors
+      analogWrite (RmotorB,RightPWM);                                // turn off motors
+    }
+    
+    if (LeftPWM > 0)
+      LeftPWM = LeftPWM - 0.001;
+     
+    if (RightPWM > 0)
+      RightPWM = RightPWM - 0.001;
+      
+    if (RightPWM > LeftPWM)
+      LeftPWM = LeftPWM + 0.001;
+      
+    if (LeftPWM > RightPWM)
+      RightPWM = RightPWM + 0.001;
+      
+    /*if (Charged==1)                                           // Only power motors if battery voltage is good
     {
       if ((millis()-leftoverload)>overloadtime)             
       {
@@ -204,7 +239,7 @@ void loop()
       analogWrite (LmotorB,0);                                // turn off motors
       analogWrite (RmotorA,0);                                // turn off motors
       analogWrite (RmotorB,0);                                // turn off motors
-    }
+    }*/
   }
 }
 
@@ -280,7 +315,44 @@ void SCmode()
  
   if (Serial.available()>1)                                   // command available
   {
+    Volts=analogRead(Battery);                                  // read the battery voltage
+    Serial.print("Volts: ");
+    Serial.println(Volts);
+    
+    Serial.print("LeftPWM: ");
+    Serial.println(LeftPWM);
+    
+    Serial.print("RightPWM: ");
+    Serial.println(RightPWM);
+    
     int A=Serial.read();
+    
+    switch(A)
+    {
+      case 'w':
+        LeftPWM = LeftPWM + 10;
+        RightPWM = RightPWM + 10;
+        Serial.println("Forward L");
+        break;
+      case 's':
+        LeftPWM = LeftPWM - 10;
+        RightPWM = RightPWM - 10;
+        Serial.println("Forward R");
+        break;
+      case 'd':
+        LeftPWM = LeftPWM - 20;
+        Serial.println("Left");
+        break;
+      case 'a':
+        RightPWM = RightPWM - 20;
+        Serial.println("Right");
+        break;   
+      case 'q':
+        LeftPWM = 0;
+        RightPWM = 0;
+        break; 
+    }
+   
     int B=Serial.read();
     int command=A*256+B;
     switch (command)
@@ -315,13 +387,13 @@ void SCmode()
        
        case 18498:                                            // HB - mode and PWM data for left and right motors
          Serialread();
-         Leftmode=data;
+         //Leftmode=data;
          Serialread();
-         LeftPWM=data;
+         //LeftPWM=data;
          Serialread();
-         Rightmode=data;
+         //Rightmode=data;
          Serialread();
-         RightPWM=data;
+         //RightPWM=data;
          break;
          
        default:                                                // invalid command
@@ -348,6 +420,7 @@ void I2Cmode()
 {//----------------------------------------------------------- Your code goes here ------------------------------------------------------------
 
 }
+
 
 
 
