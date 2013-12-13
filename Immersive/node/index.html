@@ -1,0 +1,71 @@
+<!doctype html>
+<html>
+    <head>
+        <script src='//code.jquery.com/jquery-1.7.2.min.js'></script>
+        <script src='//192.168.1.33:3000/socket.io/socket.io.js'></script>
+        <script>
+            document.onkeydown = checkKey;
+            function checkKey(e) {
+                e = e || window.event;
+
+                if (e.keyCode == '87') {
+                    socket.emit('action', 'forward');
+                }
+                else if (e.keyCode == '83') {
+                    socket.emit('action', 'backward');
+                }
+                else if (e.keyCode == '65') {
+                    socket.emit('action', 'left');
+                }
+                else if (e.keyCode == '68') {
+                    socket.emit('action', 'right');
+                }
+                else if (e.keyCode == '81') {
+                    socket.emit('action', 'stop');
+                }
+            }
+
+            function goForward() {
+                socket.emit('action', 'forward');
+            }
+
+            function goBackward() {
+                socket.emit('action', 'backward');
+            }
+
+            function goLeft() {
+                socket.emit('action', 'left');
+            }
+
+            function goRight() {
+                socket.emit('action', 'right');
+            }
+
+            function stop() {
+                socket.emit('action', 'stop');
+            }
+
+            var socket = io.connect('//192.168.1.33:3000');
+
+            socket.on('welcome', function(data) {
+                $('#messages').append('<li>' + data.message + '</li>');
+
+                socket.emit('i am client', 'Website');
+            });
+            socket.on('time', function(data) {
+                console.log(data);
+                $('#messages').append('<li>' + data.time + '</li>');
+            });
+            socket.on('error', function() { console.error(arguments) });
+            socket.on('message', function() { console.log(arguments) });
+        </script>
+    </head>
+    <body>
+        <button type="button" onclick="goForward()">Go Forward</button>
+        <button type="button" onclick="goBackward()">Go Backward</button>
+        <button type="button" onclick="goLeft()">Turn Left</button>
+        <button type="button" onclick="goRight()">Turn Right</button>
+        <button type="button" onclick="stop()">Stop</button>
+        <ul id='messages'></ul>
+    </body>
+</html>
