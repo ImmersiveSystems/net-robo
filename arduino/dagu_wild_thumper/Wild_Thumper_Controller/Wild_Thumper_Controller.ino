@@ -100,8 +100,8 @@ void loop()
     rightoverload=millis();                                   // record time of overload
   }
 
-  if ((Volts<lowvolt) && (Charged==1))                       // check condition of the battery
-  //if(1 == 1)
+  //if ((Volts<lowvolt) && (Charged==1))                       // check condition of the battery
+  if(1 == 1)
   {                                                           // change battery status from charged to flat
 
     //---------------------------------------------------------- FLAT BATTERY speed controller shuts down until battery is recharged ----
@@ -130,7 +130,8 @@ void loop()
       if ((highVolts-Volts)>5 || (millis()-chargeTimer)>chargetimeout) // has voltage begun to drop or levelled out?
       {
         Charged=1;                                            // battery voltage has peaked
-        digitalWrite (Charger,1);                             // turn off current regulator
+        digitalWrite (Charger,0);                             // turn off current regulator
+        //digitalWrite (Charger,1);                             // turn off current regulator
       }
     } 
   }
@@ -180,15 +181,19 @@ void loop()
     
     if (LeftPWM > 0)
       LeftPWM = LeftPWM - 0.001;
-     
-    if (RightPWM > 0)
-      RightPWM = RightPWM - 0.001;
-      
-    if (RightPWM > LeftPWM)
+    else 
       LeftPWM = LeftPWM + 0.001;
       
-    if (LeftPWM > RightPWM)
+    if (RightPWM > 0)
+      RightPWM = RightPWM - 0.001;
+    else
       RightPWM = RightPWM + 0.001;
+      
+    if ((RightPWM - LeftPWM) > 1)
+      RightPWM = RightPWM - 0.05;
+      
+    if ((LeftPWM > RightPWM) > 1)
+      LeftPWM = LeftPWM - 0.05;
       
     /*if (Charged==1)                                           // Only power motors if battery voltage is good
     {
@@ -340,11 +345,13 @@ void SCmode()
         Serial.println("Forward R");
         break;
       case 'd':
-        LeftPWM = LeftPWM - 20;
+        RightPWM = RightPWM + 2.5;
+        LeftPWM = LeftPWM - 2.5;
         Serial.println("Left");
         break;
       case 'a':
-        RightPWM = RightPWM - 20;
+        LeftPWM = LeftPWM + 2.5;
+        RightPWM = RightPWM - 2.5;
         Serial.println("Right");
         break;   
       case 'q':
@@ -353,7 +360,7 @@ void SCmode()
         break; 
     }
    
-    int B=Serial.read();
+    /*int B=Serial.read();
     int command=A*256+B;
     switch (command)
     {
@@ -398,7 +405,7 @@ void SCmode()
          
        default:                                                // invalid command
          Serial.flush();                                       // flush buffer
-    }
+    }*/
   }
 }
 
