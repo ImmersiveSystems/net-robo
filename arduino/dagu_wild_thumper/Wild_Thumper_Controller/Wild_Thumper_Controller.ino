@@ -12,6 +12,10 @@ unsigned long chargeTimer;
 unsigned long leftoverload;
 unsigned long rightoverload;
 int StartFlag = 0;
+<<<<<<< HEAD
+int InMotion = 0;
+=======
+>>>>>>> 4f5af19885d2263d02ab4e4dfe5ed0c8adcaebaf
 int highVolts;
 int startVolts;
 int Leftspeed=0;
@@ -148,11 +152,19 @@ void loop()
       {
         if(LeftPWM > InitStablePWM)
         {
+<<<<<<< HEAD
+          LeftPWM = LeftPWM - InitMoveAdjustValue;
+        }
+        if(RightPWM > InitStablePWM)
+        {
+          RightPWM = RightPWM - InitMoveAdjustValue;
+=======
           LeftPWM = LeftPWM - 1.0;
         }
         if(RightPWM > InitStablePWM)
         {
           RightPWM = RightPWM - 1.0;
+>>>>>>> 4f5af19885d2263d02ab4e4dfe5ed0c8adcaebaf
         }
         if(LeftPWM <= InitStablePWM && RightPWM <= InitStablePWM && StartFlag == 1)
         {
@@ -163,11 +175,19 @@ void loop()
         {
           if(LeftPWM < (-1 * InitStablePWM))
           {
+<<<<<<< HEAD
+            LeftPWM = LeftPWM + InitMoveAdjustValue;
+          }
+          if(RightPWM < (-1 * InitStablePWM))
+          {
+            RightPWM = RightPWM + InitMoveAdjustValue;
+=======
             LeftPWM = LeftPWM + 1.0;
           }
           if(RightPWM < (-1 * InitStablePWM))
           {
             RightPWM = RightPWM + 1.0;
+>>>>>>> 4f5af19885d2263d02ab4e4dfe5ed0c8adcaebaf
           }
           if(LeftPWM >= (-1 * InitStablePWM) && RightPWM >= (-1 * InitStablePWM) && StartFlag == 1)
           {
@@ -176,7 +196,11 @@ void loop()
         }
     }
      
+<<<<<<< HEAD
+    CheckPWM_StraightBackWard();
+=======
 //    CheckPWM_StraightBackWard();
+>>>>>>> 4f5af19885d2263d02ab4e4dfe5ed0c8adcaebaf
  
     switch(Cmode)
     {
@@ -384,8 +408,13 @@ void SCmode()
         }
         else
         {
+<<<<<<< HEAD
+          LeftPWM = LeftPWM + AccelRate;
+          RightPWM = RightPWM + AccelRate;
+=======
           LeftPWM = LeftPWM + 10;
           RightPWM = RightPWM + 10;
+>>>>>>> 4f5af19885d2263d02ab4e4dfe5ed0c8adcaebaf
         }
         
         Serial.println("Forward L");
@@ -399,8 +428,13 @@ void SCmode()
         }
         else
         {
+<<<<<<< HEAD
+          LeftPWM = LeftPWM - AccelRate;
+          RightPWM = RightPWM - AccelRate;
+=======
           LeftPWM = LeftPWM - 10;
           RightPWM = RightPWM - 10;
+>>>>>>> 4f5af19885d2263d02ab4e4dfe5ed0c8adcaebaf
         }
     
         Serial.println("Backward R");
@@ -474,14 +508,30 @@ void SCmode()
 
 void CheckPWM_StraightBackWard()
 {
+<<<<<<< HEAD
+  if(LeftPWM < 0.0 && RightPWM < 0.0)
+  {
+    if(LeftPWM > (-1 * MinLimit) || RightPWM > (-1 *MinLimit))
+    {
+      LeftPWM = 0.0;
+      RightPWM = 0.0;
+    }    
+  }
+  else if(LeftPWM > 0.0 && RightPWM > 0.0)
+=======
   if(CmdReceived == 's')
+>>>>>>> 4f5af19885d2263d02ab4e4dfe5ed0c8adcaebaf
   {
     if(LeftPWM < MinLimit || RightPWM < MinLimit)
     {
       LeftPWM = 0.0;
       RightPWM = 0.0;
+<<<<<<< HEAD
+    }        
+=======
     }
 //    Serial.println("Function Called");
+>>>>>>> 4f5af19885d2263d02ab4e4dfe5ed0c8adcaebaf
   }
 }
 void Serialread() 
