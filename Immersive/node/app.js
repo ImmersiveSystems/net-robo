@@ -1,7 +1,7 @@
 var http = require('http'),
     fs = require('fs'),
     // NEVER use a Sync function except at start-up!
-    index = fs.readFileSync(__dirname + '/index.html');
+    index = fs.readFileSync(__dirname + '/client/index.html');
 
 var url = require("url");
 var path = require('path');
@@ -9,7 +9,7 @@ var mime = require('mime');
 
 // Send index.html to all requests
 var app = http.createServer(function(req, res) {
-    var dir = "/";
+    var dir = "/client";
     var uri = url.parse(req.url).pathname;
     if (uri == "/")
     {
@@ -43,8 +43,8 @@ function sendTime() {
 }
 
 function action(a) {
-        console.log(a);
-        io.sockets.emit('python', a);
+	console.log(a);
+	io.sockets.emit('python', a);
 }
 
 // Send current time every 10 secs
