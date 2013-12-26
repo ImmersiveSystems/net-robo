@@ -3,10 +3,35 @@ var http = require('http'),
     // NEVER use a Sync function except at start-up!
     index = fs.readFileSync(__dirname + '/index.html');
 
+var url = require("url");
+var path = require('path');
+var mime = require('mime');
+
 // Send index.html to all requests
 var app = http.createServer(function(req, res) {
-    res.writeHead(200, {'Content-Type': 'text/html'});
-    res.end(index);
+    var dir = "/";
+    var uri = url.parse(req.url).pathname;
+    if (uri == "/")
+    {
+        uri = "index.html";
+    }
+    var filename = path.join(dir, uri);
+    console.log(filename);
+    console.log(mime.lookup(filename));
+    fs.readFile(__dirname + filename,
+        function (err, data)
+        {
+            if (err)
+            {
+                res.writeHead(500);
+                return res.end('Error loading index.html');
+            }
+            console.log(data);
+            console.log(filename + " has read");
+            res.setHeader('content-type', mime.lookup(filename));
+            res.writeHead(200);
+            res.end(data);
+        });
 });
 
 // Socket.io server listens to our app
@@ -18,8 +43,8 @@ function sendTime() {
 }
 
 function action(a) {
-	console.log(a);
-	io.sockets.emit('python', a);
+        console.log(a);
+        io.sockets.emit('python', a);
 }
 
 // Send current time every 10 secs
