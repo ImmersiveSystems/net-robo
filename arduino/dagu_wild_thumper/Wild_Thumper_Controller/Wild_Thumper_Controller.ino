@@ -11,12 +11,14 @@ unsigned int RightAmps;
 unsigned long chargeTimer;
 unsigned long leftoverload;
 unsigned long rightoverload;
+int StartFlag = 0;
 int highVolts;
 int startVolts;
 int Leftspeed=0;
 int Rightspeed=0;
 int Speed;
 int Steer;
+int CmdReceived;
 byte Charged=1;                                               // 0=Flat battery  1=Charged battery
 int Leftmode=1;                                               // 0=reverse, 1=brake, 2=forward
 int Rightmode=1;                                              // 0=reverse, 1=brake, 2=forward
@@ -139,7 +141,43 @@ void loop()
   else
 
   {//----------------------------------------------------------- GOOD BATTERY speed controller opperates normally ----------------------
-
+    
+    if(StartFlag != 0)
+    {
+      if(CmdReceived == 'w')
+      {
+        if(LeftPWM > InitStablePWM)
+        {
+          LeftPWM = LeftPWM - 1.0;
+        }
+        if(RightPWM > InitStablePWM)
+        {
+          RightPWM = RightPWM - 1.0;
+        }
+        if(LeftPWM <= InitStablePWM && RightPWM <= InitStablePWM && StartFlag == 1)
+        {
+          StartFlag = 0;
+        }
+      }    
+      if(CmdReceived == 's')
+        {
+          if(LeftPWM < (-1 * InitStablePWM))
+          {
+            LeftPWM = LeftPWM + 1.0;
+          }
+          if(RightPWM < (-1 * InitStablePWM))
+          {
+            RightPWM = RightPWM + 1.0;
+          }
+          if(LeftPWM >= (-1 * InitStablePWM) && RightPWM >= (-1 * InitStablePWM) && StartFlag == 1)
+          {
+            StartFlag = 0;
+          }
+        }
+    }
+     
+//    CheckPWM_StraightBackWard();
+ 
     switch(Cmode)
     {
     case 0:                                                   // RC mode via D0 and D1
@@ -178,7 +216,7 @@ void loop()
       analogWrite (RmotorA,0);                                // turn off motors
       analogWrite (RmotorB,RightPWM);                                // turn off motors
     }
-    
+   /* 
     if (LeftPWM > 0)
       LeftPWM = LeftPWM - 0.001;
     else 
@@ -194,7 +232,9 @@ void loop()
       
     if ((LeftPWM > RightPWM) > 1)
       LeftPWM = LeftPWM - 0.05;
-      
+     */
+    
+     
     /*if (Charged==1)                                           // Only power motors if battery voltage is good
     {
       if ((millis()-leftoverload)>overloadtime)             
@@ -318,7 +358,8 @@ void SCmode()
                                                               //      right motor PWM  0-255
    
  
-  if (Serial.available()>1)                                   // command available
+
+  if (Serial.available() >= 1)                                   // command available
   {
     Volts=analogRead(Battery);                                  // read the battery voltage
     Serial.print("Volts: ");
@@ -330,19 +371,41 @@ void SCmode()
     Serial.print("RightPWM: ");
     Serial.println(RightPWM);
     
-    int A=Serial.read();
-    
-    switch(A)
+    CmdReceived = Serial.read();
+        
+    switch(CmdReceived)
     {
       case 'w':
-        LeftPWM = LeftPWM + 10;
-        RightPWM = RightPWM + 10;
+        if(LeftPWM == 0 && RightPWM == 0)
+        {
+          LeftPWM = MaxInitStraightMove;
+          RightPWM = MaxInitStraightMove;
+          StartFlag = 1;
+        }
+        else
+        {
+          LeftPWM = LeftPWM + 10;
+          RightPWM = RightPWM + 10;
+        }
+        
         Serial.println("Forward L");
         break;
       case 's':
-        LeftPWM = LeftPWM - 10;
-        RightPWM = RightPWM - 10;
-        Serial.println("Forward R");
+        if(LeftPWM == 0 && RightPWM == 0)
+        {
+          LeftPWM = -1 * MaxInitStraightMove;
+          RightPWM = -1 * MaxInitStraightMove;
+          StartFlag = 1;
+        }
+        else
+        {
+          LeftPWM = LeftPWM - 10;
+          RightPWM = RightPWM - 10;
+        }
+    
+        Serial.println("Backward R");
+        Serial.println(LeftPWM);
+        Serial.println(RightPWM);
         break;
       case 'd':
         RightPWM = RightPWM + 2.5;
@@ -409,6 +472,18 @@ void SCmode()
   }
 }
 
+void CheckPWM_StraightBackWard()
+{
+  if(CmdReceived == 's')
+  {
+    if(LeftPWM < MinLimit || RightPWM < MinLimit)
+    {
+      LeftPWM = 0.0;
+      RightPWM = 0.0;
+    }
+//    Serial.println("Function Called");
+  }
+}
 void Serialread() 
 {//---------------------------------------------------------- Read serial port until data has been received -----------------------------------
   do 
