@@ -1,7 +1,7 @@
 Immersive Systems: net-robo
 ===========================
 
-Working prototype of internet controlled robots.
+Working prototype of internet controlled robots. Please visit the wiki for more information: https://github.com/ImmersiveSystems/net-robo/wiki
 
 Arduino
 -------
