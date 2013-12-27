@@ -4,7 +4,18 @@
 #define Brate           115200     // Baud rate for serial communications
 
 
-
+//=================================== Left/Rigth PWM Minimum Limit ===============================================================================
+<<<<<<< HEAD
+#define MinLimit 40.0
+#define MaxInitStraightMove 127.0
+#define InitStablePWM 60.0
+#define InitMoveAdjustValue 1.0
+#define AccelRate 10.0
+=======
+#define MinLimit -40.0
+#define MaxInitStraightMove 127.0
+#define InitStablePWM 60.0
+>>>>>>> 4f5af19885d2263d02ab4e4dfe5ed0c8adcaebaf
 //=================================== RC MODE OPTIONS ===============================================================================
 
 #define Mix                  1     // Set to 1 if L/R and F/R signals from RC need to be mixed
