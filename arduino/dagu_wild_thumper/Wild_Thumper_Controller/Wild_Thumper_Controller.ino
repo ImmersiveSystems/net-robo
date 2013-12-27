@@ -20,6 +20,7 @@ int Rightspeed=0;
 int Speed;
 int Steer;
 int CmdReceived;
+int CmdPrev;
 byte Charged=1;                                               // 0=Flat battery  1=Charged battery
 int Leftmode=1;                                               // 0=reverse, 1=brake, 2=forward
 int Rightmode=1;                                              // 0=reverse, 1=brake, 2=forward
@@ -42,7 +43,7 @@ Servo Servo5;                                                 // define servos
 Servo Servo6;                                                 // define servos
 
 void setup()
-{
+{  
   //------------------------------------------------------------ Initialize Servos ----------------------------------------------------
 
   Servo0.attach(S0);                                          // attach servo to I/O pin
@@ -140,83 +141,15 @@ void loop()
   }
 
   else
-
-  {//----------------------------------------------------------- GOOD BATTERY speed controller opperates normally ----------------------
-    
-    if(StartFlag != 0)
-    {
-      if(CmdReceived == 'w')
-      {
-        if(LeftPWM > InitStablePWM)
-        {
-          LeftPWM = LeftPWM - InitMoveAdjustValue;
-        }
-        if(RightPWM > InitStablePWM)
-        {
-          RightPWM = RightPWM - InitMoveAdjustValue;
-        }
-        if(LeftPWM <= InitStablePWM && RightPWM <= InitStablePWM && StartFlag == 1)
-        {
-          StartFlag = 0;
-        }
-      }    
-      if(CmdReceived == 's')
-        {
-          if(LeftPWM < (-1 * InitStablePWM))
-          {
-            LeftPWM = LeftPWM + InitMoveAdjustValue;
-          }
-          if(RightPWM < (-1 * InitStablePWM))
-          {
-            RightPWM = RightPWM + InitMoveAdjustValue;
-          }
-          if(LeftPWM >= (-1 * InitStablePWM) && RightPWM >= (-1 * InitStablePWM) && StartFlag == 1)
-          {
-            StartFlag = 0;
-          }
-        }
-    }
-     
-   CheckPWM_StraightBackWard();
- 
-    switch(Cmode)
-    {
-    case 0:                                                   // RC mode via D0 and D1
-      RCmode();
-      break;
-
-    case 1:                                                   // Serial mode via D0(RX) and D1(TX)
-      SCmode();
-      break;
-
-    case 2:                                                   // I2C mode via A4(SDA) and A5(SCL)
-      I2Cmode();
-      break;
-    }
-
+  {
+    //----------------------------------------------------------- GOOD BATTERY speed controller opperates normally ---------------------- 
+    AdjustKickOffPWM();     
+    CheckMinimumPWMs();
+    SelectOperationMode();
     // --------------------------------------------------------- Code to drive dual "H" bridges --------------------------------------
-
-    if (LeftPWM < 0)
-    {
-      analogWrite (LmotorA,(-1 * LeftPWM)); 
-      analogWrite (LmotorB,0);  
-    }
-    else
-    {
-      analogWrite (LmotorA,0);                                // turn off motors
-      analogWrite (LmotorB,LeftPWM);                                // turn off motors
-    }
+    MonitorLeftPWM_HBridge();
+    MonitorRightPWM_HBridge();
     
-    if (RightPWM < 0)
-    {
-      analogWrite (RmotorA,(-1 * RightPWM));                                // turn off motors
-      analogWrite (RmotorB,0);                                // turn off motors
-    }
-    else
-    {
-      analogWrite (RmotorA,0);                                // turn off motors
-      analogWrite (RmotorB,RightPWM);                                // turn off motors
-    }
    /* 
     if (LeftPWM > 0)
       LeftPWM = LeftPWM - 0.001;
@@ -377,48 +310,33 @@ void SCmode()
     switch(CmdReceived)
     {
       case 'w':
-        if(LeftPWM == 0 && RightPWM == 0)
-        {
-          LeftPWM = MaxInitStraightMove;
-          RightPWM = MaxInitStraightMove;
-          StartFlag = 1;
-        }
-        else
-        {
-          LeftPWM = LeftPWM + AccelRate;
-          RightPWM = RightPWM + AccelRate;
-        }        
+        CheckIfTurning();
+        MoveForward();
+        CmdPrev = CmdReceived;
         Serial.println("Forward L");
         break;
       case 's':
-        if(LeftPWM == 0 && RightPWM == 0)
-        {
-          LeftPWM = -1 * MaxInitStraightMove;
-          RightPWM = -1 * MaxInitStraightMove;
-          StartFlag = 1;
-        }
-        else
-        {
-          LeftPWM = LeftPWM - AccelRate;
-          RightPWM = RightPWM - AccelRate;
-        }    
+        CheckIfTurning();
+        MoveBackward();
+        CmdPrev = CmdReceived;        
         Serial.println("Backward R");
+        break;
+      case 'd':
+        TurnLeft();
+        CmdPrev = CmdReceived;
+        Serial.println("Left");
         Serial.println(LeftPWM);
         Serial.println(RightPWM);
         break;
-      case 'd':
-        RightPWM = RightPWM + 2.5;
-        LeftPWM = LeftPWM - 2.5;
-        Serial.println("Left");
-        break;
       case 'a':
-        LeftPWM = LeftPWM + 2.5;
-        RightPWM = RightPWM - 2.5;
+        TurnRight();
+        CmdPrev = CmdReceived;
         Serial.println("Right");
         break;   
       case 'q':
         LeftPWM = 0;
         RightPWM = 0;
+        CmdPrev = CmdReceived;        
         break; 
     }
    
@@ -471,7 +389,175 @@ void SCmode()
   }
 }
 
-void CheckPWM_StraightBackWard()
+void SelectOperationMode()
+{
+   if(Cmode == 0)
+   {             
+     RCmode();     // RC mode via D0 and D1
+   }
+   else if(Cmode == 1)
+   {         
+     SCmode();    // Serial mode via D0(RX) and D1(TX)
+   }
+   else if(Cmode == 2)
+   {                                             
+     I2Cmode();   // I2C mode via A4(SDA) and A5(SCL)
+   }  
+}
+
+void MonitorRightPWM_HBridge()  // This code is incorporated into the controller by default
+{
+  if (RightPWM < 0)
+  {
+    analogWrite (RmotorA,(-1 * RightPWM));                                // turn off motors
+    analogWrite (RmotorB,0);                                // turn off motors
+  }
+  else
+  {
+    analogWrite (RmotorA,0);                                // turn off motors
+    analogWrite (RmotorB,RightPWM);                                // turn off motors
+  }
+}
+
+void MonitorLeftPWM_HBridge()  // This code is incorporated into the controller by default
+{
+  if (LeftPWM < 0)
+  {
+    analogWrite (LmotorA,(-1 * LeftPWM)); 
+    analogWrite (LmotorB,0);  
+  }
+  else
+  {
+    analogWrite (LmotorA,0);                                // turn off motors
+    analogWrite (LmotorB,LeftPWM);                                // turn off motors
+  }  
+}
+
+void AdjustKickOffPWM()
+{
+  if(StartFlag != 0)
+  {
+    if(CmdReceived == 'w')
+    {
+      AdjustForwardToNormal();
+    }    
+    if(CmdReceived == 's')
+    {
+      AdjustBackwardToNormal();
+    }
+  }  
+}
+
+void AdjustBackwardToNormal()
+{
+  if(LeftPWM < (-1 * InitStablePWM))
+  {
+    LeftPWM = LeftPWM + InitMoveAdjustValue;
+  }
+  if(RightPWM < (-1 * InitStablePWM))
+  {
+    RightPWM = RightPWM + InitMoveAdjustValue;
+  }
+  if(LeftPWM >= (-1 * InitStablePWM) && RightPWM >= (-1 * InitStablePWM) && StartFlag == 1)
+  {
+    StartFlag = 0;
+  }  
+}
+
+void AdjustForwardToNormal()
+{
+  if(LeftPWM > InitStablePWM)
+  {
+    LeftPWM = LeftPWM - InitMoveAdjustValue;
+  }
+  if(RightPWM > InitStablePWM)
+  {
+    RightPWM = RightPWM - InitMoveAdjustValue;
+  }
+  if(LeftPWM <= InitStablePWM && RightPWM <= InitStablePWM && StartFlag == 1)
+  {
+    StartFlag = 0;
+  }  
+}
+
+void TurnLeft()
+{
+  if(CmdPrev == CmdReceived)
+  {
+    if(LeftPWM > (-1 * MaxStraightLimit) && RightPWM < MaxStraightLimit)
+    {
+      RightPWM = RightPWM + TurnRate;
+      LeftPWM = LeftPWM - TurnRate;
+    }
+  }
+  else
+  {
+    RightPWM = InitStableTurnPWM;
+    LeftPWM = -1 * InitStableTurnPWM;
+  }  
+}
+
+void TurnRight()
+{
+  if(CmdPrev == CmdReceived)
+  {
+    if(RightPWM > (-1 * MaxStraightLimit) && RightPWM < MaxStraightLimit)
+    {
+      RightPWM = RightPWM - TurnRate;
+      LeftPWM = LeftPWM + TurnRate;
+    }
+  }
+  else
+  {
+    LeftPWM = InitStableTurnPWM;
+    RightPWM = -1 * InitStableTurnPWM;
+  }  
+}
+
+void CheckIfTurning()
+{
+  if(CmdPrev == 'd' || CmdPrev == 'a')
+  {
+    LeftPWM = 0.0;
+    RightPWM = 0.0;
+  }          
+}
+void MoveForward()
+{
+  if(LeftPWM == 0 && RightPWM == 0)
+  {
+    LeftPWM = MaxInitStraightMove;
+    RightPWM = MaxInitStraightMove;
+    StartFlag = 1;
+  }
+  else
+  {
+    if(LeftPWM < MaxStraightLimit && RightPWM < MaxStraightLimit)
+    {
+      LeftPWM = LeftPWM + AccelRate;
+      RightPWM = RightPWM + AccelRate;
+    }
+  }          
+}
+void MoveBackward()
+{
+  if(LeftPWM == 0 && RightPWM == 0)
+  {
+    LeftPWM = -1 * MaxInitStraightMove;
+    RightPWM = -1 * MaxInitStraightMove;
+    StartFlag = 1;
+  }
+  else
+  {
+    if(LeftPWM > (-1 * MaxStraightLimit) && RightPWM > (-1 * MaxStraightLimit))
+    {
+      LeftPWM = LeftPWM - AccelRate;
+      RightPWM = RightPWM - AccelRate;
+    }
+  }      
+}
+
+void CheckMinimumPWMs()
 {
   if(LeftPWM < 0.0 && RightPWM < 0.0)
   {

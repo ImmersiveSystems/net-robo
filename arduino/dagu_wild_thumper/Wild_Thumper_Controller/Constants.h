@@ -6,8 +6,11 @@
 
 //=================================== Left/Rigth PWM Minimum Limit ===============================================================================
 #define MinLimit 40.0
+#define MaxStraightLimit 250.0
 #define MaxInitStraightMove 127.0
 #define InitStablePWM 60.0
+#define InitStableTurnPWM 80.0
+#define TurnRate 2.5
 #define InitMoveAdjustValue 1.0
 #define AccelRate 10.0
 //=================================== RC MODE OPTIONS ===============================================================================
