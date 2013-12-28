@@ -4,11 +4,7 @@
 
 
 //-------------------------------------------------------------- define global variables --------------------------------------------
-<<<<<<< HEAD
-// Hello3
-=======
-// Hello2
->>>>>>> ad970cc0bfafe70b79606d8d479dfa0694d177bd
+// Hello4
 unsigned int Volts;
 unsigned int LeftAmps;
 unsigned int RightAmps;
