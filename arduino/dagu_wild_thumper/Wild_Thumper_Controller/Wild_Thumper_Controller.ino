@@ -4,7 +4,7 @@
 
 
 //-------------------------------------------------------------- define global variables --------------------------------------------
-// Hello5
+
 unsigned int Volts;
 unsigned int LeftAmps;
 unsigned int RightAmps;
@@ -508,7 +508,7 @@ void TurnRight()
 {
   if(CmdPrev == CmdReceived)
   {
-    if(RightPWM > (-1 * MaxStraightLimit) && RightPWM < MaxStraightLimit)
+    if(RightPWM > (-1 * MaxStraightLimit) && LeftPWM < MaxStraightLimit)
     {
       RightPWM = RightPWM - TurnRate;
       LeftPWM = LeftPWM + TurnRate;
@@ -541,7 +541,7 @@ void MoveForward()
   {
     if(LeftPWM < MaxStraightLimit && RightPWM < MaxStraightLimit)
     {
-      LeftPWM = (LeftPWM + AccelRate) * 2;
+      LeftPWM = LeftPWM + AccelRate;
       RightPWM = RightPWM + AccelRate;
     }
   }          
