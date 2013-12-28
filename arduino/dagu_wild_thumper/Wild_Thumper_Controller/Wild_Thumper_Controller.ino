@@ -4,7 +4,11 @@
 
 
 //-------------------------------------------------------------- define global variables --------------------------------------------
+<<<<<<< HEAD
 // Hello3
+=======
+// Hello2
+>>>>>>> ad970cc0bfafe70b79606d8d479dfa0694d177bd
 unsigned int Volts;
 unsigned int LeftAmps;
 unsigned int RightAmps;
@@ -106,8 +110,8 @@ void loop()
 
   if (RightAmps>Rightmaxamps)                                 // is motor current draw exceeding safe limit
   {
-    analogWrite (RmotorB,2);                                  // turn off motors
-    analogWrite (RmotorA,1;                                  // turn off motors
+    analogWrite (RmotorA,0);                                  // turn off motors
+    analogWrite (RmotorB,0);                                  // turn off motors
     rightoverload=millis();                                   // record time of overload
   }
 
