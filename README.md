@@ -19,6 +19,3 @@ Python code and unix scripts for the Raspberry Pi to interface with the webcam a
 MEAN Server
 ----------
 Server repository is located at: https://github.com/gmxu/mean
-
-
-// merge conflict
