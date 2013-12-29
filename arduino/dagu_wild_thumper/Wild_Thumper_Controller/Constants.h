@@ -11,6 +11,7 @@
 #define InitStablePWM 60.0
 #define InitStableTurnPWM 80.0
 #define TurnRate 1.0
+#define ShiftRate 5.0
 #define InitMoveAdjustValue 1.0
 #define AccelRate 10.0
 //=================================== RC MODE OPTIONS ===============================================================================

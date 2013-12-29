@@ -340,10 +340,18 @@ void SCmode()
         CmdPrev = CmdReceived;
         Serial.println("Right");
         break;   
-      case 'q':
+      case 'x':
         LeftPWM = 0;
         RightPWM = 0;
         CmdPrev = CmdReceived;        
+        break; 
+      case 'q':
+        ShiftLeft();
+        Serial.println("Shift L");
+        break;   
+      case 'e':
+        ShiftRight();
+        Serial.println("Shift R");
         break; 
     }
    
@@ -519,6 +527,56 @@ void TurnRight()
     LeftPWM = InitStableTurnPWM;
     RightPWM = -1 * InitStableTurnPWM;
   }  
+}
+
+void ShiftLeft()
+{
+  if(RightPWM > 0 && LeftPWM > 0)
+  {
+    if (RightPWM > LeftPWM)
+      RightPWM = RightPWM - ShiftRate;
+    else
+      LeftPWM = LeftPWM + ShiftRate;
+    
+    if(LeftPWM >= MaxStraightLimit)
+      LeftPWM = MaxStraightLimit;
+  }
+  else if (RightPWM < 0 && LeftPWM < 0)
+  {
+    if (LeftPWM > RightPWM)
+      RightPWM = RightPWM + ShiftRate;
+    else
+      LeftPWM = LeftPWM - ShiftRate;
+    
+    if(LeftPWM <= (-1 * MaxStraightLimit))
+      LeftPWM = (-1 * MaxStraightLimit);
+  }
+    
+}
+
+void ShiftRight()
+{
+  if(RightPWM > 0 && LeftPWM > 0)
+  {
+    if (LeftPWM > RightPWM)
+      LeftPWM = LeftPWM - ShiftRate;
+    else
+      RightPWM = RightPWM + ShiftRate;
+    
+    if(RightPWM >= MaxStraightLimit)
+      RightPWM = MaxStraightLimit;
+  }
+  else if (RightPWM < 0 && LeftPWM < 0)
+  {
+    if (RightPWM > LeftPWM)
+      LeftPWM = LeftPWM + ShiftRate;
+    else
+      RightPWM = RightPWM - ShiftRate;
+    
+    if(LeftPWM <= (-1 * MaxStraightLimit))
+      RightPWM = (-1 * MaxStraightLimit);
+  }
+  
 }
 
 void CheckIfTurning()

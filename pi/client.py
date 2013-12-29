@@ -2,7 +2,7 @@ from socketIO_client import SocketIO
 
 import serial
 
-#ser = serial.Serial("/dev/ttyUSB1", 115200)
+ser = serial.Serial("/dev/ttyUSB0", 115200)
 
 def listener(*args):
 	if args[0] == 'forward':
@@ -18,10 +18,16 @@ def listener(*args):
 		print 'd'
 		ser.write('d')
 	elif args[0] == 'stop':
+		print 'x'
+		ser.write('x')
+	elif args[0] == 'shiftr':
+		print 'e'
+		ser.write('e')
+	elif args[0] == 'shiftl':
 		print 'q'
-		#ser.write('q')
+		ser.write('q')
 
-socketIO = SocketIO('localhost', 9000)
-socketIO.on('python', listener)
-socketIO.emit('i am client', 'Python')
+socketIO = SocketIO('192.168.1.33', 3000)
+socketIO.on('serverToPython', listener)
+socketIO.emit('clientType', 'Python')
 socketIO.wait(seconds=6000)
