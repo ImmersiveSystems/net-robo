@@ -519,8 +519,8 @@ void TurnLeft()
     }
     if(LeftPWM > (-1 * MaxStraightLimit) && RightPWM < MaxStraightLimit)
     {
-      RightPWM = RightPWM + TurnRateOnSpot;
-      LeftPWM = LeftPWM - TurnRateOnSpot;
+      RightPWM = RightPWM + TurnRate;
+      LeftPWM = LeftPWM - TurnRate;
     }
   }
   else
@@ -621,8 +621,8 @@ void TurnRight()
     }    
     if(RightPWM > (-1 * MaxStraightLimit) && LeftPWM < MaxStraightLimit)
     {
-      RightPWM = RightPWM - TurnRateOnSpot;
-      LeftPWM = LeftPWM + TurnRateOnSpot;
+      RightPWM = RightPWM - TurnRate;
+      LeftPWM = LeftPWM + TurnRate;
     }
   }
   else
