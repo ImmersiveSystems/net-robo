@@ -12,6 +12,7 @@ unsigned long chargeTimer;
 unsigned long leftoverload;
 unsigned long rightoverload;
 int StartFlag = 0;
+int StartTurnFlag = 0;
 
 int AmpsAdjust = 0;
 int highVolts;
@@ -29,6 +30,8 @@ byte Leftmodechange=0;                                        // Left input must
 byte Rightmodechange=0;                                       // Right input must be 1500 before brake or reverse can occur
 double LeftPWM;                                                  // PWM value for left  motor speed / brake
 double RightPWM;                                                 // PWM value for right motor speed / brake
+double LeftPWM_Prev;
+double RightPWM_Prev;
 int data;
 int servo[7];
 
@@ -151,6 +154,7 @@ void loop()
   {
     //----------------------------------------------------------- GOOD BATTERY speed controller opperates normally ---------------------- 
     AdjustKickOffPWM();     
+    AdjustOnSpotTurn();
     CheckMinimumPWMs();
     SelectOperationMode();
     // --------------------------------------------------------- Code to drive dual "H" bridges --------------------------------------
@@ -317,27 +321,37 @@ void SCmode()
     switch(CmdReceived)
     {
       case 'w':
-        CheckIfTurning();
+//        CheckIfTurning();
+        CheckIfTurning_New();
+        LeftPWM_Prev = LeftPWM;
+        RightPWM_Prev = RightPWM;
         MoveForward();
         CmdPrev = CmdReceived;
+        Serial.println(LeftPWM);
+        Serial.println(RightPWM);        
         Serial.println("Forward L");
         break;
       case 's':
-        CheckIfTurning();
+//        CheckIfTurning();
+        CheckIfTurning_New();
+        LeftPWM_Prev = LeftPWM;
+        RightPWM_Prev = RightPWM;        
         MoveBackward();
-        CmdPrev = CmdReceived;        
+        CmdPrev = CmdReceived;   
+        Serial.println(LeftPWM);
+        Serial.println(RightPWM);        
         Serial.println("Backward R");
         break;
-      case 'd':
+      case 'd': //turn on spot
         TurnLeft();
-        CmdPrev = CmdReceived;
+        CmdPrev = CmdReceived;        
         Serial.println("Left");
         Serial.println(LeftPWM);
         Serial.println(RightPWM);
         break;
-      case 'a':
+      case 'a': //turn on spot
         TurnRight();
-        CmdPrev = CmdReceived;
+        CmdPrev = CmdReceived;        
         Serial.println("Right");
         break;   
       case 'x':
@@ -460,7 +474,7 @@ void AdjustKickOffPWM()
     {
       AdjustBackwardToNormal();
     }
-  }  
+  }    
 }
 
 void AdjustBackwardToNormal()
@@ -499,6 +513,83 @@ void TurnLeft()
 {
   if(CmdPrev == CmdReceived)
   {
+    if(StartTurnFlag == 1)
+    {
+      StartTurnFlag = 1;
+    }
+    if(LeftPWM > (-1 * MaxStraightLimit) && RightPWM < MaxStraightLimit)
+    {
+      RightPWM = RightPWM + TurnRateOnSpot;
+      LeftPWM = LeftPWM - TurnRateOnSpot;
+    }
+  }
+  else
+  {
+    RightPWM = InitStableTurnPWM;
+    LeftPWM = -1 * InitStableTurnPWM;
+    StartTurnFlag = 1;
+  }  
+}
+
+void AdjustOnSpotTurn()
+{
+  if(StartTurnFlag == 1)
+  {
+    if(LeftPWM > 0 && RightPWM < 0)
+    {
+      if(LeftPWM > 90.0 && RightPWM < -90.0)
+      {
+        LeftPWM = LeftPWM - InitMoveAdjustValue;
+        RightPWM = RightPWM + InitMoveAdjustValue;
+      }
+      else if(LeftPWM <= 90.0 && RightPWM >= -90.0)
+      {
+        StartTurnFlag = 0;
+      }    
+    }
+    else if(LeftPWM < 0 && RightPWM > 0)
+    {
+      if(LeftPWM < (-1 * InitStableTurn) && RightPWM > InitStableTurn)
+      {
+        LeftPWM = LeftPWM + InitMoveAdjustValue;
+        RightPWM = RightPWM - InitMoveAdjustValue;
+      }
+      else if(LeftPWM >= (-1 * InitStableTurn) && RightPWM <= InitStableTurn)
+      {
+        StartTurnFlag = 0;
+      }
+    }
+  }
+}
+
+void TurnLeft_New()
+{
+  if(LeftPWM == 0 && RightPWM == 0)
+  {
+    RightPWM = InitStableTurnPWM;
+    LeftPWM = -1 * InitStableTurnPWM;
+  }  
+  else if(CmdPrev == CmdReceived && LeftPWM < 0 && RightPWM > 0)
+  {
+    if(LeftPWM > (-1 * MaxStraightLimit) && RightPWM < MaxStraightLimit)
+    {
+      RightPWM = RightPWM + TurnRate;
+      LeftPWM = LeftPWM - TurnRate;
+    }
+  }  
+  else if(LeftPWM > 0 && RightPWM > 0)
+  {
+    RightPWM = RightPWM + TurnRate;
+//    LeftPWM = LeftPWM_Prev;
+  }
+  else if(LeftPWM < 0 && RightPWM < 0)
+  {
+    RightPWM = RightPWM - TurnRate;
+//    LeftPWM = LeftPWM_Prev;
+  }
+  /*
+  if(CmdPrev == CmdReceived)
+  {
     if(LeftPWM > (-1 * MaxStraightLimit) && RightPWM < MaxStraightLimit)
     {
       RightPWM = RightPWM + TurnRate;
@@ -507,25 +598,38 @@ void TurnLeft()
   }
   else
   {
-    RightPWM = InitStableTurnPWM;
-    LeftPWM = -1 * InitStableTurnPWM;
-  }  
+    if(LeftPWM == 0 && RightPWM == 0)
+    {
+      RightPWM = InitStableTurnPWM;
+      LeftPWM = -1 * InitStableTurnPWM;
+    }
+    else
+    {
+      LeftPWM = -1 * LeftPWM;
+    }
+  } 
+ */ 
 }
 
 void TurnRight()
 {
   if(CmdPrev == CmdReceived)
   {
+    if(StartTurnFlag == 1)
+    {
+      StartTurnFlag = 1;
+    }    
     if(RightPWM > (-1 * MaxStraightLimit) && LeftPWM < MaxStraightLimit)
     {
-      RightPWM = RightPWM - TurnRate;
-      LeftPWM = LeftPWM + TurnRate;
+      RightPWM = RightPWM - TurnRateOnSpot;
+      LeftPWM = LeftPWM + TurnRateOnSpot;
     }
   }
   else
   {
     LeftPWM = InitStableTurnPWM;
     RightPWM = -1 * InitStableTurnPWM;
+    StartTurnFlag = 1;
   }  
 }
 
@@ -576,7 +680,7 @@ void ShiftRight()
     if(LeftPWM <= (-1 * MaxStraightLimit))
       RightPWM = (-1 * MaxStraightLimit);
   }
-  
+ 
 }
 
 void CheckIfTurning()
@@ -587,6 +691,18 @@ void CheckIfTurning()
     RightPWM = 0.0;
   }          
 }
+
+void CheckIfTurning_New()
+{
+  Serial.println(LeftPWM_Prev);
+  Serial.println(RightPWM_Prev);
+  if(CmdPrev == 'd' || CmdPrev == 'a')
+  {
+    LeftPWM = LeftPWM_Prev;
+    RightPWM = RightPWM_Prev;
+  }          
+}
+
 void MoveForward()
 {
   if(LeftPWM == 0 && RightPWM == 0)
