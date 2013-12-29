@@ -9,7 +9,6 @@
 #define MaxStraightLimit 250.0
 #define MaxInitStraightMove 127.0
 #define InitStablePWM 60.0
-<<<<<<< HEAD
 #define InitStableTurn 90.0
 #define InitStableTurnPWM 127.0
 #define TurnRate 1.0
