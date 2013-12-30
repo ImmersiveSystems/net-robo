@@ -6,6 +6,7 @@
 //-------------------------------------------------------------- define global variables --------------------------------------------
 
 unsigned int Volts;
+unsigned int VoltsAtStop = 0;
 unsigned int LeftAmps;
 unsigned int RightAmps;
 unsigned long chargeTimer;
@@ -85,71 +86,16 @@ void setup()
 void loop()
 {
   //------------------------------------------------------------ Check battery voltage and current draw of motors ---------------------
+  LeftMotor_MonitorCurrent();
+  RightMotor_MonitorCurrent();
 
-  Volts=analogRead(Battery);                                  // read the battery voltage
-  LeftAmps=analogRead(LmotorC);                               // read left motor current draw
-  RightAmps=analogRead(RmotorC);                              // read right motor current draw
-/*
-  Serial.print(LeftAmps);
-  Serial.print("    ");
-  Serial.println(RightAmps);
-  */
-  /*
-  Serial.print("LEFT:  ");
-  Serial.println(LeftPWM);
-  Serial.print("Right:  ");
-  Serial.println(RightPWM);
-  */
-  if (LeftAmps>Leftmaxamps)                                   // is motor current draw exceeding safe limit
-  {
-    analogWrite (LmotorA,0);                                  // turn off motors
-    analogWrite (LmotorB,0);                                  // turn off motors
-    leftoverload=millis();                                    // record time of overload
-  }
-
-  if (RightAmps>Rightmaxamps)                                 // is motor current draw exceeding safe limit
-  {
-    analogWrite (RmotorA,0);                                  // turn off motors
-    analogWrite (RmotorB,0);                                  // turn off motors
-    rightoverload=millis();                                   // record time of overload
-  }
-
-  //if ((Volts<lowvolt) && (Charged==1))                       // check condition of the battery
-  if(1 == 1)
-  {                                                           // change battery status from charged to flat
-
-    //---------------------------------------------------------- FLAT BATTERY speed controller shuts down until battery is recharged ----
-    //---------------------------------------------------------- This is a safety feature to prevent malfunction at low voltages!! ------
-
-    Charged=0;                                                // battery is flat
-    highVolts=Volts;                                          // record the voltage
-    startVolts=Volts;
-    chargeTimer=millis();                                     // record the time
-
-    digitalWrite (Charger,0);                                 // enable current regulator to charge battery
-  }
+  MonitorBatteryVoltage();
 
   //------------------------------------------------------------ CHARGE BATTERY -------------------------------------------------------
-
-  if ((Charged==0) && (Volts-startVolts>67))                  // if battery is flat and charger has been connected (voltage has increased by at least 1V)
+  if ((Charged == 0)) //&& (Volts-startVolts>65))                  // if battery is flat and charger has been connected (voltage has increased by at least 1V)
   {
-    if (Volts>highVolts)                                      // has battery voltage increased?
-    {
-      highVolts=Volts;                                        // record the highest voltage. Used to detect peak charging.
-      chargeTimer=millis();                                   // when voltage increases record the time
-    }
-
-    if (Volts>batvolt)                                        // battery voltage must be higher than this before peak charging can occur.
-    {
-      if ((highVolts-Volts)>5 || (millis()-chargeTimer)>chargetimeout) // has voltage begun to drop or levelled out?
-      {
-        Charged=1;                                            // battery voltage has peaked
-        digitalWrite (Charger,0);                             // turn off current regulator
-        //digitalWrite (Charger,1);                             // turn off current regulator
-      }
-    } 
+    RechargeBattery();
   }
-
   else
   {
     //----------------------------------------------------------- GOOD BATTERY speed controller opperates normally ---------------------- 
@@ -160,25 +106,8 @@ void loop()
     // --------------------------------------------------------- Code to drive dual "H" bridges --------------------------------------
     MonitorLeftPWM_HBridge();
     MonitorRightPWM_HBridge();
-    
-   /* 
-    if (LeftPWM > 0)
-      LeftPWM = LeftPWM - 0.001;
-    else 
-      LeftPWM = LeftPWM + 0.001;
-      
-    if (RightPWM > 0)
-      RightPWM = RightPWM - 0.001;
-    else
-      RightPWM = RightPWM + 0.001;
-      
-    if ((RightPWM - LeftPWM) > 1)
-      RightPWM = RightPWM - 0.05;
-      
-    if ((LeftPWM > RightPWM) > 1)
-      LeftPWM = LeftPWM - 0.05;
-     */
-    
+           
+ //   DeccelerateIfNoKeyReceived();
      
     /*if (Charged==1)                                           // Only power motors if battery voltage is good
     {
@@ -233,7 +162,109 @@ void loop()
   }
 }
 
+void DeccelerateIfNoKeyReceived()
+{
+  if (LeftPWM > 0)
+  {
+    LeftPWM = LeftPWM - DeccelRate;
+  }
+  else
+  {     
+    LeftPWM = LeftPWM + DeccelRate;
+  }
+      
+  if (RightPWM > 0)
+  {
+    RightPWM = RightPWM - DeccelRate;
+  }
+  else
+  {
+    RightPWM = RightPWM + DeccelRate;
+  }
+/*      
+  if ((RightPWM - LeftPWM) > 1)
+    RightPWM = RightPWM - 0.05;
+      
+  if ((LeftPWM > RightPWM) > 1)
+    LeftPWM = LeftPWM - 0.05;  
+    */
+}
+  
+void TurnOffMotors()
+{
+  analogWrite (LmotorA,0);                                // turn off motors
+  analogWrite (LmotorB,0);                                // turn off motors
+  analogWrite (RmotorA,0);                                // turn off motors
+  analogWrite (RmotorB,0);                                // turn off motors  
+}
 
+void RechargeBattery()
+{
+  TurnOffMotors();         // temporarily used to carry the robot back to the charger  
+    
+  if (Volts > highVolts)                                      // has battery voltage increased?
+  {
+    highVolts = Volts;                                        // record the highest voltage. Used to detect peak charging.
+    chargeTimer = millis();                                   // when voltage increases record the time
+  }
+
+  if (Volts > batvolt)                                        // battery voltage must be higher than this before peak charging can occur.
+  {
+    Serial.print(    "Timer: ");
+    Serial.println(millis() - chargeTimer);
+    if ((highVolts - Volts) > 5 || (millis() - chargeTimer) > chargetimeout) // has voltage begun to drop or levelled out?
+    {
+      Charged = 1;                                            // battery voltage has peaked
+      digitalWrite(Charger,0);                             // turn off current regulator
+      //digitalWrite (Charger,1);                             // turn off current regulator
+    }
+  }   
+}
+
+void MonitorBatteryVoltage()
+{
+  Volts = analogRead(Battery);                                  // read the battery voltage
+  LeftAmps = analogRead(LmotorC);                               // read left motor current draw
+  RightAmps = analogRead(RmotorC);                              // read right motor current draw
+/*  
+  Serial.print("Volts: ");
+  Serial.print(Volts);
+  Serial.print("     Charging: ");
+  Serial.println(Charged);
+  */
+  if ((Volts < lowvolt) && (Charged == 1))                       // check condition of the battery  
+  {                                                           // change battery status from charged to flat
+
+    //---------------------------------------------------------- FLAT BATTERY speed controller shuts down until battery is recharged ----
+    //---------------------------------------------------------- This is a safety feature to prevent malfunction at low voltages!! ------
+    Charged = 0;                                                // battery is flat
+    highVolts = Volts;                                          // record the voltage
+    startVolts = Volts;
+    chargeTimer = millis();                                     // record the time
+
+    digitalWrite(Charger,0);                                 // enable current regulator to charge battery
+  }  
+}
+
+void LeftMotor_MonitorCurrent()
+{
+  if (LeftAmps > Leftmaxamps)                                   // is motor current draw exceeding safe limit
+  {
+    analogWrite (LmotorA,0);                                  // turn off motors
+    analogWrite (LmotorB,0);                                  // turn off motors
+    leftoverload = millis();                                    // record time of overload
+  }  
+}
+
+void RightMotor_MonitorCurrent()
+{
+  if (RightAmps > Rightmaxamps)                                 // is motor current draw exceeding safe limit
+  {
+    analogWrite (RmotorA,0);                                  // turn off motors
+    analogWrite (RmotorB,0);                                  // turn off motors
+    rightoverload=millis();                                   // record time of overload
+  }
+}
 
 
 
@@ -310,12 +341,6 @@ void SCmode()
     Serial.print("Volts: ");
     Serial.println(Volts);
     
-    Serial.print("LeftPWM: ");
-    Serial.println(LeftPWM);
-    
-    Serial.print("RightPWM: ");
-    Serial.println(RightPWM);
-    
     CmdReceived = Serial.read();
         
     switch(CmdReceived)
@@ -327,8 +352,6 @@ void SCmode()
         RightPWM_Prev = RightPWM;
         MoveForward();
         CmdPrev = CmdReceived;
-        Serial.println(LeftPWM);
-        Serial.println(RightPWM);        
         Serial.println("Forward L");
         break;
       case 's':
@@ -338,16 +361,12 @@ void SCmode()
         RightPWM_Prev = RightPWM;        
         MoveBackward();
         CmdPrev = CmdReceived;   
-        Serial.println(LeftPWM);
-        Serial.println(RightPWM);        
         Serial.println("Backward R");
         break;
       case 'd': //turn on spot
         TurnLeft();
         CmdPrev = CmdReceived;        
         Serial.println("Left");
-        Serial.println(LeftPWM);
-        Serial.println(RightPWM);
         break;
       case 'a': //turn on spot
         TurnRight();
@@ -357,17 +376,23 @@ void SCmode()
       case 'x':
         LeftPWM = 0;
         RightPWM = 0;
-        CmdPrev = CmdReceived;        
+        CmdPrev = CmdReceived;
+                
         break; 
-      case 'q':
+      case 'q':        
         ShiftLeft();
+        CmdPrev = CmdReceived;
         Serial.println("Shift L");
         break;   
       case 'e':
         ShiftRight();
+        CmdPrev = CmdReceived;
         Serial.println("Shift R");
         break; 
     }
+
+    Serial.println(LeftPWM);
+    Serial.println(RightPWM);        
    
     /*int B=Serial.read();
     int command=A*256+B;
@@ -490,6 +515,9 @@ void AdjustBackwardToNormal()
   if(LeftPWM >= (-1 * InitStablePWM) && RightPWM >= (-1 * InitStablePWM) && StartFlag == 1)
   {
     StartFlag = 0;
+    LeftPWM_Prev = LeftPWM;
+    RightPWM_Prev = RightPWM;
+
   }  
 }
 
@@ -505,6 +533,8 @@ void AdjustForwardToNormal()
   }
   if(LeftPWM <= InitStablePWM && RightPWM <= InitStablePWM && StartFlag == 1)
   {
+    LeftPWM_Prev = LeftPWM;
+    RightPWM_Prev = RightPWM;    
     StartFlag = 0;
   }  
 }
@@ -537,12 +567,12 @@ void AdjustOnSpotTurn()
   {
     if(LeftPWM > 0 && RightPWM < 0)
     {
-      if(LeftPWM > 90.0 && RightPWM < -90.0)
+      if(LeftPWM > InitStableTurn && RightPWM < (-1 * InitStableTurn))
       {
         LeftPWM = LeftPWM - InitMoveAdjustValue;
         RightPWM = RightPWM + InitMoveAdjustValue;
       }
-      else if(LeftPWM <= 90.0 && RightPWM >= -90.0)
+      else if(LeftPWM <= InitStableTurn && RightPWM >= (-1 * InitStableTurn))
       {
         StartTurnFlag = 0;
       }    
@@ -580,35 +610,11 @@ void TurnLeft_New()
   else if(LeftPWM > 0 && RightPWM > 0)
   {
     RightPWM = RightPWM + TurnRate;
-//    LeftPWM = LeftPWM_Prev;
   }
   else if(LeftPWM < 0 && RightPWM < 0)
   {
     RightPWM = RightPWM - TurnRate;
-//    LeftPWM = LeftPWM_Prev;
-  }
-  /*
-  if(CmdPrev == CmdReceived)
-  {
-    if(LeftPWM > (-1 * MaxStraightLimit) && RightPWM < MaxStraightLimit)
-    {
-      RightPWM = RightPWM + TurnRate;
-      LeftPWM = LeftPWM - TurnRate;
-    }
-  }
-  else
-  {
-    if(LeftPWM == 0 && RightPWM == 0)
-    {
-      RightPWM = InitStableTurnPWM;
-      LeftPWM = -1 * InitStableTurnPWM;
-    }
-    else
-    {
-      LeftPWM = -1 * LeftPWM;
-    }
   } 
- */ 
 }
 
 void TurnRight()
@@ -654,8 +660,7 @@ void ShiftLeft()
     
     if(LeftPWM <= (-1 * MaxStraightLimit))
       LeftPWM = (-1 * MaxStraightLimit);
-  }
-    
+  }    
 }
 
 void ShiftRight()
@@ -694,13 +699,48 @@ void CheckIfTurning()
 
 void CheckIfTurning_New()
 {
-  Serial.println(LeftPWM_Prev);
-  Serial.println(RightPWM_Prev);
-  if(CmdPrev == 'd' || CmdPrev == 'a')
+  /*
+  if(CmdPrev == 'q' || CmdPrev == 'e')
   {
     LeftPWM = LeftPWM_Prev;
     RightPWM = RightPWM_Prev;
-  }          
+    Serial.println("--------------");
+    Serial.println(LeftPWM_Prev);
+    Serial.println(RightPWM_Prev);        
+    Serial.println("--------------");      
+  }  
+  else*/ if(CmdPrev == 'd' || CmdPrev == 'a')
+  {
+    if(CmdReceived == 'w')
+    {
+      if(LeftPWM_Prev < InitStablePWM || RightPWM_Prev < InitStablePWM)
+      {
+        LeftPWM = MaxInitStraightMove;
+        RightPWM = MaxInitStraightMove;    
+        StartFlag = 1;        
+      }
+      else
+      {
+        LeftPWM = LeftPWM_Prev;
+        RightPWM = RightPWM_Prev;
+      }
+    }
+    else if(CmdReceived == 's')
+    {
+      if(LeftPWM_Prev > (-1 * InitStablePWM) || RightPWM_Prev > (-1 * InitStablePWM))
+      {
+        LeftPWM = -1 * MaxInitStraightMove;
+        RightPWM = -1 * MaxInitStraightMove;    
+        StartFlag = 1;                
+      }
+      else
+      {
+        LeftPWM = LeftPWM_Prev;
+        RightPWM = RightPWM_Prev;
+      }      
+    }
+  }
+  
 }
 
 void MoveForward()
@@ -757,6 +797,7 @@ void CheckMinimumPWMs()
     }        
   }
 }
+
 void Serialread() 
 {//---------------------------------------------------------- Read serial port until data has been received -----------------------------------
   do 

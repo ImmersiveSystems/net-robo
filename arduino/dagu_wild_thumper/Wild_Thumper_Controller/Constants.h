@@ -15,6 +15,7 @@
 #define ShiftRate 5.0
 #define InitMoveAdjustValue 1.0
 #define AccelRate 10.0
+#define DeccelRate 0.001
 //=================================== RC MODE OPTIONS ===============================================================================
 
 #define Mix                  1     // Set to 1 if L/R and F/R signals from RC need to be mixed
@@ -27,8 +28,9 @@
 
 //=================================== BATTERY CHARGER SETTINGS ======================================================================
 
-#define batvolt            520     // This is the nominal battery voltage reading. Peak charge can only occur above this voltage.
-#define lowvolt            410     // This is the voltage at which the speed controller goes into recharge mode.
+#define batvolt            550     // This is the nominal battery voltage reading. Peak charge can only occur above this voltage.
+#define lowvolt            510//410     // This is the voltage at which the speed controller goes into recharge mode.
+#define maxvolt            560
 #define chargetimeout   300000     // If the battery voltage does not change in this number of milliseconds then stop charging.
 
 
