@@ -428,13 +428,13 @@ void SCmode()
        
        case 18498:                                            // HB - mode and PWM data for left and right motors
          Serialread();
-         //Leftmode=data;
+         Leftmode=data;
          Serialread();
-         //LeftPWM=data;
+         LeftPWM=data;
          Serialread();
-         //Rightmode=data;
+         Rightmode=data;
          Serialread();
-         //RightPWM=data;
+         RightPWM=data;
          break;
          
        default:                                                // invalid command
@@ -760,6 +760,7 @@ void MoveForward()
     }
   }          
 }
+
 void MoveBackward()
 {
   if(LeftPWM == 0 && RightPWM == 0)
