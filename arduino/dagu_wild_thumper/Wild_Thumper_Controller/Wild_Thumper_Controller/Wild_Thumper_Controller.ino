@@ -328,7 +328,7 @@ void SetLeft_RightPWM()
   if(LeftPWM_Prev != 0 && LeftPWM < MinLimit)
   {
     LeftPWM = 0;
-    InitStablePWM = 0;
+    LeftPWM_Prev = 0;
   }
   Serialread();
   Rightmode = data;
