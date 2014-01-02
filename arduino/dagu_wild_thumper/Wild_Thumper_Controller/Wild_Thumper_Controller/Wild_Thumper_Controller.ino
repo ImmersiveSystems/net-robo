@@ -185,7 +185,10 @@ void ProcessRightMotorCommands()
     switch (Rightmode)                                    // if right motor has not overloaded recently
     {
       case 2:                 // right motor forward
-      RightMorotForward();
+      if(LeftPWM >= InitStablePWM)
+      {
+        RightMorotForward();
+      }
       break;
 
       case 1:                                               // right motor brake
@@ -193,7 +196,10 @@ void ProcessRightMotorCommands()
       break;
 
       case 0:                                               // right motor reverse
-      RightMotorBackward();
+      if(LeftPWM >= InitStablePWM)
+      {
+        RightMotorBackward();
+      }
       break;
     }
   } 
@@ -207,7 +213,10 @@ void ProcessLeftMotorCommands()
     switch (Leftmode)                                     // if left motor has not overloaded recently
     {
       case 2:        // left motor forward
-      LeftMorotForward();
+      if(RightPWM >= InitStablePWM)
+      {
+        LeftMorotForward();
+      }
       break;
 
       case 1:                     // left motor brake
@@ -215,7 +224,10 @@ void ProcessLeftMotorCommands()
       break;
 
       case 0:                                               // left motor reverse
-      LeftMotorBackward();
+      if(RightPWM >= InitStablePWM)
+      {
+        LeftMotorBackward();
+      }
       break;
       
       default:
@@ -319,11 +331,11 @@ void SetLeft_RightPWM()
   Serialread();
   Leftmode = data;
   Serialread();
-  LeftPWM = data;
+  LeftPWM = data * SpeedScale;
   Serialread();
   Rightmode = data;
   Serialread();
-  RightPWM = data;  
+  RightPWM = data * SpeedScale;  
 }
 
 void CheckForward_LeftPWM()
