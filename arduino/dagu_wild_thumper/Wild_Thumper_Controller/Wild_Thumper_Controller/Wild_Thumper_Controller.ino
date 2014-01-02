@@ -318,6 +318,24 @@ void RightMorotForward()
   }  
 }
 
+void CheckLeftPWM_Received()
+{
+  if(LeftPWM_Prev != 0 && LeftPWM < MinLimit)
+  {
+    LeftPWM = 0;
+    LeftPWM_Prev = 0;
+  }  
+}
+
+void CheckRightPWM_Received()
+{
+  if(RightPWM_Prev != 0 && RightPWM < MinLimit)
+  {
+    RightPWM = 0;
+    RightPWM_Prev = 0;
+  }
+}
+
 void SetLeft_RightPWM()
 {
   Serialread();
@@ -325,21 +343,16 @@ void SetLeft_RightPWM()
   Serialread();
   LeftPWM_Prev = LeftPWM;
   LeftPWM = data * SpeedScale;
-  if(LeftPWM_Prev != 0 && LeftPWM < MinLimit)
-  {
-    LeftPWM = 0;
-    LeftPWM_Prev = 0;
-  }
+  
+  CheckLeftPWM_Received()
+  
   Serialread();
   Rightmode = data;
   Serialread();
   RightPWM_Prev = RightPWM;
   RightPWM = data * SpeedScale;  
-  if(RightPWM_Prev != 0 && RightPWM < MinLimit)
-  {
-    RightPWM = 0;
-    RightPWM_Prev = 0;
-  }
+  
+  CheckRightPWM_Received();
 }
 
 void CheckForward_LeftPWM()
@@ -367,7 +380,7 @@ void CheckForward_RightPWM()
     RightPWMStartFlag = 1;
   }
 }
-
+/*
 void CheckBackward_LeftPWM()
 {
   if(LeftPWM == 0)
@@ -380,7 +393,8 @@ void CheckBackward_LeftPWM()
     LeftPWMStartFlag = 1;
   }
 }
-
+*/
+/*
 void CheckBackward_RightPWM()
 {
   if(RightPWM == 0)
@@ -393,7 +407,8 @@ void CheckBackward_RightPWM()
     RightPWMStartFlag = 1;
   }
 }
-
+*/
+/*
 void AdjustLeftPWM2Normal_Backward()
 {
   if(LeftPWM < (-1 * InitStablePWM))
@@ -406,7 +421,8 @@ void AdjustLeftPWM2Normal_Backward()
     LeftPWM_Prev = LeftPWM;
   }    
 }
-
+*/
+/*
 void AdjustRightPWM2Normal_Backward()
 {
   if(RightPWM < (-1 * InitStablePWM))
@@ -419,7 +435,7 @@ void AdjustRightPWM2Normal_Backward()
     RightPWM_Prev = RightPWM;
   }    
 }
-
+*/
 void AdjustLeftPWM2Normal_Forward()
 {
   if(LeftPWM > InitStablePWM)
