@@ -9,6 +9,7 @@ int LeftPWMStartFlag = 0;
 int RightPWMStartFlag = 0;
 
 unsigned int Volts;
+double ScaledVolts;
 unsigned int LeftAmps;
 unsigned int RightAmps;
 unsigned long chargeTimer;
@@ -294,11 +295,11 @@ void SetLeft_RightPWM()
   Serialread();
   Leftmode = data;
   Serialread();
-  LeftPWM = data;
+  LeftPWM = data * SpeedScale;
   Serialread();
   Rightmode = data;
   Serialread();
-  RightPWM = data;  
+  RightPWM = data * SpeedScale;  
 }
 
 void CheckForward_LeftPWM()
@@ -473,8 +474,8 @@ void MonitorBatteryVoltage()
   Volts = analogRead(Battery);                                  // read the battery voltage
   LeftAmps = analogRead(LmotorC);                               // read left motor current draw
   RightAmps = analogRead(RmotorC);                              // read right motor current draw
-  //Volts = Volts / VoltageScale;
-  //Serial.write(Volts);
+  ScaledVolts = Volts / VoltageScale;
+  Serial.write( (int) ScaledVolts);
 /*  
   Serial.print("Volts: ");
   Serial.print(Volts);

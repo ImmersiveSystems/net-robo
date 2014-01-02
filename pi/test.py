@@ -1,11 +1,18 @@
 import serial
 
-ser = serial.Serial("COM5", 115200)
+ser = serial.Serial("COM6", 115200)
 
-var = raw_input("Enter something: ")
-print "You entered: ", var
 
-ser.write("HB" + chr(2) + chr(127) + chr(0) + chr(127)) 
+for i in range(100):
 
-var = raw_input("Enter something: ")
-print "You entered: ", var
+    speed = raw_input("Enter speed: ")
+    print "You entered: ", speed
+    speed = int(speed)
+
+    mode = raw_input("Enter mode: ")
+    print "You entered: ", mode
+    mode = int(mode)
+
+    ser.write("HB" + chr(mode) + chr(speed) + chr(mode) + chr(speed))
+
+    print( ser.read() )
