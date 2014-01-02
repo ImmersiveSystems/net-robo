@@ -235,7 +235,7 @@ void LeftMotorBrake()
 
 void RightMotorBackward()
 {
-  CheckBackward_LeftPWM();
+  CheckBackward_RightPWM();
   if(LeftPWMStartFlag == 0)
   {
     analogWrite(RmotorA,RightPWM);
