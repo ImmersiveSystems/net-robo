@@ -25,10 +25,10 @@ int Leftmode=1;                                               // 0=reverse, 1=br
 int Rightmode=1;                                              // 0=reverse, 1=brake, 2=forward
 byte Leftmodechange=0;                                        // Left input must be 1500 before brake or reverse can occur
 byte Rightmodechange=0;                                       // Right input must be 1500 before brake or reverse can occur
-int LeftPWM;                                                  // PWM value for left  motor speed / brake
-int RightPWM;                                                 // PWM value for right motor speed / brake
-int LeftPWM_Prev;
-int RightPWM_Prev;
+int LeftPWM = 0;                                                  // PWM value for left  motor speed / brake
+int RightPWM = 0;                                                 // PWM value for right motor speed / brake
+int LeftPWM_Prev = 0;
+int RightPWM_Prev = 0;
 int data;
 int servo[7];
 
@@ -185,10 +185,7 @@ void ProcessRightMotorCommands()
     switch (Rightmode)                                    // if right motor has not overloaded recently
     {
       case 2:                 // right motor forward
-      if(LeftPWM >= InitStablePWM)
-      {
-        RightMorotForward();
-      }
+      RightMorotForward();
       break;
 
       case 1:                                               // right motor brake
@@ -196,10 +193,7 @@ void ProcessRightMotorCommands()
       break;
 
       case 0:                                               // right motor reverse
-      if(LeftPWM >= InitStablePWM)
-      {
-        RightMotorBackward();
-      }
+      RightMotorBackward();
       break;
     }
   } 
@@ -213,10 +207,7 @@ void ProcessLeftMotorCommands()
     switch (Leftmode)                                     // if left motor has not overloaded recently
     {
       case 2:        // left motor forward
-      if(RightPWM >= InitStablePWM)
-      {
-        LeftMorotForward();
-      }
+      LeftMorotForward();
       break;
 
       case 1:                     // left motor brake
@@ -224,10 +215,7 @@ void ProcessLeftMotorCommands()
       break;
 
       case 0:                                               // left motor reverse
-      if(RightPWM >= InitStablePWM)
-      {
-        LeftMotorBackward();
-      }
+      LeftMotorBackward();
       break;
       
       default:
@@ -242,6 +230,8 @@ void RightMotorBrake()
   {
     RightPWM = 0;
   }
+  RightPWM_Prev = 0;
+  
   analogWrite(RmotorA,RightPWM);
   analogWrite(RmotorB,RightPWM);
 }
@@ -252,6 +242,8 @@ void LeftMotorBrake()
   {
     LeftPWM = 0;
   }
+  LeftPWM_Prev = 0;
+  
   analogWrite(LmotorA,LeftPWM);
   analogWrite(LmotorB,LeftPWM);  
 }
@@ -331,11 +323,23 @@ void SetLeft_RightPWM()
   Serialread();
   Leftmode = data;
   Serialread();
+  LeftPWM_Prev = LeftPWM;
   LeftPWM = data * SpeedScale;
+  if(LeftPWM_Prev != 0 && LeftPWM < MinLimit)
+  {
+    LeftPWM = 0;
+    InitStablePWM = 0;
+  }
   Serialread();
   Rightmode = data;
   Serialread();
+  RightPWM_Prev = RightPWM;
   RightPWM = data * SpeedScale;  
+  if(RightPWM_Prev != 0 && RightPWM < MinLimit)
+  {
+    RightPWM = 0;
+    RightPWM_Prev = 0;
+  }
 }
 
 void CheckForward_LeftPWM()

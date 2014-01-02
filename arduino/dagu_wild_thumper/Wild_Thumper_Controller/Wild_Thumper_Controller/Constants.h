@@ -7,7 +7,7 @@
 //=================================== Left/Rigth PWM Minimum Limit ===============================================================================
 #define VoltageScale 65
 #define SpeedScale 2.25
-#define MinLimit 40.0
+#define MinLimit 50.0
 #define MaxStraightLimit 250.0
 #define MaxInitStraightMove 127.0
 #define InitStablePWM 60.0
