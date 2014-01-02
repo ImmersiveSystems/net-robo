@@ -303,7 +303,11 @@ void SetLeft_RightPWM()
 
 void CheckForward_LeftPWM()
 {
-  if(LeftPWM < InitStablePWM)
+  if(LeftPWM == 0)
+  {
+    LeftMotorBrake();
+  }  
+  else if(LeftPWM < InitStablePWM)
   {
     LeftPWM = MaxInitStraightMove;
     LeftPWMStartFlag = 1;
@@ -312,7 +316,11 @@ void CheckForward_LeftPWM()
 
 void CheckForward_RightPWM()
 {
-  if(RightPWM < InitStablePWM)
+  if(RightPWM == 0)
+  {
+    RightMotorBrake();
+  }
+  else if(RightPWM < InitStablePWM)
   {
     RightPWM = MaxInitStraightMove;
     RightPWMStartFlag = 1;
@@ -321,7 +329,11 @@ void CheckForward_RightPWM()
 
 void CheckBackward_LeftPWM()
 {
-  if(LeftPWM > (-1 * InitStablePWM))
+  if(LeftPWM == 0)
+  {
+    LeftMotorBrake();
+  }
+  else if(LeftPWM > (-1 * InitStablePWM))
   {
     LeftPWM = -1 * MaxInitStraightMove;
     LeftPWMStartFlag = 1;
@@ -330,7 +342,11 @@ void CheckBackward_LeftPWM()
 
 void CheckBackward_RightPWM()
 {
-  if(RightPWM > (-1 * InitStablePWM))
+  if(RightPWM == 0)
+  {
+    RightMotorBrake();
+  }
+  else if(RightPWM > (-1 * InitStablePWM))
   {
     RightPWM = -1 * MaxInitStraightMove;
     RightPWMStartFlag = 1;
