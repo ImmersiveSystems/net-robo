@@ -1,4 +1,6 @@
 import serial
+import sys
+
 
 ser = serial.Serial("COM6", 115200)
 
@@ -9,10 +11,21 @@ for i in range(100):
     print "You entered: ", speed
     speed = int(speed)
 
-    mode = raw_input("Enter mode: ")
-    print "You entered: ", mode
-    mode = int(mode)
+    modeL = raw_input("Enter mode1: ")
+    print "You entered: ", modeL
+    modeL = int(modeL)
 
-    ser.write("HB" + chr(mode) + chr(speed) + chr(mode) + chr(speed))
+    modeR = raw_input("Enter mode2: ")
+    print "You entered: ", modeR
+    modeR = int(modeR)
 
-    print( ser.read() )
+    
+    if modeL == 9:
+        ser.close()
+        sys.exit()
+
+        
+
+    ser.write("HB" + chr(modeL) + chr(speed) + chr(modeR) + chr(speed))
+
+ser.close()
