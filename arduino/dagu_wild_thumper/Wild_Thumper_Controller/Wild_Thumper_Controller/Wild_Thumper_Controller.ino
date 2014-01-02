@@ -224,19 +224,28 @@ void ProcessLeftMotorCommands()
 
 void RightMotorBrake()
 {
+  if(RightPWM != 0)
+  {
+    RightPWM = 0;
+  }
   analogWrite(RmotorA,RightPWM);
   analogWrite(RmotorB,RightPWM);
 }
 
 void LeftMotorBrake()
 {
+  if(LeftPWM != 0)
+  {
+    LeftPWM = 0;
+  }
   analogWrite(LmotorA,LeftPWM);
   analogWrite(LmotorB,LeftPWM);  
 }
 
 void RightMotorBackward()
 {
-  CheckBackward_RightPWM();
+  //CheckBackward_RightPWM();
+  CheckForward_RightPWM();
   if(LeftPWMStartFlag == 0)
   {
     analogWrite(RmotorA,RightPWM);
@@ -244,13 +253,18 @@ void RightMotorBackward()
   }
   else
   {
-    AdjustRightPWM2Normal_Backward();
+    AdjustRightPWM2Normal_Forward();
+    analogWrite(RmotorA,RightPWM);
+    analogWrite(RmotorB,0);
+
+    //AdjustRightPWM2Normal_Backward();
   }  
 }
 
 void LeftMotorBackward()
 {
-  CheckBackward_LeftPWM();
+    CheckForward_LeftPWM();
+  //CheckBackward_LeftPWM();
   if(LeftPWMStartFlag == 0)
   {
     analogWrite(LmotorA,LeftPWM);
@@ -258,7 +272,11 @@ void LeftMotorBackward()
   }
   else
   {
-    AdjustLeftPWM2Normal_Backward();
+    AdjustLeftPWM2Normal_Forward();
+    analogWrite(LmotorA,LeftPWM);
+    analogWrite(LmotorB,0);
+    
+//    AdjustLeftPWM2Normal_Backward();
   }  
 }
 
@@ -273,6 +291,8 @@ void LeftMorotForward()
   else
   {
     AdjustLeftPWM2Normal_Forward();
+    analogWrite(LmotorA,0);
+    analogWrite(LmotorB,LeftPWM);    
   }  
 }
 
@@ -287,6 +307,8 @@ void RightMorotForward()
   else
   {
     AdjustRightPWM2Normal_Forward();
+    analogWrite(RmotorA,0);
+    analogWrite(RmotorB,RightPWM);    
   }  
 }
 
