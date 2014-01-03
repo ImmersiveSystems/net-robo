@@ -546,8 +546,8 @@ void MonitorBatteryVoltage()
   Volts = analogRead(Battery);                                  // read the battery voltage
   LeftAmps = analogRead(LmotorC);                               // read left motor current draw
   RightAmps = analogRead(RmotorC);                              // read right motor current draw
-  Volts = Volts / VoltageScale;
-  Serial.write(Volts);
+  double Power = Volts / VoltageScale;
+  Serial.write(Power);
 /*  
   Serial.print("Volts: ");
   Serial.print(Volts);
