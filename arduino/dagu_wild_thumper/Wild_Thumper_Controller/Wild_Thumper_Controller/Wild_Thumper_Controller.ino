@@ -541,16 +541,27 @@ void TurnOffMotors()
   analogWrite (RmotorB,0);                                // turn off motors  
 }
 
+void SendPowerLevel()
+{
+  double Power = (double)Volts;
+  Power = Power / VoltageScale;
+  int PowerIntPart = (int)Power;
+  double PowerFloatPart = Power - ((double)PowerIntPart);
+  int PowerFloatPartScaled = (int)(PowerFloatPart * 100);
+  char VoltageMsg[25];
+
+  dtostrf(PowerIntPart, 1, 2, &VoltageMsg[0]);  
+  Serial.println(VoltageMsg);  
+
+  dtostrf(PowerFloatPartScaled, 1, 2, &VoltageMsg[0]);  
+  Serial.println(VoltageMsg);    
+}
 void MonitorBatteryVoltage()
 {
   Volts = analogRead(Battery);                                  // read the battery voltage
   LeftAmps = analogRead(LmotorC);                               // read left motor current draw
   RightAmps = analogRead(RmotorC);                              // read right motor current draw
-  double Power = (double)Volts;
-  Power = Power / VoltageScale;
-  char VoltageMsg[25];
-  dtostrf(Power,1,2, &VoltageMsg[0]);  
-  Serial.println(VoltageMsg);  
+  SendPowerLevel();
 
   if ((Volts < lowvolt) && (Charged == 1))                       // check condition of the battery  
   {                                                           // change battery status from charged to flat
