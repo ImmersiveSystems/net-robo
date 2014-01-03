@@ -9,12 +9,22 @@ speed1 = 50
 speed2 = 70
 speed3 = 100
 
+
+accel = 1.001
+decel = 1 - accel
+
+
 #defualt speed
 Leftspeed = speed1
 Rightspeed = speed1
 
+Leftmode = 2
+Rightmode = 2
+
+command = 'default'
 
 controlmode = 1 # 1 = exploration, -1 = race
+
 
 #modes 0=reverse, 1=brake, 2=forward
 
@@ -22,9 +32,10 @@ startcommand = "HB" # start of the message
 
 
 def listener(*args):
+
     
-        Leftmode = 1
-        Rightmode = 1
+    command = args[0];
+    #correct indentation!
 
         if args[0] == '-toggle':  #toggles the mode when the toggle button is released
             controlmode *= -1
@@ -34,18 +45,15 @@ def listener(*args):
             if args[0] == 'speedlow':
                 Leftspeed = speed1
                 Rightspeed = speed1
-
-                
-                
+           
             elif args[0] == 'speedmed':
                 Leftspeed = speed2
                 Rightspeed = speed2
-
                 
             elif args[0] == 'speedhi':
                 Leftspeed = speed3
                 Rightspeed = speed3
-               
+                
                 
             elif args[0] == 'forward':
                 Leftmode = 2
@@ -62,10 +70,32 @@ def listener(*args):
             elif args[0] == '-backward':
                 Leftmode = 0
                 Rightmode = 0
+
+            elif args[0] == 'left':
+                Leftmode = 2
+                Rightmode = 0
+
+            elif args[0] == 'right':
+                Leftmode = 0
+                Rightmode = 2
+                
+            elif args[0] == '-left':
+                Leftmode = 1
+                Rightmode = 1
+
+            elif args[0] == '-right':
+                Leftmode = 1
+                Rightmode = 1
+
+                
                 
         if controlmode == -1: # if race mode
-            #logic here
+
             pass
+        
+        else:
+            pass
+        
 
 
         ser.write(chr(startcommand))
@@ -74,9 +104,24 @@ def listener(*args):
         ser.write(chr(Rightmode))
         ser.write(chr(Rightspeed))
 
-
         
 socketIO = SocketIO('192.168.1.33', 3000)
 socketIO.on('serverToPython', listener)
 socketIO.emit('clientType', 'Python')
-socketIO.wait(seconds=6000)
+socketIO.wait(seconds=6000)   
+
+while 1:
+
+    if controlmode == -1:
+        if command == 'forward':
+        
+            Rightspeed *= accel
+            Leftspeed *= accel
+        
+        if command == '-forward':
+        
+            Rightspeed *= decel
+            Leftspeed *= decel
+        
+    
+    

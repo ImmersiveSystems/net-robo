@@ -7,6 +7,9 @@ ser = serial.Serial("COM6", 115200)
 
 for i in range(100):
 
+    print (ser.read())
+
+
     speed = raw_input("Enter speed: ")
     print "You entered: ", speed
     speed = int(speed)
