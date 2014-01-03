@@ -547,16 +547,10 @@ void MonitorBatteryVoltage()
   LeftAmps = analogRead(LmotorC);                               // read left motor current draw
   RightAmps = analogRead(RmotorC);                              // read right motor current draw
   double Power = Volts / VoltageScale;
-  char buf[32]; // needs to be at least large enough to fit the formatted text
-  sprintf(buf,"%2.6f\n", Power);  
-  Serial.write(buf);
-  
-/*  
-  Serial.print("Volts: ");
-  Serial.print(Volts);
-  Serial.print("     Charging: ");
-  Serial.println(Charged);
-  */
+  char VoltageMsg[25];
+  dtostrf(Power,1,2, &VoltageMsg[0]);  
+  Serial.println(VoltageMsg);  
+
   if ((Volts < lowvolt) && (Charged == 1))                       // check condition of the battery  
   {                                                           // change battery status from charged to flat
 
