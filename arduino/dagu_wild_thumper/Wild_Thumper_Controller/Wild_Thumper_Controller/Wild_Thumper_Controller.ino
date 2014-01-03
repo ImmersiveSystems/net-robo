@@ -344,7 +344,7 @@ void SetLeft_RightPWM()
   LeftPWM_Prev = LeftPWM;
   LeftPWM = data * SpeedScale;
   
-  CheckLeftPWM_Received()
+  CheckLeftPWM_Received();
   
   Serialread();
   Rightmode = data;
