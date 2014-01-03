@@ -547,7 +547,10 @@ void MonitorBatteryVoltage()
   LeftAmps = analogRead(LmotorC);                               // read left motor current draw
   RightAmps = analogRead(RmotorC);                              // read right motor current draw
   double Power = Volts / VoltageScale;
-  Serial.write(Power);
+  char buf[32]; // needs to be at least large enough to fit the formatted text
+  sprintf(buf,"%2.6f\n", Power);  
+  Serial.write(buf);
+  
 /*  
   Serial.print("Volts: ");
   Serial.print(Volts);
