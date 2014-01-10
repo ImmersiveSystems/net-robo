@@ -44,7 +44,7 @@ Controller::Controller()
 }
 
 int Controller::ReturnChargedFlagStatus()
-{
+{ 
   return Charged;
 }
 void Controller::InitServos_IO_Pin()
@@ -122,7 +122,7 @@ void Controller::ProcessLeftMotorCommands()
   }  
 }
 
-void Controller::SetLeft_RightPWM()
+void Controller::SetLeft_PWM()
 {
   Serialread();
   Leftmode = data;
@@ -131,14 +131,17 @@ void Controller::SetLeft_RightPWM()
   LeftPWM = data * SpeedScale;
   
   CheckLeftPWM_Received();
-  
+}
+
+void Controller::SetRight_PWM()
+{
   Serialread();
   Rightmode = data;
   Serialread();
   RightPWM_Prev = RightPWM;
   RightPWM = data * SpeedScale;  
   
-  CheckRightPWM_Received();
+  CheckRightPWM_Received();  
 }
 
 void Controller::CheckLeftPWM()
@@ -385,10 +388,10 @@ void Controller::SendPowerLevel()
   char VoltageMsg[25];
 
   dtostrf(PowerIntPart, 1, 2, &VoltageMsg[0]);  
-  Serial.println(VoltageMsg);  
+//  Serial.println(VoltageMsg);  
 
   dtostrf(PowerFloatPartScaled, 1, 2, &VoltageMsg[0]);  
-  Serial.println(VoltageMsg);    
+//  Serial.println(VoltageMsg);    
 }
 
 void Controller::MonitorBatteryVoltage()
@@ -488,7 +491,8 @@ void Controller::SCmode()
         break;
 
       case 18498:                                            // HB - mode and PWM data for left and right motors
-        SetLeft_RightPWM();
+        SetLeft_PWM();
+        SetRight_PWM();
         break;
          
       default:                                                // invalid command
