@@ -200,7 +200,10 @@ void TurnOffMotors()
 
 void RechargeBattery()
 {
-  TurnOffMotors();         // temporarily used to carry the robot back to the charger  
+  if (Volts < lowvolt)
+  {
+    TurnOffMotors();                                          // temporarily used to carry the robot back to the charger  
+  }
     
   if (Volts > highVolts)                                      // has battery voltage increased?
   {
@@ -212,7 +215,7 @@ void RechargeBattery()
   {
     Serial.print(    "Timer: ");
     Serial.println(millis() - chargeTimer);
-    if ((highVolts - Volts) > 5 || (millis() - chargeTimer) > chargetimeout) // has voltage begun to drop or levelled out?
+    if ((highVolts - Volts) > 5 || (millis() - chargeTimer) > chargetimeout || Volts > maxvolt ) // has voltage begun to drop or levelled out?
     {
       Charged = 1;                                            // battery voltage has peaked
       digitalWrite(Charger,0);                             // turn off current regulator
