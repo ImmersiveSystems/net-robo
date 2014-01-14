@@ -67,7 +67,8 @@ class Controller
         void Serialread();
     
         void TurnOffMotors();
-        void SetLeft_RightPWM();
+        void SetLeft_PWM();
+        void SetRight_PWM();
     
 
         void MonitorRightPWM_HBridge();
