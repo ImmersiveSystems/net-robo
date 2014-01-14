@@ -1,0 +1,79 @@
+Factory Details:
+  Rank                     primary + 1 (257)
+  Long-name                H.264 parser
+  Klass                    Codec/Parser/Converter/Video
+  Description              Parses H.264 streams
+  Author                   Mark Nauwelaerts <mark.nauwelaerts@collabora.co.uk>
+
+Plugin Details:
+  Name                     videoparsersbad
+  Description              videoparsers
+  Filename                 /usr/local/lib/gstreamer-1.0/libgstvideoparsersbad.so
+  Version                  1.2.2
+  License                  LGPL
+  Source module            gst-plugins-bad
+  Source release date      2013-12-26
+  Binary package           GStreamer Bad Plug-ins source release
+  Origin URL               Unknown package origin
+
+GObject
+ +----GInitiallyUnowned
+       +----GstObject
+             +----GstElement
+                   +----GstBaseParse
+                         +----GstH264Parse
+
+Pad Templates:
+  SRC template: 'src'
+    Availability: Always
+    Capabilities:
+      video/x-h264
+                 parsed: true
+          stream-format: { avc, avc3, byte-stream }
+              alignment: { au, nal }
+
+  SINK template: 'sink'
+    Availability: Always
+    Capabilities:
+      video/x-h264
+
+
+Element Flags:
+  no flags set
+
+Element Implementation:
+  Has change_state() function: gst_base_parse_change_state
+
+Element has no clocking capabilities.
+Indexing capabilities:
+  element can do indexing
+Element has no URI handling capabilities.
+
+Pads:
+  SINK: 'sink'
+    Implementation:
+      Has chainfunc(): gst_base_parse_chain
+      Has custom eventfunc(): gst_base_parse_sink_event
+      Has custom queryfunc(): gst_base_parse_sink_query
+      Has custom iterintlinkfunc(): gst_pad_iterate_internal_links_default
+    Pad Template: 'sink'
+  SRC: 'src'
+    Implementation:
+      Has custom eventfunc(): gst_base_parse_src_event
+      Has custom queryfunc(): gst_base_parse_src_query
+      Has custom iterintlinkfunc(): gst_pad_iterate_internal_links_default
+    Pad Template: 'src'
+
+Element Properties:
+  name                : The name of the object
+                        flags: readable, writable
+                        String. Default: "h264parse0"
+  parent              : The parent of the object
+                        flags: readable, writable
+                        Object of type "GstObject"
+  disable-passthrough : Force processing (disables passthrough)
+                        flags: readable, writable
+                        Boolean. Default: false
+  config-interval     : Send SPS and PPS Insertion Interval in seconds (sprop parameter sets will be multiplexed in the data stream when detected.) (0 = disabled)
+                        flags: readable, writable
+                        Unsigned Integer. Range: 0 - 3600 Default: 0 

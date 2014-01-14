@@ -1,0 +1,1 @@
+raspivid -vf -hf -t 0 -h 720 -w 1280 -fps 25 -b 2000000 -o - | ./ffmpeg -i - -vcodec copy  -an -f flv rtmp://192.168.0.104/live/test

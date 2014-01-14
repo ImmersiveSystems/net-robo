@@ -1,0 +1,93 @@
+Factory Details:
+  Rank                     primary (256)
+  Long-name                libav H.264 / AVC / MPEG-4 AVC / MPEG-4 part 10 decoder
+  Klass                    Codec/Decoder/Video
+  Description              libav h264 decoder
+  Author                   Wim Taymans <wim.taymans@gmail.com>, Ronald Bultje <rbultje@ronald.bitfreak.net>, Edward Hervey <bilboed@bilboed.com>
+
+Plugin Details:
+  Name                     libav
+  Description              All libav codecs and formats (local snapshot)
+  Filename                 /usr/local/lib/gstreamer-1.0/libgstlibav.so
+  Version                  1.2.2
+  License                  GPL
+  Source module            gst-libav
+  Binary package           libav
+  Origin URL               http://www.libav.org
+
+GObject
+ +----GInitiallyUnowned
+       +----GstObject
+             +----GstElement
+                   +----GstVideoDecoder
+                         +----avdec_h264
+
+Pad Templates:
+  SRC template: 'src'
+    Availability: Always
+    Capabilities:
+      video/x-raw
+                 format: { I420, YUY2, RGB, BGR, Y42B, Y444, YUV9, Y41B, GRAY8, RGB8P, I420, Y42B, Y444, UYVY, NV12, NV21, ARGB, RGBA, ABGR, BGRA, GRAY16_BE, GRAY16_LE, A420, RGB16, RGB15, I420_10BE, I420_10LE, I422_10BE, I422_10LE, Y444_10BE, Y444_10LE, GBR, GBR_10BE, GBR_10LE }
+
+  SINK template: 'sink'
+    Availability: Always
+    Capabilities:
+      video/x-h264
+              alignment: au
+          stream-format: { avc, byte-stream }
+
+
+Element Flags:
+  no flags set
+
+Element Implementation:
+  Has change_state() function: gst_video_decoder_change_state
+
+Element has no clocking capabilities.
+Element has no indexing capabilities.
+Element has no URI handling capabilities.
+
+Pads:
+  SINK: 'sink'
+    Implementation:
+      Has chainfunc(): gst_video_decoder_chain
+      Has custom eventfunc(): gst_video_decoder_sink_event
+      Has custom queryfunc(): gst_video_decoder_sink_query
+      Has custom iterintlinkfunc(): gst_pad_iterate_internal_links_default
+    Pad Template: 'sink'
+  SRC: 'src'
+    Implementation:
+      Has custom eventfunc(): gst_video_decoder_src_event
+      Has custom queryfunc(): gst_video_decoder_src_query
+      Has custom iterintlinkfunc(): gst_pad_iterate_internal_links_default
+    Pad Template: 'src'
+
+Element Properties:
+  name                : The name of the object
+                        flags: readable, writable
+                        String. Default: "avdec_h264-0"
+  parent              : The parent of the object
+                        flags: readable, writable
+                        Object of type "GstObject"
+  lowres              : At which resolution to decode images
+                        flags: readable, writable
+                        Enum "GstLibAVVidDecLowres" Default: 0, "full"
+                           (0): full             - 0
+                           (1): 1/2-size         - 1
+                           (2): 1/4-size         - 2
+  skip-frame          : Which types of frames to skip during decoding
+                        flags: readable, writable
+                        Enum "GstLibAVVidDecSkipFrame" Default: 0, "Skip nothing"
+                           (0): Skip nothing     - 0
+                           (1): Skip B-frames    - 1
+                           (2): Skip IDCT/Dequantization - 2
+                           (5): Skip everything  - 5
+  direct-rendering    : Enable direct rendering
+                        flags: readable, writable
+                        Boolean. Default: true
+  debug-mv            : Whether libav should print motion vectors on top of the image
+                        flags: readable, writable
+                        Boolean. Default: false
+  max-threads         : Maximum number of worker threads to spawn. (0 = auto)
+                        flags: readable, writable
+                        Integer. Range: 0 - 2147483647 Default: 0 
