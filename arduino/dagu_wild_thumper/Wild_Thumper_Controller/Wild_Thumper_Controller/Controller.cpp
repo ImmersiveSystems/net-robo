@@ -357,6 +357,8 @@ void Controller::CheckVoltageLevel()
 
 void Controller::RechargeBattery()
 {
+  Serial.println('C');
+  Serial.println(1); // one means it's  charging!   
   CheckVoltageLevel();
   
   if (Volts > highVolts)                                      // has battery voltage increased?
@@ -367,13 +369,14 @@ void Controller::RechargeBattery()
 
   if (Volts > batvolt)                                        // battery voltage must be higher than this before peak charging can occur.
   {
-    Serial.print(    "Timer: ");
+    Serial.println(    "Timer: ");
     Serial.println(millis() - chargeTimer);
     if ((highVolts - Volts) > 5 || (millis() - chargeTimer) > chargetimeout || Volts > maxvolt) // has voltage begun to drop or levelled out?
     {
       Charged = 1;                                            // battery voltage has peaked
-      digitalWrite(Charger,0);                             // turn off current regulator
-      //digitalWrite (Charger,1);                             // turn off current regulator
+      //digitalWrite(Charger,0);                             // turn off current regulator
+      digitalWrite (Charger,1);           // turn off current regulator
+
     }
   }   
 }
@@ -390,8 +393,8 @@ void Controller::SendPowerLevel()
 {
   double Power = (double)Volts;
   Power = Power / VoltageScale;
-  Serial.write('P'); //start bit for a power command 
-  Serial.print(Power);  
+  Serial.println('P'); //start bit for a power command 
+  Serial.println(Power);  
 }
 
 void Controller::MonitorBatteryVoltage()
@@ -399,9 +402,7 @@ void Controller::MonitorBatteryVoltage()
   Volts = analogRead(Battery);                                  // read the battery voltage
   LeftAmps = analogRead(LmotorC);                               // read left motor current draw
   RightAmps = analogRead(RmotorC);                              // read right motor current draw
-  SendPowerLevel();
-  Serial.write('C'); //start bit for charge status
-  Serial.print(Charged);  
+  SendPowerLevel();  
   if ((Volts < lowvolt) && (Charged == 1))                       // check condition of the battery  
   {                                                           // change battery status from charged to flat
     //---------------------------------------------------------- FLAT BATTERY speed controller shuts down until battery is recharged ----
@@ -410,7 +411,9 @@ void Controller::MonitorBatteryVoltage()
     highVolts = Volts;                                          // record the voltage
     startVolts = Volts;
     chargeTimer = millis();                                     // record the time
-    digitalWrite(Charger, 0);                                 // enable current regulator to charge battery
+    digitalWrite(Charger, 0);      // enable current regulator to charge battery
+    Serial.println('C');
+    Serial.println(0); // 0 means it's charging 
   }  
 }
 
