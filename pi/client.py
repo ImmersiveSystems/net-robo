@@ -3,8 +3,11 @@ from socketIO_client import SocketIO
 import serial
 import threading
 
-#ser = serial.Serial("/dev/ttyUSB0", 115200)
+ser = serial.Serial("COM15", 115200)
 print 'opened serial'
+
+voltage = 0
+charged = 1
 
 controlScheme = 0
 
@@ -200,6 +203,35 @@ def drivingThread():
         #ser.write('HB' + chr(driveModeLeft) + chr(abs(driveSpeedLeft)) + chr(driveModeRight) + chr(abs(driveSpeedRight)))
 
     threading.Timer(0.1, drivingThread).start()
+
+def read_from_port(ser):  
+    global voltage, charged
+
+    while True:
+        reading = ser.readline()
+
+        if reading == 'P\r\n':
+            voltage =  ser.readline()
+            print voltage
+
+        if reading == 'C\r\n':
+            charged =  ser.readline()
+            if charged == '1\r\n':
+                #print 'its trying to charge!'
+                pass
+            if charged == '0\r\n':
+                #print 'its charged!'
+                pass
+            
+        if reading == 'Timer: \r\n':
+            timer =  ser.readline()
+            #print 'Timer: ', timer      
+
+
+thread = threading.Thread(target=read_from_port, args=(ser,))
+thread.start()
+
+
 
 drivingThread()
 
