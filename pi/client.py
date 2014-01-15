@@ -6,63 +6,204 @@ import threading
 #ser = serial.Serial("/dev/ttyUSB0", 115200)
 print 'opened serial'
 
-speed1 = 40
-speed2 = 60
-speed3 = 100
+controlScheme = 0
 
-speed = speed1
+exploSpeed1 = 40
+exploSpeed2 = 60
+exploSpeed3 = 100
+exploSpeed = exploSpeed1
+
+driveCommand  = ''
+isTurning = False
+accelerationRate = 5
+decelerationRate = 1
+turnRate = 1
+shiftRate = 5
+driveTurnSpeed = 40
+driveSpeedLeft = 0
+driveSpeedRight = 0
+driveSavedSpeedLeft = 0
+driveSavedSpeedRight = 0
+driveModeLeft = 0
+driveModeRight = 0
 
 def listener(*args):
-    global speed
-    print 'recieved a command'
-    if args[0] == 'forward':
-        print 'w'
-        #ser.write('HB' + chr(2) + chr(speed) + chr(2) + chr(speed))
+    global controlScheme
+    global driveCommand
+    global exploSpeed1
+    global exploSpeed2
+    global exploSpeed3
+    global exploSpeed
 
-    elif (args[0] == '-forward') or (args[0] == '-right') or (args[0] == '-left') or (args[0] == '-backward'):
-        print 'stop'
-        #ser.write('HB' + chr(2) + chr(0) + chr(2) + chr(0))
+    if controlScheme == 0:
+        if args[0] == 'forward':
+            print 'Move FORWARD'
+            #ser.write('HB' + chr(2) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
+        elif (args[0] == '-forward') or (args[0] == '-right') or (args[0] == '-left') or (args[0] == '-backward'):
+            print 'Stop movement'
+            #ser.write('HB' + chr(2) + chr(0) + chr(2) + chr(0))
+        elif args[0] == 'backward':
+            print 'Move BACKWARD'
+            #ser.write('HB' + chr(0) + chr(exploSpeed) + chr(0) + chr(exploSpeed))
+        elif args[0] == 'right':
+            print 'Turn RIGHT'
+            #ser.write('HB' + chr(2) + chr(exploSpeed) + chr(0) + chr(exploSpeed))
+        elif args[0] == 'left':
+            print 'Turn LEFT'
+            #ser.write('HB' + chr(0) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
+        elif args[0] == 'stop':
+            print 'HALT'
+            #ser.write('x')
+        elif args[0] == 'shiftr':
+            if controlScheme == 0:
+                if exploSpeed == exploSpeed2:
+                    print 'Speed increased'
+                    exploSpeed = exploSpeed3;
+                elif exploSpeed == exploSpeed1:
+                    print 'Speed increased'
+                    exploSpeed = exploSpeed2;
+        elif args[0] == 'shiftl':
+            if controlScheme == 0:
+                if exploSpeed == exploSpeed2:
+                    print 'Speed decreased'
+                    exploSpeed = exploSpeed1;
+                elif exploSpeed == exploSpeed3:
+                    print 'Speed decreased'
+                    exploSpeed = exploSpeed2;
+        elif args[0] == 'toggle':
+            print 'Driving mode'
+            controlScheme = 1
+            driveSpeedLeft = 0
+            driveSpeedRight = 0
+            #ser.write('HB' + chr(2) + chr(0) + chr(2) + chr(0))
+    elif controlScheme == 1:
+        driveCommand = args[0]
 
-    elif args[0] == 'backward':
-        print 's'
-        #ser.write('HB' + chr(0) + chr(speed) + chr(0) + chr(speed))
+        if args[0] == 'stop':
+            print 'HALT'
+            #ser.write('x')
+        elif args[0] == 'toggle':
+            print 'Exploration mode'
+            controlScheme = 0
+            exploSpeed = exploSpeed1
+            #ser.write('HB' + chr(2) + chr(0) + chr(2) + chr(0))
 
-    elif args[0] == 'right':
-        print 'r'
-        #ser.write('HB' + chr(2) + chr(speed) + chr(0) + chr(speed))
+def drivingThread():
+    global controlScheme
+    global driveCommand
+    global isTurning
+    global accelerationRate
+    global decelerationRate
+    global turnRate
+    global shiftRate
+    global driveInitTurnSpeed
+    global driveSpeedLeft
+    global driveSpeedRight
+    global driveSavedSpeedLeft
+    global driveSavedSpeedRight
+    global driveModeLeft
+    global driveModeRight
 
-    elif args[0] == 'left':
-        print 'l'
-         #ser.write('HB' + chr(0) + chr(speed) + chr(2) + chr(speed))
+    if controlScheme == 1:
+        if (driveCommand != 'right') and (driveCommand != 'left') and (driveCommand != '-forward') and (driveCommand != '-right') and (driveCommand != '-left') and (driveCommand != '-backward'):
+            if isTurning == True:
+                driveSpeedLeft = driveSavedSpeedLeft
+                driveSpeedRight = driveSavedSpeedRight
+                isTurning = False
 
-    elif args[0] == 'stop':
-        print 'x'
-        #ser.write('x')
+        if driveCommand == 'forward':
+            print 'Go FORWARD'
+            driveSpeedLeft = driveSpeedLeft + accelerationRate
+            driveSpeedRight = driveSpeedRight + accelerationRate
+        elif (driveCommand == '-forward') or (driveCommand == '-right') or (driveCommand == '-left') or (driveCommand == '-backward'):
+            print 'Wait'
+        elif driveCommand == 'backward':
+            print 'Go BACKWARD'
+            driveSpeedLeft = driveSpeedLeft - accelerationRate
+            driveSpeedRight = driveSpeedRight - accelerationRate
+        elif driveCommand == 'right':
+            print 'Turn RIGHT'
+            if isTurning == False or (driveSpeedLeft > 0 and driveSpeedRight < 0):
+                driveSavedSpeedLeft = driveSpeedLeft
+                driveSavedSpeedRight = driveSpeedRight
+                driveSpeedRight = driveTurnSpeed
+                driveSpeedLeft = -1 * driveTurnSpeed
+                isTurning = True
+            else:
+                driveSpeedRight = driveSpeedRight + turnRate
+                driveSpeedLeft = driveSpeedLeft - turnRate
 
+        elif driveCommand == 'left':
+            print 'Turn LEFT'
+            if isTurning == False or (driveSpeedLeft < 0 and driveSpeedRight > 0):
+                driveSavedSpeedLeft = driveSpeedLeft
+                driveSavedSpeedRight = driveSpeedRight
+                driveSpeedLeft = driveTurnSpeed
+                driveSpeedRight = -1 * driveTurnSpeed
+                isTurning = True
+            else:
+                driveSpeedLeft = driveSpeedLeft + turnRate
+                driveSpeedRight = driveSpeedRight - turnRate
 
-    elif args[0] == 'speed1':
-        speed = speed1
-    elif args[0] == 'speed2':
-        speed = speed2
-    elif args[0] == 'speed3':
-        speed = speed3
+        elif driveCommand == 'shiftr':
+            print 'Steer RIGHT'
+            if driveSpeedRight > 0 and driveSpeedLeft > 0:
+                if driveSpeedLeft > driveSpeedRight:
+                    driveSpeedLeft = driveSpeedLeft - shiftRate;
+                else:
+                    driveSpeedRight = driveSpeedRight + shiftRate;
+            elif driveSpeedRight < 0 and driveSpeedLeft < 0:
+                if driveSpeedRight > driveSpeedLeft:
+                    driveSpeedLeft = driveSpeedLeft + shiftRate
+                else:
+                    driveSpeedRight = driveSpeedRight - shiftRate
+        elif driveCommand == 'shiftl':
+            print 'Steer LEFT'
+            if driveSpeedLeft > 0 and driveSpeedRight > 0:
+                if driveSpeedRight > driveSpeedLeft:
+                    driveSpeedRight = driveSpeedRight - shiftRate;
+                else:
+                    driveSpeedLeft = driveSpeedLeft + shiftRate;
+            elif driveSpeedLeft < 0 and driveSpeedRight < 0:
+                if driveSpeedLeft > driveSpeedRight:
+                    driveSpeedRight = driveSpeedRight + shiftRate
+                else:
+                    driveSpeedLeft = driveSpeedLeft - shiftRate
 
-    elif args[0] == 'shiftr':
-        speed = speed1
+        if driveSpeedLeft > 0:
+            if isTurning == False:
+                driveSpeedLeft = driveSpeedLeft - decelerationRate;
+            driveModeLeft = 2
+        elif driveSpeedLeft < 0:
+            if isTurning == False:
+                driveSpeedLeft = driveSpeedLeft + decelerationRate;
+            driveModeLeft = 0
+        if driveSpeedRight > 0:
+            if isTurning == False:
+                driveSpeedRight = driveSpeedRight - decelerationRate;
+            driveModeRight = 2
+        elif driveSpeedRight < 0:
+            if isTurning == False:
+                driveSpeedRight = driveSpeedRight + decelerationRate;
+            driveModeRight  = 0;
+        
+        if driveSpeedLeft > 100:
+            driveSpeedLeft = 100
+        elif driveSpeedLeft < -100:
+            driveSpeedLeft = -100
+        if driveSpeedRight > 100:
+            driveSpeedRight = 100
+        elif driveSpeedRight < -100:
+            driveSpeedRight = -100
 
-    elif args[0] == 'shiftl':
-        speed = speed3
+        print 'Left Speed: ' + str(driveSpeedLeft) + '   Right Speed: ' + str(driveSpeedRight)
+        #ser.write('HB' + chr(driveModeLeft) + chr(abs(driveSpeedLeft)) + chr(driveModeRight) + chr(abs(driveSpeedRight)))
 
-def hello():
-    print 'HELLO!'
-    threading.Timer(1, hello).start()
+    threading.Timer(0.1, drivingThread).start()
 
-hello()
+drivingThread()
 
 socketIO = SocketIO('localhost', 3000)
 socketIO.on('serverToPython', listener)
 socketIO.emit('clientType', 'Python')
 socketIO.wait(seconds=6000)
-
-
-
