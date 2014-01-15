@@ -48,7 +48,7 @@ void loop()
     }
     else                                                      // Battery is flat
     {
-      RobotController.TurnOffMotors();
+      RobotController.CheckVoltageLevel();
     }
   }
 }
