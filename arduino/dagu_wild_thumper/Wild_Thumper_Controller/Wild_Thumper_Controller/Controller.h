@@ -87,6 +87,7 @@ class Controller
         void LeftMorotForward();
         void LeftMotorBrake();
         void LeftMotorBackward();
+        void CheckVoltageLevel();
         void CheckLeftPWM();
         void CheckLeftPWM_Received();
         void AdjustLeftPWM2Normal();

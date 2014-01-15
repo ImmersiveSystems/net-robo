@@ -347,13 +347,18 @@ void Controller::SelectOperationMode()
    }  
 }
 
-void Controller::RechargeBattery()
+void Controller::CheckVoltageLevel()
 {
   if (Volts < lowvolt)
   {
     TurnOffMotors();                                          // temporarily used to carry the robot back to the charger  
-  }
-    
+  }  
+}
+
+void Controller::RechargeBattery()
+{
+  CheckVoltageLevel();
+  
   if (Volts > highVolts)                                      // has battery voltage increased?
   {
     highVolts = Volts;                                        // record the highest voltage. Used to detect peak charging.
