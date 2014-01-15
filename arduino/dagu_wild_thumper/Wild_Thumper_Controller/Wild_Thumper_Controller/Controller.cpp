@@ -384,17 +384,8 @@ void Controller::TurnOffMotors()
 void Controller::SendPowerLevel()
 {
   double Power = (double)Volts;
-  Power = Power / VoltageScale;
-  int PowerIntPart = (int)Power;
-  double PowerFloatPart = Power - ((double)PowerIntPart);
-  int PowerFloatPartScaled = (int)(PowerFloatPart * 100);
-  char VoltageMsg[25];
-
-  dtostrf(PowerIntPart, 1, 2, &VoltageMsg[0]);  
-//  Serial.println(VoltageMsg);  
-
-  dtostrf(PowerFloatPartScaled, 1, 2, &VoltageMsg[0]);  
-//  Serial.println(VoltageMsg);    
+  Serial.write('P'); //start bit for a power command 
+  Serial.print(Power);  
 }
 
 void Controller::MonitorBatteryVoltage()
