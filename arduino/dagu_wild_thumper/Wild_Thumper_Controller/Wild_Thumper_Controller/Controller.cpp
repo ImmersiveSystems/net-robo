@@ -384,6 +384,7 @@ void Controller::TurnOffMotors()
 void Controller::SendPowerLevel()
 {
   double Power = (double)Volts;
+  Power = Power / VoltageScale;
   Serial.write('P'); //start bit for a power command 
   Serial.print(Power);  
 }
@@ -394,7 +395,8 @@ void Controller::MonitorBatteryVoltage()
   LeftAmps = analogRead(LmotorC);                               // read left motor current draw
   RightAmps = analogRead(RmotorC);                              // read right motor current draw
   SendPowerLevel();
-
+  Serial.write('C'); //start bit for charge status
+  Serial.print(Charged);  
   if ((Volts < lowvolt) && (Charged == 1))                       // check condition of the battery  
   {                                                           // change battery status from charged to flat
     //---------------------------------------------------------- FLAT BATTERY speed controller shuts down until battery is recharged ----
