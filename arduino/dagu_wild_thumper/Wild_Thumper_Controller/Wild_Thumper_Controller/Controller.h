@@ -8,89 +8,84 @@
 class Controller
 {
   private:
+  	// define servos
   	int servo[7];
-	Servo Servo0;                                                 // define servos
-	Servo Servo1;                                                 // define servos
-	Servo Servo2;                                                 // define servos
-	Servo Servo3;                                                 // define servos
-	Servo Servo4;                                                 // define servos
-	Servo Servo5;                                                 // define servos
-	Servo Servo6;                                                 // define servos
+		Servo Servo0;	
+		Servo Servo1;
+		Servo Servo2;
+		Servo Servo3;
+		Servo Servo4;
+		Servo Servo5;
+		Servo Servo6;
 
-	int LeftPWMStartFlag;
-	int RightPWMStartFlag;
+		int data;
+		int LeftPWMStartFlag;
+		int RightPWMStartFlag;
 
-	unsigned int Volts;
-	unsigned int LeftAmps;
-	unsigned int RightAmps;
-	unsigned long chargeTimer;
-	unsigned long leftoverload;
-	unsigned long rightoverload;
+		unsigned int Volts;
+		unsigned int LeftAmps;
+		unsigned int RightAmps;
+		unsigned long chargeTimer;
+		unsigned long leftoverload;
+		unsigned long rightoverload;
+		double ConvertedVolts;
 
-	//-----  used for RC mode -----
-	int Leftspeed;
-	int Rightspeed;
-	int Speed;
-	int Steer;
-	//-----------------------------
+		// 0=Flat battery  1=Charged battery
+		static int Charged;
+		int highVolts;
+		int startVolts;	
 
-	int highVolts;
-	int startVolts;	
-	static int Charged;                                               // 0=Flat battery  1=Charged battery
-	
-	int Leftmode;                                               // 0=reverse, 1=brake, 2=forward
-	int Rightmode;                                              // 0=reverse, 1=brake, 2=forward
+		// 0=reverse, 1=brake, 2=forward
+		int Leftmode;                                               
+		int Rightmode;
 
-	int LeftPWM;                                                  // PWM value for left  motor speed / brake
-	int RightPWM;                                                 // PWM value for right motor speed / brake
-	int LeftPWM_Prev;
-	int RightPWM_Prev;
-	
-	int data;
+		// PWM values for left and right motor speeds / brake
+		int LeftPWM;                                                  
+		int RightPWM;
+		int LeftPWM_Prev;
+		int RightPWM_Prev;
+
+		unsigned long prevTime;
+		
   public:
-	Controller();
+		Controller();
 
-	void InitServos_IO_Pin();
-	void InitServosDefaultPos();
-	void SetServosPos();
-	
-	void SCmode();
-	void I2Cmode();	
-	void RCmode();
+		void InitServos_IO_Pin();
+		void InitServosDefaultPos();
+		void SetServosPos();
 
+		int ReturnChargedFlagStatus();
   	void SendPowerLevel();
-        int ReturnChargedFlagStatus();
+  	void DebugInfo();
   	void MonitorBatteryVoltage();
   	void RechargeBattery();
 
-  	void SelectOperationMode();
-        void Serialread();
-    
-        void TurnOffMotors();
-        void SetLeft_PWM();
-        void SetRight_PWM();
-    
+  	void SerialCommunicate();
+    void Serialread();
 
-        void MonitorRightPWM_HBridge();
-        void RightMotor_MonitorCurrent();
-        void ProcessRightMotorCommands();
-        void RightMorotForward();
-        void RightMotorBrake();
-        void RightMotorBackward();
-        void CheckRightPWM();
-        void CheckRightPWM_Received();
-        void AdjustRightPWM2Normal();
+    void SetLeft_PWM();
+    void SetRight_PWM();
 
-        void MonitorLeftPWM_HBridge();
-        void LeftMotor_MonitorCurrent();
-        void ProcessLeftMotorCommands();
-        void LeftMorotForward();
-        void LeftMotorBrake();
-        void LeftMotorBackward();
-        void CheckVoltageLevel();
-        void CheckLeftPWM();
-        void CheckLeftPWM_Received();
-        void AdjustLeftPWM2Normal();
+    void MonitorRightPWM_HBridge();
+    void RightMotor_MonitorCurrent();
+    void ProcessRightMotorCommands();
+    void RightMotorForward();
+    void RightMotorBrake();
+    void RightMotorBackward();
+    void CheckRightPWM();
+    void CheckRightPWM_Received();
+    void AdjustRightPWM2Normal();
+
+    void MonitorLeftPWM_HBridge();
+    void LeftMotor_MonitorCurrent();
+    void ProcessLeftMotorCommands();
+    void LeftMotorForward();
+    void LeftMotorBrake();
+    void LeftMotorBackward();
+    void CheckVoltageLevel();
+    void CheckLeftPWM();
+    void CheckLeftPWM_Received();
+    void AdjustLeftPWM2Normal();
 };
 
 #endif

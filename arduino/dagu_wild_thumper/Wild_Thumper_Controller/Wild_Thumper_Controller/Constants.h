@@ -1,11 +1,7 @@
-//=================================== MODE OF COMMUNICATIONS ========================================================================
+// Baud rate for serial communications
+#define Brate 115200     
 
-#define Cmode                1     // Sets communication mode: 0=RC    1=Serial    2=I2C
-#define Brate           115200     // Baud rate for serial communications
-
-
-//=================================== Left/Rigth PWM Minimum Limit ===============================================================================
-#define VoltageScale 65
+#define VoltageScale 68
 #define SpeedScale 2.25
 #define MinLimit 50.0
 #define MaxStraightLimit 250.0
@@ -18,42 +14,27 @@
 #define InitMoveAdjustValue 1.0
 #define AccelRate 10.0
 #define DeccelRate 0.001
-//=================================== RC MODE OPTIONS ===============================================================================
 
-#define Mix                  1     // Set to 1 if L/R and F/R signals from RC need to be mixed
-#define Leftcenter        1500     // when RC inputs are centered then input should be 1.5mS
-#define Rightcenter       1500     // when RC inputs are centered then input should be 1.5mS
-#define RCdeadband          35     // inputs do not have to be perfectly centered to stop motors
-#define scale               12     // scale factor for RC signal to PWM
+ // This is the nominal battery voltage reading. Peak charge can only occur above this voltage.
+#define batvolt 544 
+ // This is the voltage at which the speed controller goes into recharge mode.
+#define lowvolt 455
+#define peakvolt 571
+// If the battery voltage does not change in this number of milliseconds then stop charging.
+#define chargetimeout 300000 
 
+// set overload current for left motor 
+#define Leftmaxamps 800  
+// set overload current for right motor    
+#define Rightmaxamps 800    
+// time in mS before motor is re-enabled after overload occurs 
+#define overloadtime 100     
 
-
-//=================================== BATTERY CHARGER SETTINGS ======================================================================
-
-#define batvolt            520     // This is the nominal battery voltage reading. Peak charge can only occur above this voltage.
-#define lowvolt            455     // This is the voltage at which the speed controller goes into recharge mode.
-#define maxvolt            560
-#define chargetimeout   150000     // If the battery voltage does not change in this number of milliseconds then stop charging.
-
-
-
-//=================================== H BRIDGE SETTINGS =============================================================================
-
-#define Leftmaxamps        800     // set overload current for left motor 
-#define Rightmaxamps       800     // set overload current for right motor 
-#define overloadtime       100     // time in mS before motor is re-enabled after overload occurs
-
-
-
-//=================================== SERVO SETTINGS ================================================================================
-
-#define DServo0           1500     // default position for servo0 on "power up" - 1500uS is center position on most servos
-#define DServo1           1500     // default position for servo1 on "power up" - 1500uS is center position on most servos
-#define DServo2           1500     // default position for servo2 on "power up" - 1500uS is center position on most servos
-#define DServo3           1500     // default position for servo3 on "power up" - 1500uS is center position on most servos
-#define DServo4           1500     // default position for servo4 on "power up" - 1500uS is center position on most servos
-#define DServo5           1500     // default position for servo5 on "power up" - 1500uS is center position on most servos
-#define DServo6           1500     // default position for servo6 on "power up" - 1500uS is center position on most servos
-
-
-
+// default position for servo6 on "power up" - 1500uS is center position on most servos
+#define DServo0 1500
+#define DServo1 1500 
+#define DServo2 1500
+#define DServo3 1500
+#define DServo4 1500
+#define DServo5 1500
+#define DServo6 1500
