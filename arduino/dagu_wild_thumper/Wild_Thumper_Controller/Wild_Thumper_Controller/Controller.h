@@ -65,6 +65,7 @@ class Controller
 
     void SetLeft_PWM();
     void SetRight_PWM();
+    void TurnOffMotors();
 
     void MonitorRightPWM_HBridge();
     void RightMotor_MonitorCurrent();
@@ -86,6 +87,8 @@ class Controller
     void CheckLeftPWM();
     void CheckLeftPWM_Received();
     void AdjustLeftPWM2Normal();
+
+    void SleepNow();
 };
 
 #endif

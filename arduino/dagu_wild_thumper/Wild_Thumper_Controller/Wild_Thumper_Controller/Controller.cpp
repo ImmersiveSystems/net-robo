@@ -9,6 +9,9 @@
 #include "IOpins.h"
 #include "Constants.h"
 
+#include <avr/power.h>
+#include "avr/sleep.h"
+
 int Controller::Charged;
 
 Controller::Controller()
@@ -47,6 +50,7 @@ int Controller::ReturnChargedFlagStatus()
 { 
   return Charged;
 }
+
 void Controller::InitServos_IO_Pin()
 {
   // attach servo to I/O pin
@@ -151,6 +155,14 @@ void Controller::SetRight_PWM()
   RightPWM = data * SpeedScale;  
   
   CheckRightPWM_Received();  
+}
+
+void Controller::TurnOffMotors()
+{
+  analogWrite (LmotorA,0);
+  analogWrite (LmotorB,0);
+  analogWrite (RmotorA,0);
+  analogWrite (RmotorB,0);
 }
 
 void Controller::CheckLeftPWM()
@@ -328,7 +340,6 @@ void Controller::RechargeBattery()
     // Serial.println('C');
     // one means it's  charging!  
     // Serial.println(1);  
-    CheckVoltageLevel();
     
     // has battery voltage increased?
     if (Volts > highVolts)                                      
@@ -473,17 +484,52 @@ void Controller::SerialCommunicate()
   //      right motor mode 0-2
   //      right motor PWM  0-255
   
-  if (Serial.available() > 1)                                   // command available
+  if (Serial.available() > 0)                                   // command available
   {
-    int A = Serial.read();
-    int B = Serial.read();
-    int command = A * 256 + B;
+    int command = Serial.read();
 
     switch(command)
     {
       // FL
-      case 17996:                                             
-        // Serial.flush(); 
+      case 'F':                                             
+        Serial.flush(); 
+        break;
+      // AN - return values of analog inputs 1-5
+      case 'A':                                             
+        for (int i=1;i<6;i++)
+        {
+          // read 10bit analog input 
+          data = analogRead(i);               
+          // transmit high byte                  
+          Serial.write(highByte(data));
+          // transmit low byte
+          Serial.write(lowByte(data));
+        }
+        break;
+      // SV - receive postion information for servos 0-6
+      case 'S':
+        SetServosPos();
+        break;
+      // HB - mode and PWM data for left and right motors
+      case 'H':
+        SetLeft_PWM();
+        SetRight_PWM();
+        break;
+      case 'W':
+        Serial.println("Go");
+        Leftmode = 2;
+        Rightmode = 2;
+        LeftPWM = 127;
+        RightPWM = 127;
+        break;
+      case 'X':
+        Serial.println("Stop");
+        Leftmode = 2;
+        Rightmode = 2;
+        LeftPWM = 0;
+        RightPWM = 0;
+        break;
+      case 'T':
         Serial.print("Volts: ");
         Serial.print(Volts);
         Serial.print(" ");
@@ -491,40 +537,62 @@ void Controller::SerialCommunicate()
         Serial.print("    Timer:");
         Serial.println((millis()-chargeTimer));
         break;
-      // AN - return values of analog inputs 1-5
-      case 16718:                                             
-        // for (int i=1;i<6;i++)
-        // {
-        //   // read 10bit analog input 
-        //   data = analogRead(i);               
-        //   // transmit high byte                  
-        //   Serial.write(highByte(data));
-        //   // transmit low byte
-        //   Serial.write(lowByte(data));
-        // }
-        Serial.println("Go");
-        Leftmode = 2;
-        Rightmode = 2;
-        LeftPWM = 127;
-        RightPWM = 127;
-        break;
-      // SV - receive postion information for servos 0-6
-      case 21334:
-        // SetServosPos();
-        Serial.println("Stop");
-        Leftmode = 2;
-        Rightmode = 2;
+      case 'Z':
+        Serial.println("GO TO SLEEP!");
         LeftPWM = 0;
         RightPWM = 0;
-        break;
-      // HB - mode and PWM data for left and right motors
-      case 18498:
-        SetLeft_PWM();
-        SetRight_PWM();
+        TurnOffMotors();
+        delay(100);
+        SleepNow();
         break;
       // invalid command
       default:                                                
        Serial.flush();
     }
   }
+}
+
+void Controller::SleepNow()
+{
+  /* Now is the time to set the sleep mode. In the Atmega8 datasheet
+   * http://www.atmel.com/dyn/resources/prod_documents/doc2486.pdf on page 35
+   * there is a list of sleep modes which explains which clocks and 
+   * wake up sources are available in which sleep modus.
+   *
+   * In the avr/sleep.h file, the call names of these sleep modus are to be found:
+   *
+   * The 5 different modes are:
+   *     SLEEP_MODE_IDLE         -the least power savings 
+   *     SLEEP_MODE_ADC
+   *     SLEEP_MODE_PWR_SAVE
+   *     SLEEP_MODE_STANDBY
+   *     SLEEP_MODE_PWR_DOWN     -the most power savings
+   *
+   *  the power reduction management <avr/power.h>  is described in 
+   *  http://www.nongnu.org/avr-libc/user-manual/group__avr__power.html
+   */  
+  
+  // sleep mode is set here
+  set_sleep_mode(SLEEP_MODE_IDLE);
+
+  // enables the sleep bit in the mcucr register so sleep is possible. just a safety pin 
+  sleep_enable();          
+  
+  power_adc_disable();
+  power_spi_disable();
+  power_timer0_disable();
+  power_timer1_disable();
+  power_timer2_disable();
+  power_twi_disable();
+
+  // here the device is actually put to sleep!!
+  sleep_mode();            
+ 
+  // THE PROGRAM CONTINUES FROM HERE AFTER WAKING UP
+  // first thing after waking from sleep: disable sleep...
+  sleep_disable();          
+
+  power_all_enable();
+                        
+  Serial.println("WOKE UP");
 }

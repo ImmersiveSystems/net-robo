@@ -27,12 +27,13 @@ void loop()
   // Check battery voltage and current draw of motors
   RobotController.LeftMotor_MonitorCurrent();
   RobotController.RightMotor_MonitorCurrent();
+  
   RobotController.MonitorBatteryVoltage();
   RobotController.DebugInfo();
-
   RobotController.RechargeBattery();
 
   RobotController.SerialCommunicate();
+
   RobotController.CheckVoltageLevel();
   RobotController.ProcessLeftMotorCommands();
   RobotController.ProcessRightMotorCommands();
