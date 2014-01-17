@@ -1,9 +1,7 @@
-import sys
-
-sys.path.append('./Modules')
 import ClientClass
 
-Clnt = ClientClass.Client();
+globVars = ClientClass.GlobalVariables();
+Clnt = ClientClass.Client(globVars);
 
 Clnt.OpenSerialPort();
 
