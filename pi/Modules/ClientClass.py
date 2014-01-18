@@ -8,7 +8,7 @@ import Consts_n_Flags
 
 class Client():
 	def __init__(self):
-		initVar = Consts_n_Flags.InitializerClass()
+		initVar = Consts_n_Flags.InitializerClass()		
 		self.__voltage = initVar.Set2Zero()
 		self.__charged = initVar.Set2One()
 		self.__controlScheme = initVar.Set2Zero()
@@ -21,6 +21,47 @@ class Client():
 		self.__driveSavedSpeedRight = initVar.Set2Zero()
 		self.__driveModeLeft = initVar.Set2Zero()
 		self.__driveModeRight = initVar.Set2Zero()
+		self.__ForwardThread = False		
+		self.__BackwardThread = False
+		self.__RightTurnThread = False
+		self.__LeftTurnThread = False
+		self.__SteerRightThread = False
+		self.__SteerLeftThread = False
+
+	def Get_SteerRightThread(self):
+		return self.__SteerRightThread
+
+	def Set_SteerRightThread(self, Value):
+		self.__SteerRightThread = Value
+
+	def Get_SteerLeftThread(self):
+		return self.__SteerLeftThread
+
+	def Set_SteerLeftThread(self, Value):
+		self.__SteerLeftThread = Value
+	def Get_BackwardThread(self):
+		return self.__BackwardThread
+
+	def Set_BackwardThread(self, Value):
+		self.__BackwardThread = Value
+
+	def Get_RightTurnThread(self):
+		return self.__RightTurnThread
+
+	def Set_RightTurnThread(self, Value):
+		self.__RightTurnThread = Value
+
+	def Get_LeftTurnThread(self):
+		return self.__LeftTurnThread
+
+	def Set_LeftTurnThread(self, Value):
+		self.__LeftTurnThread = Value
+
+	def Get_ForwardThread(self):
+		return self.__ForwardThread
+
+	def Set_ForwardThread(self, Value):
+		self.__ForwardThread = Value
 
 	def Set_exploSpeed(self):
 		return Consts_n_Flags.GlobalVariables().Get_exploSpeed1()
@@ -109,36 +150,78 @@ class Client():
 	    		self.__driveSpeedRight = self.__driveSavedSpeedRight
 	    		self.__isTurning = initVar.Set2False()
 
-	def DrivingThread(self):
+	def CheckThreadStatus(self):
+	    if self.Get_ForwardThread() == True:
+	    	self.Set_ForwardThread(False)
+	    if self.Get_BackwardThread() == True:
+	    	self.Set_BackwardThread(False)
+	    if self.Get_RightTurnThread() == True:
+	    	self.Set_RightTurnThread(False)
+	    if self.Get_LeftTurnThread() == True:
+	    	self.Set_LeftTurnThread(False)
+	    if self.Get_SteerRightThread() == True:
+	    	self.Set_SteerRightThread(False)
+	    if self.Get_SteerLeftThread() == True:
+	    	self.Set_SteerLeftThread(False)
+
+	def RunActiveThreads(self, gVar, initVar):
+	    if self.Get_ForwardThread() == True:
+	    	threading.Timer(0.1, self.ToggledForward_accel, args = (gVar, )).start()
+	    if self.Get_BackwardThread() == True:
+	    	threading.Timer(0.1, self.ToggledBackward_accel, args = (gVar, )).start()
+	    if self.Get_RightTurnThread() == True:
+	    	threading.Timer(0.1, self.ToggledTurnRight, args = (gVar, initVar, )).start()
+	    if self.Get_LeftTurnThread() == True:
+	    	threading.Timer(0.1, self.ToggledTurnLeft, args = (gVar, initVar, )).start()
+	    if self.Get_SteerRightThread() == True:
+	    	threading.Timer(0.1, self.ToggledSteerRight, args = (gVar, initVar, )).start()
+	    if self.Get_SteerLeftThread() == True:
+	    	threading.Timer(0.1, self.ToggledSteerLeft, args = (gVar, initVar, )).start()
+
+	def DrivingThread(self):	    
 	    gVar = Consts_n_Flags.GlobalVariables()
 	    initVar = Consts_n_Flags.InitializerClass()
 	    if self.__controlScheme == initVar.Set2One():
 	        self.ToggledResumeSpeed_AfterTurn(gVar, initVar)	                        	                	                
 	        if self.__driveCommand == 'forward':
 	            print 'Go FORWARD'
-	            self.ToggledForward_accel(gVar)
-	        elif (self.__driveCommand == '-forward') or (self.__driveCommand == '-right') or (self.__driveCommand == '-left') or (self.__driveCommand == '-backward'):
+	            if self.Get_ForwardThread() == False:
+	            	self.Set_ForwardThread(True)	            
+	            # self.ToggledForward_accel(gVar)
+	        elif (self.__driveCommand == '-forward') or (self.__driveCommand == '-right') or (self.__driveCommand == '-left') or (self.__driveCommand == '-backward'):	            
+	            self.CheckThreadStatus()
 	            print 'Wait'
-	        elif self.__driveCommand == 'backward':
+	        elif self.__driveCommand == 'backward':	            
 	            print 'Go BACKWARD'
-	            self.ToggledBackward_accel(gVar)	            
+	            if self.Get_BackwardThread() == False:
+	            	self.Set_BackwardThread(True)
+	            # self.ToggledBackward_accel(gVar)	            
 	        elif self.__driveCommand == 'right':
 	            print 'Turn RIGHT'
-	            self.ToggledTurnRight(gVar, initVar)
+	            if self.Get_RightTurnThread() == False:
+	            	self.Set_RightTurnThread(True)
+	            # self.ToggledTurnRight(gVar, initVar)
 	        elif self.__driveCommand == 'left':
 	            print 'Turn LEFT'
-	            self.ToggledTurnLeft(gVar, initVar)
+	            if self.Get_LeftTurnThread() == False:
+	            	self.Set_LeftTurnThread(True)
+	            # self.ToggledTurnLeft(gVar, initVar)
 	        elif self.__driveCommand == 'shiftr':
 	            print 'Steer RIGHT'
-	            self.ToggledSteerRight(gVar, initVar)
+	            if self.Get_SteerRightThread() == False:
+	            	self.Set_SteerRightThread(True)
+	            # self.ToggledSteerRight(gVar, initVar)
 	        elif self.__driveCommand == 'shiftl':
 	            print 'Steer LEFT'
-	            self.ToggledSteerLeft(gVar, initVar)
+	            if self.Get_SteerLeftThread() == False:
+	            	self.Set_SteerLeftThread(True)
+	            # self.ToggledSteerLeft(gVar, initVar)
 	        self.ToggledDecelLeft_NoTurning(gVar, initVar)
 	        self.ToggledDecelRight_NoTurning(gVar, initVar)
 	        self.CheckDriveSpeed(gVar)
-
-	    threading.Timer(0.1, self.DrivingThread).start()
+	    
+	    threading.Timer(0.1, self.DrivingThread).start()	    
+	    self.RunActiveThreads(gVar, initVar)
 
 	def CheckDriveSpeed(self, gVar):
 		if self.__driveSpeedLeft > gVar.Get_MaxDriveSpeed():
