@@ -24,13 +24,15 @@ class Client():
 		self.__driveSavedSpeedRight = initVar.Set2Zero()
 		self.__driveModeLeft = initVar.Set2Zero()
 		self.__driveModeRight = initVar.Set2Zero()		
-		self.__CommandsDic = dict([('forward', self.ForwardExplore), ('backward', self.BackwardExplore), ('left', self.TurnLeftExplore), ('right', self.TurnRightExplore), ('stop', self.SendHaltSignal), ('shiftr', self.ExploreIncreaseSpeed), ('shiftl', self.ExploreDecreaseSpeed), ('toggle', self.ProcessToggleCommand), ('-forward', self.StopExplore), ('-backward', self.StopExplore), ('-left', self.StopExplore), ('-right', self.StopExplore)])
+		self.__ExplorationDic = dict([('forward', self.ForwardExplore), ('backward', self.BackwardExplore), ('left', self.TurnLeftExplore), ('right', self.TurnRightExplore), ('stop', self.SendHaltSignal), ('shiftr', self.ExploreIncreaseSpeed), ('shiftl', self.ExploreDecreaseSpeed), ('toggle', self.Switch2DrivingMode)])					
+		self.__DrivingDic = dict([('stop', self.SendHaltSignal), ('toggle', self.Switch2ExploreMode)])
 		self.__DriveCommandDic = dict([('forward', self.ToggledForward_accel), ('backward', self.ToggledBackward_accel), ('left', self.ToggledTurnLeft), ('right', self.ToggledTurnRight), ('shiftl', self.ToggledSteerLeft), ('shiftr', self.ToggledSteerRight)])
 		self.__ThreadsFlagDic = dict([('forward', True), ('backward', True), ('left', True), ('right', True), ('shiftl', True), ('shiftr', True), ('-forward', False), ('-backward', False), ('-left', False), ('-right', False)])
 		self.__ConflictingCommandsDic = {'forward':'backward', 'backward':'forward', 'left':'right', 'right':'left', 'shiftl':'shiftr', 'shiftr':'shiftl'}
 		self.__DriveCommandPairs = dict([('-forward', 'forward'), ('-backward', 'backward'), ('-left', 'left'), ('-right', 'right')])
 		self.__ListActiveDriveCmd = []		
 		self.__ShiftCommands = ['shiftl', 'shiftr']
+		self.__CounterCommands = ['-forward', '-backward', '-left', '-right']		
 
 	def ShowDriveModeInfo(self):
 		print 'Left Speed: ' + str(self.__driveSpeedLeft) + '   Right Speed: ' + str(self.__driveSpeedRight)
@@ -51,13 +53,10 @@ class Client():
 		self.__driveSpeedLeft = self.__driveSpeedLeft - gVar.Get_AccelRate()
 		self.__driveSpeedRight = self.__driveSpeedRight - gVar.Get_AccelRate()
 
-	def SaveLeftRightSpeeds(self):
-		self.__driveSavedSpeedLeft = self.__driveSpeedLeft
-		self.__driveSavedSpeedRight = self.__driveSpeedRight
-
 	def ToggledTurnRight(self):
 	    if self.__isTurning == initVar.Set2False() or (self.__driveSpeedLeft > initVar.Set2Zero() and self.__driveSpeedRight < initVar.Set2Zero()):
-	        self.SaveLeftRightSpeeds()
+	        self.__driveSavedSpeedLeft = self.__driveSpeedLeft		
+	        self.__driveSavedSpeedRight = self.__driveSpeedRight
 	        self.__driveSpeedRight = gVar.Get_DriveTurnSpeed()
 	        self.__driveSpeedLeft = -1 * gVar.Get_DriveTurnSpeed()
 	        self.__isTurning = initVar.Set2True()
@@ -67,7 +66,8 @@ class Client():
 
 	def ToggledTurnLeft(self):
 	    if self.__isTurning == initVar.Set2False() or (self.__driveSpeedLeft < initVar.Set2Zero() and self.__driveSpeedRight > initVar.Set2Zero()):
-	        self.SaveLeftRightSpeeds()
+	        self.__driveSavedSpeedLeft = self.__driveSpeedLeft
+	        self.__driveSavedSpeedRight = self.__driveSpeedRight
 	        self.__driveSpeedLeft = gVar.Get_DriveTurnSpeed()
 	        self.__driveSpeedRight = -1 * gVar.Get_DriveTurnSpeed()
 	        self.__isTurning = initVar.Set2True()
@@ -132,9 +132,7 @@ class Client():
 	    		threading.Timer(0.1, self.__DriveCommandDic[Cmd]).start()
     
 	def UpdateActiveCommandList(self):	    
-	    if self.__driveCommand != '' and self.__driveCommand in self.__ShiftCommands and self.__driveSpeedLeft == 0 and self.__driveSpeedRight == 0:
-	    	pass
-	    elif self.__driveCommand != '' and self.__driveCommand in self.__ThreadsFlagDic and self.__ThreadsFlagDic[self.__driveCommand] == True:
+	    if self.__driveCommand != '' and self.__driveCommand in self.__ThreadsFlagDic and self.__ThreadsFlagDic[self.__driveCommand] == True:
 	    	if self.__driveCommand not in self.__ListActiveDriveCmd:
 	    		self.__ListActiveDriveCmd.append(self.__driveCommand)
 	    		self.ResolveConflict()
@@ -269,21 +267,19 @@ class Client():
 
 	def StopExplore(self):
 		print 'Stop movement'
-		self.__exploSpeed = self.Set_exploSpeed()
 	    # ser.write('HB' + chr(2) + chr(0) + chr(2) + chr(0))
 
 	def SendHaltSignal(self):
 		print 'HALT'
 	    # ser.write(self.__HaltSignal)
 
-	def ProcessToggleCommand(self):
-		if self.__controlScheme == initVar.Set2One():
-			threading.Timer(0.1, self.Switch2ExploreMode).start()
-		else:
-			threading.Timer(0.1, self.Switch2DrivingMode).start()
-
 	def listener(self, *args):
-		if self.__controlScheme == initVar.Set2One():
-			self.__driveCommand = args[0]
-		if args[0] in self.__CommandsDic:
-			threading.Timer(0.1, self.__CommandsDic[args[0]]).start()
+	    if self.__controlScheme == initVar.Set2Zero():
+	        if args[0] in self.__ExplorationDic:
+	        	threading.Timer(0.1, self.__ExplorationDic[args[0]]).start()
+	        elif args[0] in self.__CounterCommands:
+	            self.StopExplore()
+	    elif self.__controlScheme == initVar.Set2One():
+	        self.__driveCommand = args[0]
+	        if args[0] in self.__DrivingDic:
+	        	threading.Timer(0.1, self.__DrivingDic[args[0]]).start()
