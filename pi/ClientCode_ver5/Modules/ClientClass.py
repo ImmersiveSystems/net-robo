@@ -16,29 +16,20 @@ class Client():
 		self.__controlScheme = initVar.Set2Zero()
 		self.__exploSpeed = self.Set_exploSpeed()
 		self.__driveCommand  = ''
-		self.__HaltSignal = 'x'
 		self.__isTurning = initVar.Set2False()
 		self.__driveSpeedLeft = initVar.Set2Zero()
 		self.__driveSpeedRight = initVar.Set2Zero()
 		self.__driveSavedSpeedLeft = initVar.Set2Zero()
 		self.__driveSavedSpeedRight = initVar.Set2Zero()
 		self.__driveModeLeft = initVar.Set2Zero()
-		self.__driveModeRight = initVar.Set2Zero()		
-		self.__ExplorationDic = dict([('forward', self.ForwardExplore), ('backward', self.BackwardExplore), ('left', self.TurnLeftExplore), ('right', self.TurnRightExplore), ('stop', self.SendHaltSignal), ('shiftr', self.ExploreIncreaseSpeed), ('shiftl', self.ExploreDecreaseSpeed), ('toggle', self.Switch2DrivingMode)])					
-		self.__DrivingDic = dict([('stop', self.SendHaltSignal), ('toggle', self.Switch2ExploreMode)])
+		self.__driveModeRight = initVar.Set2Zero()
 		self.__DriveCommandDic = dict([('forward', self.ToggledForward_accel), ('backward', self.ToggledBackward_accel), ('left', self.ToggledTurnLeft), ('right', self.ToggledTurnRight), ('shiftl', self.ToggledSteerLeft), ('shiftr', self.ToggledSteerRight)])
 		self.__ThreadsFlagDic = dict([('forward', True), ('backward', True), ('left', True), ('right', True), ('shiftl', True), ('shiftr', True), ('-forward', False), ('-backward', False), ('-left', False), ('-right', False)])
-		self.__ConflictingCommandsDic = {'forward':'backward', 'backward':'forward', 'left':'right', 'right':'left', 'shiftl':'shiftr', 'shiftr':'shiftl'}
+		self.__ConflictingCommandsDic = {'forward':'backward', 'backward':'forward', 'left':'right', 'right':'left'}
 		self.__DriveCommandPairs = dict([('-forward', 'forward'), ('-backward', 'backward'), ('-left', 'left'), ('-right', 'right')])
 		self.__ListActiveDriveCmd = []		
 		self.__ShiftCommands = ['shiftl', 'shiftr']
-		self.__CounterCommands = ['-forward', '-backward', '-left', '-right']		
 
-	def ShowDriveModeInfo(self):
-		print 'Left Speed: ' + str(self.__driveSpeedLeft) + '   Right Speed: ' + str(self.__driveSpeedRight)
-		print 'Current Active Thread(s): ------------------>  ', self.__ListActiveDriveCmd
-	    # self.__serial.write('HB' + chr(self.__driveModeLeft) + chr(abs(self.__driveSpeedLeft)) + chr(self.__driveModeRight) + chr(abs(self.__driveSpeedRight)))        
-	
 	def Set_exploSpeed(self):
 		return gVar.Get_exploSpeed1()
 
@@ -159,28 +150,27 @@ class Client():
 	    self.MonitorShiftCommand()
 	    if self.__controlScheme == initVar.Set2One():
 	        self.ToggledResumeSpeed_AfterTurn()
-	        self.UpdateActiveCommandList()	        
+	        self.UpdateActiveCommandList()
+	        print 'Current Active Thread(s): ------------------>  ', self.__ListActiveDriveCmd
 	        self.CleanActiveCommandList()
 	        self.ToggledDecelLeft_NoTurning()
 	        self.ToggledDecelRight_NoTurning()
-	        self.CheckDriveSpeed_Left()
-	        self.CheckDriveSpeed_Right()
-	        self.ShowDriveModeInfo()
+	        self.CheckDriveSpeed()
 	    	    
 	    threading.Timer(0.1, self.DrivingThread).start()	    
 	    self.RunActiveThreads()
-	
-	def CheckDriveSpeed_Left(self):
+
+	def CheckDriveSpeed(self):
 		if self.__driveSpeedLeft > gVar.Get_MaxDriveSpeed():
 		    self.__driveSpeedLeft = gVar.Get_MaxDriveSpeed()
 		elif self.__driveSpeedLeft < gVar.Get_MinDriveSpeed():
 		    self.__driveSpeedLeft = gVar.Get_MinDriveSpeed()
-
-	def CheckDriveSpeed_Right(self):
 		if self.__driveSpeedRight > gVar.Get_MaxDriveSpeed():
-			self.__driveSpeedRight = gVar.Get_MaxDriveSpeed()
+		    self.__driveSpeedRight = gVar.Get_MaxDriveSpeed()
 		elif self.__driveSpeedRight < gVar.Get_MinDriveSpeed():
-			self.__driveSpeedRight = gVar.Get_MinDriveSpeed()
+		    self.__driveSpeedRight = gVar.Get_MinDriveSpeed()
+		print 'Left Speed: ' + str(self.__driveSpeedLeft) + '   Right Speed: ' + str(self.__driveSpeedRight)
+		# self.__serial.write('HB' + chr(self.__driveModeLeft) + chr(abs(self.__driveSpeedLeft)) + chr(self.__driveModeRight) + chr(abs(self.__driveSpeedRight)))        
 
 	def read_from_port(self, serialPort):  
 	    while True:
@@ -249,37 +239,39 @@ class Client():
 		self.__exploSpeed = gVar.Get_exploSpeed1();
 		#ser.write('HB' + chr(2) + chr(0) + chr(2) + chr(0))
 
-	def ForwardExplore(self):
-		print 'Move FORWARD'
-	    # ser.write('HB' + chr(2) + chr(self.__exploSpeed) + chr(2) + chr(self.__exploSpeed))
-
-	def BackwardExplore(self):
-		print 'Move BACKWARD'
-	    # ser.write('HB' + chr(0) + chr(self.__exploSpeed) + chr(0) + chr(self.__exploSpeed))
-	
-	def TurnLeftExplore(self):
-		print 'Turn LEFT'
-	    # ser.write('HB' + chr(0) + chr(self.__exploSpeed) + chr(2) + chr(self.__exploSpeed))
-
-	def TurnRightExplore(self):
-		print 'Turn RIGHT'
-	    # ser.write('HB' + chr(2) + chr(self.__exploSpeed) + chr(0) + chr(self.__exploSpeed))
-
-	def StopExplore(self):
-		print 'Stop movement'
-	    # ser.write('HB' + chr(2) + chr(0) + chr(2) + chr(0))
-
-	def SendHaltSignal(self):
-		print 'HALT'
-	    # ser.write(self.__HaltSignal)
-
 	def listener(self, *args):
+	    gVar = Consts_n_Flags.GlobalVariables()
+	    initVar = Consts_n_Flags.InitializerClass()
 	    if self.__controlScheme == initVar.Set2Zero():
-	        if args[0] in self.__ExplorationDic:
-	        	threading.Timer(0.1, self.__ExplorationDic[args[0]]).start()
-	        elif args[0] in self.__CounterCommands:
-	            self.StopExplore()
+	    	# print 'Length of args:  ', len(args), '\n'
+	        if args[0] == 'forward':
+	            print 'Move FORWARD'
+	            #ser.write('HB' + chr(2) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
+	        elif (args[0] == '-forward') or (args[0] == '-right') or (args[0] == '-left') or (args[0] == '-backward'):
+	            print 'Stop movement'
+	            #ser.write('HB' + chr(2) + chr(0) + chr(2) + chr(0))
+	        elif args[0] == 'backward':
+	            print 'Move BACKWARD'
+	            #ser.write('HB' + chr(0) + chr(exploSpeed) + chr(0) + chr(exploSpeed))
+	        elif args[0] == 'right':
+	            print 'Turn RIGHT'
+	            #ser.write('HB' + chr(2) + chr(exploSpeed) + chr(0) + chr(exploSpeed))
+	        elif args[0] == 'left':
+	            print 'Turn LEFT'
+	            #ser.write('HB' + chr(0) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
+	        elif args[0] == 'stop':
+	            print 'HALT'
+	            #ser.write('x')
+	        elif args[0] == 'shiftr':
+	            self.ExploreIncreaseSpeed()                	                    	                    	                	                   	                   
+	        elif args[0] == 'shiftl':
+	            self.ExploreDecreaseSpeed()
+	        elif args[0] == 'toggle':
+	            self.Switch2DrivingMode()
 	    elif self.__controlScheme == initVar.Set2One():
 	        self.__driveCommand = args[0]
-	        if args[0] in self.__DrivingDic:
-	        	threading.Timer(0.1, self.__DrivingDic[args[0]]).start()
+	        if args[0] == 'stop':
+	            print 'HALT'
+	            #ser.write('x')
+	        elif args[0] == 'toggle':
+	            self.Switch2ExploreMode()
