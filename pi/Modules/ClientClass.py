@@ -136,16 +136,8 @@ class Client():
 	    if self.__controlScheme == initVar.Set2One():
 	        self.ToggledResumeSpeed_AfterTurn()
 	        self.UpdateActiveCommandList()
-	        # if self.__driveCommand != '' and self.__driveCommand in self.__ThreadsFlagDic and self.__ThreadsFlagDic[self.__driveCommand] == True:
-	        # 	if self.__driveCommand not in self.__ListActiveDriveCmd:
-	        # 		self.__ListActiveDriveCmd.append(self.__driveCommand)
 	        print '-------------------------------', self.__ListActiveDriveCmd
 	        self.CleanActiveCommandList()
-	        # if self.__driveCommand != '' and self.__driveCommand in self.__ThreadsFlagDic and self.__ThreadsFlagDic[self.__driveCommand] == False:
-	        # 	print self.__driveCommand
-	        # 	if self.__ListActiveDriveCmd != [] and self.__DriveCommandPairs[self.__driveCommand] in self.__ListActiveDriveCmd:
-	        # 		print 'REMOVED:       ', self.__DriveCommandPairs[self.__driveCommand]
-	        # 		self.__ListActiveDriveCmd.remove(self.__DriveCommandPairs[self.__driveCommand])
 	        self.ToggledDecelLeft_NoTurning()
 	        self.ToggledDecelRight_NoTurning()
 	        self.CheckDriveSpeed()

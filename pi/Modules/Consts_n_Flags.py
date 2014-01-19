@@ -7,12 +7,6 @@ class InitializerClass:
 		self.__GlobalFlaseFlag = False
 		self.__DrivingThreadFlag = 0
 
-	def Get_DrivingThreadFlag(self):
-		return self.__DrivingThreadFlag
-
-	def Set_DrivingThreadFlag(self):
-		self.__DrivingThreadFlag = 1
-		
 	def Set2Zero(self):
 		return self.__GlobalZeroInitializer
 
