@@ -1,0 +1,1 @@
+gst-launch-1.0 v4l2src device=/dev/video0 ! "video/x-raw,width=640,height=480,framerate=15/1" ! queue ! videoconvert ! omxh264enc ! h264parse ! flvmux ! rtmpsink location=\"rtmp://192.168.0.104/live/test live=1\"
