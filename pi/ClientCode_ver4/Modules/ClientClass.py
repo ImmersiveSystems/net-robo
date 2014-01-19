@@ -25,10 +25,8 @@ class Client():
 		self.__driveModeRight = initVar.Set2Zero()
 		self.__DriveCommandDic = dict([('forward', self.ToggledForward_accel), ('backward', self.ToggledBackward_accel), ('left', self.ToggledTurnLeft), ('right', self.ToggledTurnRight), ('shiftl', self.ToggledSteerLeft), ('shiftr', self.ToggledSteerRight)])
 		self.__ThreadsFlagDic = dict([('forward', True), ('backward', True), ('left', True), ('right', True), ('shiftl', True), ('shiftr', True), ('-forward', False), ('-backward', False), ('-left', False), ('-right', False)])
-		self.__ConflictingCommandsDic = {'forward':'backward', 'backward':'forward', 'left':'right', 'right':'left'}
 		self.__DriveCommandPairs = dict([('-forward', 'forward'), ('-backward', 'backward'), ('-left', 'left'), ('-right', 'right')])
 		self.__ListActiveDriveCmd = []		
-		self.__ShiftCommands = ['shiftl', 'shiftr']
 
 	def Set_exploSpeed(self):
 		return gVar.Get_exploSpeed1()
@@ -126,7 +124,6 @@ class Client():
 	    if self.__driveCommand != '' and self.__driveCommand in self.__ThreadsFlagDic and self.__ThreadsFlagDic[self.__driveCommand] == True:
 	    	if self.__driveCommand not in self.__ListActiveDriveCmd:
 	    		self.__ListActiveDriveCmd.append(self.__driveCommand)
-	    		self.ResolveConflict()
 
 	def CleanActiveCommandList(self):	    
 	    if self.__driveCommand != '' and self.__driveCommand in self.__ThreadsFlagDic and self.__ThreadsFlagDic[self.__driveCommand] == False:
@@ -135,23 +132,11 @@ class Client():
 	    		print 'REMOVED:       ', self.__DriveCommandPairs[self.__driveCommand]
 	    		self.__ListActiveDriveCmd.remove(self.__DriveCommandPairs[self.__driveCommand])
 
-	def MonitorShiftCommand(self):
-		if len(self.__ListActiveDriveCmd) == 1:
-			if self.__ListActiveDriveCmd[0] in self.__ShiftCommands:
-				print 'Removing Ineffective Command', self.__ListActiveDriveCmd
-				self.__ListActiveDriveCmd.remove(self.__ListActiveDriveCmd[0])
-	
-	def ResolveConflict(self):
-		if self.__driveCommand in self.__ConflictingCommandsDic and self.__ConflictingCommandsDic[self.__driveCommand] in self.__ListActiveDriveCmd:
-			print self.__driveCommand + "  and  " + self.__ConflictingCommandsDic[self.__driveCommand] + "  are Conflicting Commands"
-			print 'Removing The Old Conflicting Command:   ', self.__ConflictingCommandsDic[self.__driveCommand]
-			self.__ListActiveDriveCmd.remove(self.__ConflictingCommandsDic[self.__driveCommand])
 	def DrivingThread(self):	    
-	    self.MonitorShiftCommand()
 	    if self.__controlScheme == initVar.Set2One():
 	        self.ToggledResumeSpeed_AfterTurn()
 	        self.UpdateActiveCommandList()
-	        print 'Current Active Thread(s): ------------------>  ', self.__ListActiveDriveCmd
+	        print '-------------------------------', self.__ListActiveDriveCmd
 	        self.CleanActiveCommandList()
 	        self.ToggledDecelLeft_NoTurning()
 	        self.ToggledDecelRight_NoTurning()
