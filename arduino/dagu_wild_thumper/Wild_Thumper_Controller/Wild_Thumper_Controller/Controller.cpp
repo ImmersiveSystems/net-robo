@@ -153,6 +153,7 @@ void Controller::SetRight_PWM()
   Serialread();
   RightPWM_Prev = RightPWM;
   RightPWM = data * SpeedScale;  
+  RightPWM = RightPWM * 1.20;
   
   CheckRightPWM_Received();  
 }

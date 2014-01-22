@@ -211,32 +211,44 @@ class Client():
 
 	def BatteryStatusThread(self):
 		print 'Uncomment serial_port_threading'
-		# thread = threading.Thread(target = self.read_from_port, args = (self.__serial,))
-		# thread.start()
+		thread = threading.Thread(target = self.read_from_port, args = (self.__serial,))
+		thread.start()
 
 	def ListenIO(self):
-		socketIO = SocketIO('192.168.0.100', 3000)
+		socketIO = SocketIO('192.168.1.33', 3000)
 		socketIO.on('serverToPython', self.listener)
 		socketIO.emit('clientType', 'Python')
 		socketIO.wait(seconds = 6000)
 
 	def ExploreIncreaseSpeed(self):
 		if self.__controlScheme == initVar.Set2Zero():
-			if self.__exploSpeed == gVar.Get_exploSpeed2():
-				print 'Speed increased'
-				self.__exploSpeed =  gVar.Get_exploSpeed3();
-			elif self.__exploSpeed == gVar.Get_exploSpeed1():
-				print 'Speed increased'
-				self.__exploSpeed = gVar.Get_exploSpeed2();
+			# if self.__exploSpeed == gVar.Get_exploSpeed2():
+			# 	print 'Speed increased'
+			# 	self.__exploSpeed =  gVar.Get_exploSpeed3();
+			# elif self.__exploSpeed == gVar.Get_exploSpeed1():
+			# 	print 'Speed increased'
+			# 	self.__exploSpeed = gVar.Get_exploSpeed2();
+			if self.__exploSpeed >= 60:
+				self.__exploSpeed = 60
+				print 'Max speed reached'
+			else:
+				self.__exploSpeed = self.__exploSpeed + 5;
+				print 'Speed increased to ' + str(self.__exploSpeed)
 
 	def ExploreDecreaseSpeed(self):
 		if self.__controlScheme == initVar.Set2Zero():
-			if self.__exploSpeed == gVar.Get_exploSpeed2():
-				print 'Speed decreased'
-				self.__exploSpeed = gVar.Get_exploSpeed1();
-			elif self.__exploSpeed == gVar.Get_exploSpeed3():
-				print 'Speed decreased'
-				self.__exploSpeed = gVar.Get_exploSpeed2();
+			# if self.__exploSpeed == gVar.Get_exploSpeed2():
+			# 	print 'Speed decreased'
+			# 	self.__exploSpeed = gVar.Get_exploSpeed1();
+			# elif self.__exploSpeed == gVar.Get_exploSpeed3():
+			# 	print 'Speed decreased'
+			# 	self.__exploSpeed = gVar.Get_exploSpeed2();
+			if self.__exploSpeed <= 30:
+				self.__exploSpeed = 30
+				print 'Min speed reached'
+			else:
+				self.__exploSpeed = self.__exploSpeed - 5;
+				print 'Speed decreased to ' + str(self.__exploSpeed)
 
 	def Switch2DrivingMode(self):
 		print 'Driving mode'
@@ -277,10 +289,11 @@ class Client():
 		self.__serial.write(self.__HaltSignal)
 
 	def ProcessToggleCommand(self):
-		if self.__controlScheme == initVar.Set2One():
-			threading.Timer(0.1, self.Switch2ExploreMode).start()
-		else:
-			threading.Timer(0.1, self.Switch2DrivingMode).start()
+		print 'Toggling is disabled for now'
+		# if self.__controlScheme == initVar.Set2One():
+		# 	threading.Timer(0.1, self.Switch2ExploreMode).start()
+		# else:
+		# 	threading.Timer(0.1, self.Switch2DrivingMode).start()
 
 	def listener(self, *args):
 		if self.__controlScheme == initVar.Set2One():

@@ -24,9 +24,9 @@ class InitializerClass:
 
 class GlobalVariables:
 	def __init__(self):
-		self.__exploSpeed1 = 40
-		self.__exploSpeed2 = 60
-		self.__exploSpeed3 = 100
+		self.__exploSpeed1 = 30
+		self.__exploSpeed2 = 45
+		self.__exploSpeed3 = 60
 		self.__accelerationRate = 5
 		self.__decelerationRate = 1	
 		self.__turnRate = 1
