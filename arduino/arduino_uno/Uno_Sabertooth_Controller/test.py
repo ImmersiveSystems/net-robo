@@ -7,9 +7,6 @@ ser = serial.Serial("COM4", 9600)
 
 for i in range(100):
 
-    print (ser.read())
-
-
     speed = raw_input("Enter speed: ")
     print "You entered: ", speed
     speed = int(speed)
@@ -29,6 +26,6 @@ for i in range(100):
 
         
 
-    ser.write("HB" + chr(modeL) + chr(speed) + chr(modeR) + chr(speed))
+    ser.write("H" + chr(modeL) + chr(speed) + chr(modeR) + chr(speed))
 
 ser.close()
