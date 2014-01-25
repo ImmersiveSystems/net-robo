@@ -206,8 +206,9 @@ class Client():
 				#print 'Timer: ', timer      
 
 	def OpenSerialPort(self):
-		self.__serial = serial.Serial("/dev/ttyUSB0", 115200)
-		print 'opened serial - Uncomment the function call'
+		# print 'opened serial - Uncomment the function call'		
+		# self.__serial = serial.Serial("/dev/ttyUSB0", 115200)
+		self.__serial = serial.Serial("COM4", 9600)
 
 	def BatteryStatusThread(self):
 		print 'Uncomment serial_port_threading'
@@ -215,7 +216,8 @@ class Client():
 		thread.start()
 
 	def ListenIO(self):
-		socketIO = SocketIO('192.168.1.33', 3000)
+		# socketIO = SocketIO('192.168.1.33', 3000)		
+		socketIO = SocketIO('192.168.1.223', 3000)		
 		socketIO.on('serverToPython', self.listener)
 		socketIO.emit('clientType', 'Python')
 		socketIO.wait(seconds = 6000)
@@ -228,11 +230,11 @@ class Client():
 			# elif self.__exploSpeed == gVar.Get_exploSpeed1():
 			# 	print 'Speed increased'
 			# 	self.__exploSpeed = gVar.Get_exploSpeed2();
-			if self.__exploSpeed >= 60:
-				self.__exploSpeed = 60
+			if self.__exploSpeed >= gVar.Get_exploMaxSpeed():
+				self.__exploSpeed = gVar.Get_exploMaxSpeed()
 				print 'Max speed reached'
 			else:
-				self.__exploSpeed = self.__exploSpeed + 5;
+				self.__exploSpeed = self.__exploSpeed + gVar.Get_exploSpeedRate()
 				print 'Speed increased to ' + str(self.__exploSpeed)
 
 	def ExploreDecreaseSpeed(self):
@@ -243,11 +245,11 @@ class Client():
 			# elif self.__exploSpeed == gVar.Get_exploSpeed3():
 			# 	print 'Speed decreased'
 			# 	self.__exploSpeed = gVar.Get_exploSpeed2();
-			if self.__exploSpeed <= 30:
-				self.__exploSpeed = 30
+			if self.__exploSpeed <= gVar.Get_exploMinSpeed():
+				self.__exploSpeed = gVar.Get_exploMinSpeed()
 				print 'Min speed reached'
 			else:
-				self.__exploSpeed = self.__exploSpeed - 5;
+				self.__exploSpeed = self.__exploSpeed - gVar.Get_exploSpeedRate()
 				print 'Speed decreased to ' + str(self.__exploSpeed)
 
 	def Switch2DrivingMode(self):

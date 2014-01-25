@@ -24,6 +24,8 @@ class InitializerClass:
 
 class GlobalVariables:
 	def __init__(self):
+		self.__exploMinSpeed = 30
+		self.__exploMaxSpeed = 60
 		self.__exploSpeed1 = 30
 		self.__exploSpeed2 = 45
 		self.__exploSpeed3 = 60
@@ -31,9 +33,18 @@ class GlobalVariables:
 		self.__decelerationRate = 1	
 		self.__turnRate = 1
 		self.__shiftRate = 5
+		self.__exploSpeedRate = 5
 		self.__driveTurnSpeed = 40
 		self.__MaxDriveSpeed = 100
 		self.__MinDriveSpeed = -100
+
+	def Get_exploSpeedRate(self):
+		return self.__exploSpeedRate
+	def Get_exploMinSpeed(self):
+		return self.__exploMinSpeed
+
+	def Get_exploMaxSpeed(self):
+		return self.__exploMaxSpeed
 
 	def Get_MaxDriveSpeed(self):
 		return self.__MaxDriveSpeed
@@ -44,11 +55,11 @@ class GlobalVariables:
 	def Get_exploSpeed1(self):
 		return self.__exploSpeed1
 
-	def Get_exploSpeed2(self):
-		return self.__exploSpeed2
+	# def Get_exploSpeed2(self):
+	# 	return self.__exploSpeed2
 
-	def Get_exploSpeed3(self):
-		return self.__exploSpeed3		
+	# def Get_exploSpeed3(self):
+	# 	return self.__exploSpeed3		
 
 	def Get_AccelRate(self):
 		return self.__accelerationRate
