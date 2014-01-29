@@ -17,24 +17,4 @@ public:
 	void ReadEncoder(int Mode);
 };
 
-/*
-class PanTilt
-{
-private:
-  	const int PanPin 9
-	const int TiltPin 10
-	const int PanInitPos 90
-	const int TiltInitPos 125
-public:
-	Servo servoPan;  // create servo object to control a servo, a maximum of eight servo objects
-	Servo servoTilt;
-
-    PanTilt(int pp, int tp, int ppos, int tpos) : PanPin(pp), TiltPin(tp), PanInitPos(ppos), TiltInitPos(tpos) {}
-    void InitServos();
-    inline void Show()
-    {
-    	cout<<<<"\t"<<endl;
-    }
-};
-*/
 #endif

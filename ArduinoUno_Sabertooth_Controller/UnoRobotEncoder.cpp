@@ -6,7 +6,6 @@
 
 #include "UnoRobotEncoder.h"
 
-
 #define WhichEncoder(Mode) (Mode == 0 ? "Right Encoder:  " : "Left Encoder:  ")
 
 UnoRobotEncoder::UnoRobotEncoder()

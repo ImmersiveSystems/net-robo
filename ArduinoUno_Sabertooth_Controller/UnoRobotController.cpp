@@ -11,6 +11,20 @@
 
 Sabertooth SaberTooth(128);
 
+int UnoRobotController::ElbowPos_Cur;
+int UnoRobotController::ClawPos_Cur;
+int UnoRobotController::WristPos_Cur;
+
+int UnoRobotController::PanPos_Cur;
+int UnoRobotController::TiltPos_Cur;
+
+int UnoRobotController::ElbowFlag;
+int UnoRobotController::ClawFlag;
+int UnoRobotController::WristFlag;
+
+int UnoRobotController::PanFlag;
+int UnoRobotController::TiltFlag;
+
 UnoRobotController::UnoRobotController(): ElbowPin(ELBOW), ClawPin(CLAW), WristPin(WRIST), ElbowInitPos(ELBOW_INIT), ClawInitPos(CLAW_INIT), WristInitPos(WRIST_INIT), PanPin(PAN), TiltPin(TILT), PanInitPos(PAN_INIT), TiltInitPos(TILT_INIT)
 {
   int data = 0;
@@ -18,6 +32,16 @@ UnoRobotController::UnoRobotController(): ElbowPin(ELBOW), ClawPin(CLAW), WristP
   int Rightmode = 0;
   int LeftPWM = 0;                                       
   int RightPWM = 0;
+}
+
+void UnoRobotController::InitServosCurPos()
+{
+	ElbowPos_Cur = ElbowInitPos;
+	ClawPos_Cur = ClawInitPos;
+	WristPos_Cur = WristInitPos;
+
+	PanPos_Cur = PanInitPos;
+	TiltPos_Cur = TiltInitPos;
 }
 
 void UnoRobotController::InitServos()
@@ -35,6 +59,8 @@ void UnoRobotController::InitServos()
 
   servoPan.write(PanInitPos);
   servoTilt.write(TiltInitPos);	
+
+  InitServosCurPos();
 }
 
 void UnoRobotController::InitSaber()
@@ -68,6 +94,7 @@ void UnoRobotController::SerialCommunicate()
 	  {
 	    Set_PWM(RightMotor);
 	    Set_PWM(LeftMotor);
+	    Set_ServoPos();
 	  }
 	  else
 	  {
@@ -97,7 +124,6 @@ void UnoRobotController::Set_PWM(int MotorNum)
 	    LeftPWM = data * SpeedScale;
 	    ProcessMotorCommand(Leftmode, LeftMotor, LeftPWM);
 	    break;
-	 
 	  default:
 	    break;
 	}
@@ -112,7 +138,8 @@ void UnoRobotController::ProcessMotorCommand(int Mode, int MotorNum, int PWMVal)
 	    break;
 	 
 	  case 1: //Stop
-	    SaberTooth.motor(MotorNum, 0);
+	    SaberTooth.stop();
+	    // SaberTooth.motor(MotorNum, 0);
 	    break;
 	 
 	  case 0: //Move Backward
@@ -127,52 +154,143 @@ void UnoRobotController::ProcessEncoders()
     ReadEncoder(LeftMotor - 1);
 }
 
-void UnoRobotController::MoveServoMotor(int PinNum, int POS)
+void UnoRobotController::Set_ServoPos()  //(int val)
 {
-	POS = CheckAngleValue(PinNum, POS);
+	/* 
+	  data values:
+	  0 : do othing
+	  1 : increment current position by one
+	  -1 : decrement current position by one
+	*/
+	Serialread();
+	PanFlag = data;
+	// PanFlag = val;
+	PanPos_Cur = PanPos_Cur + PanFlag;
 
-	if(PinNum == PAN)
+	Serialread();
+	TiltFlag = data;
+	// TiltFlag = val;
+	TiltPos_Cur = TiltPos_Cur + TiltFlag;
+	
+	Serialread();
+	ElbowFlag = data;
+	// ElbowFlag = val;
+	ElbowPos_Cur = ElbowPos_Cur + ElbowFlag;
+	
+	Serialread();
+	ClawFlag = data;
+	// ClawFlag = val;
+	ClawPos_Cur = ClawPos_Cur + ClawFlag;
+	
+	Serialread();
+	WristFlag = data;
+	// WristFlag = val;
+	WristPos_Cur = WristPos_Cur + WristFlag;	
+}
+
+void UnoRobotController::UpdateServosPos()
+{
+	if(PanFlag != 0)
 	{
-		servoPan.write(POS);
+		ProcessServoCommand(PanPin);
 	}
-	else if(PinNum == TILT)
+	if(TiltFlag != 0)
 	{
-		servoTilt.write(POS);
+		ProcessServoCommand(TiltPin);
 	}
-	else if(PinNum == ELBOW)
+	if(ElbowFlag != 0)
 	{
-		servoElbow.write(POS);
+		ProcessServoCommand(ElbowPin);
 	}
-	else if(PinNum == CLAW)
+	if(ClawFlag != 0)
 	{
-		servoClaw.write(POS);
+		ProcessServoCommand(ClawPin);
 	}
-	else if(PinNum == WRIST)
+	if(WristFlag != 0)
 	{
-		servoWrist.write(POS);
+		ProcessServoCommand(WristPin);
 	}
 }
 
-int UnoRobotController::CheckAngleValue(int PinNum, int POS)
+void UnoRobotController::ProcessServoCommand(int PinNum)
 {
-	if(PinNum == TILT && POS > MaxTiltAngle)
+	if(PinNum == PanPin)
+	{
+		PanPos_Cur = ValidateServoCurPos(PinNum, PanPos_Cur);
+		servoPan.write(PanPos_Cur);
+	}
+	else if(PinNum == TiltPin)
+	{
+		TiltPos_Cur = ValidateServoCurPos(PinNum, TiltPos_Cur);
+		servoTilt.write(TiltPos_Cur);
+	}
+	else if(PinNum == ElbowPin)
+	{
+		ElbowPos_Cur = ValidateServoCurPos(PinNum, ElbowPos_Cur);
+		servoElbow.write(ElbowPos_Cur);
+	}
+	else if(PinNum == ClawPin)
+	{
+		ClawPos_Cur = ValidateServoCurPos(PinNum, ClawPos_Cur);
+		servoClaw.write(ClawPos_Cur);
+	}
+	else if(PinNum == WristPin)
+	{
+		WristPos_Cur = ValidateServoCurPos(PinNum, WristPos_Cur);
+		servoWrist.write(WristPos_Cur);
+	}	
+}
+
+int UnoRobotController::ValidateServoCurPos(int PinNum, int POS)
+{
+	if(PinNum == TiltPin && POS > MaxTiltAngle)
 	{
 		return MaxTiltAngle;
 	}
-	else if(PinNum == ELBOW && POS > MaxElbowAngle)
+	else if(PinNum == ElbowPin && POS > MaxElbowAngle)
 	{
 		return MaxElbowAngle;
 	}
-	else if(PinNum != TILT && POS > MaxOtherServoAngle)
+	else if((PinNum != TiltPin && PinNum != ElbowPin) && POS > MaxOtherServoAngle)
 	{
 		return MaxOtherServoAngle;
 	}
-	else if(POS < MinServoAngle)
+	else if(PinNum == PanPin && POS < MinPanAngle)
+	{
+		return MinPanAngle;
+	}
+	else if(PinNum != PanPin && POS < MinServoAngle)
 	{
 		return MinServoAngle;
 	}
 	else
 	{
 		return POS;
+	}
+}
+
+void UnoRobotController::MoveServoMotor(int PinNum, int POS)
+{
+	POS = ValidateServoCurPos(PinNum, POS);
+
+	if(PinNum == PanPin)
+	{
+		servoPan.write(POS);
+	}
+	else if(PinNum == TiltPin)
+	{
+		servoTilt.write(POS);
+	}
+	else if(PinNum == ElbowPin)
+	{
+		servoElbow.write(POS);
+	}
+	else if(PinNum == ClawPin)
+	{
+		servoClaw.write(POS);
+	}
+	else if(PinNum == WristPin)
+	{
+		servoWrist.write(POS);
 	}
 }

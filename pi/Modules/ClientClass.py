@@ -207,8 +207,8 @@ class Client():
 
 	def OpenSerialPort(self):
 		# print 'opened serial - Uncomment the function call'		
-		# self.__serial = serial.Serial("/dev/ttyUSB0", 115200)
-		self.__serial = serial.Serial("COM4", 9600)
+		self.__serial = serial.Serial("/dev/ttyACM1", 9600)
+		# self.__serial = serial.Serial("COM4", 9600)
 
 	def BatteryStatusThread(self):
 		print 'Uncomment serial_port_threading'

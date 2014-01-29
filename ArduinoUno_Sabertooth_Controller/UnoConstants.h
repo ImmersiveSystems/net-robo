@@ -23,4 +23,5 @@
 #define MaxElbowAngle 140
 #define MaxOtherServoAngle 180
 #define MinServoAngle 30
+#define MinPanAngle 0
 #endif

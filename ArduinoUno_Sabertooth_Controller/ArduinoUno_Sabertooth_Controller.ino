@@ -19,25 +19,20 @@ void setup()
 
 void loop()
 {
-  for(int pos = 0; pos < 180; pos++)
-  {
-	robot.MoveServoMotor(PAN, pos);  	
-	robot.MoveServoMotor(TILT, pos);  	
-	robot.MoveServoMotor(ELBOW, pos);  	
-	robot.MoveServoMotor(CLAW, pos);  	
-	robot.MoveServoMotor(WRIST, pos);  	
-	delay(ServoDelayValue);
-  }
-  for(int pos = 180; pos >= 0; pos--)
-  {
-	robot.MoveServoMotor(PAN, pos);  	
-	robot.MoveServoMotor(TILT, pos);  	
-	robot.MoveServoMotor(ELBOW, pos);  	
-	robot.MoveServoMotor(CLAW, pos);  	
-	robot.MoveServoMotor(WRIST, pos);  	
-	delay(ServoDelayValue);
-  }
+ //  for(int pos = 0; pos < 180; pos++)
+ //  {
+ //  	robot.Set_ServoPos(1);
+	// robot.UpdateServosPos();
+	// delay(ServoDelayValue);
+ //  }
+ //  for(int pos = 180; pos >= 0; pos--)
+ //  {
+ //  	robot.Set_ServoPos(-1);
+	// robot.UpdateServosPos();
+	// delay(ServoDelayValue);
+ //  }
   
-  robot.SerialCommunicate();
   robot.ProcessEncoders(); //inherited from UnoRobotEncoder class
+  robot.SerialCommunicate();
+  robot.UpdateServosPos();
 }
