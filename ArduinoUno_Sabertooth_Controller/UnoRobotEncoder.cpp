@@ -11,10 +11,10 @@
 
 UnoRobotEncoder::UnoRobotEncoder()
 {	
-  encoderPinA[0] = 3;
-  encoderPinA[1] = 6;
-  encoderPinB[0] = 4;
-  encoderPinB[1] = 5;
+  encoderPinA[0] = 12;
+  encoderPinA[1] = 11;
+  encoderPinB[0] = 13;
+  encoderPinB[1] = 10;
   encoderPos[0] = 0;
   encoderPos[1] = 0;
   encoderPinA_Cur[0] = LOW;

@@ -1,16 +1,40 @@
+#if defined(ARDUINO) && ARDUINO >= 100
+#include "Arduino.h"
+#else
+#include "WProgram.h"
+#endif
+
+#include <Servo.h>
 #include <Sabertooth.h>
 #include "UnoRobotController.h"
 #include "UnoConstants.h"
 
 Sabertooth SaberTooth(128);
 
-UnoRobotController::UnoRobotController()
+UnoRobotController::UnoRobotController(): ElbowPin(ELBOW), ClawPin(CLAW), WristPin(WRIST), ElbowInitPos(ELBOW_INIT), ClawInitPos(CLAW_INIT), WristInitPos(WRIST_INIT), PanPin(PAN), TiltPin(TILT), PanInitPos(PAN_INIT), TiltInitPos(TILT_INIT)
 {
-    int data = 0;
-	int Leftmode = 0;
-	int Rightmode = 0;
-	int LeftPWM = 0;                                       
-	int RightPWM = 0;
+  int data = 0;
+  int Leftmode = 0;
+  int Rightmode = 0;
+  int LeftPWM = 0;                                       
+  int RightPWM = 0;
+}
+
+void UnoRobotController::InitServos()
+{
+  servoElbow.attach(ElbowPin);
+  servoClaw.attach(ClawPin);  
+  servoWrist.attach(WristPin);
+
+  servoElbow.write(ElbowInitPos);
+  servoClaw.write(ClawInitPos);  
+  servoWrist.write(WristInitPos);
+
+  servoPan.attach(PanPin);
+  servoTilt.attach(TiltPin);
+
+  servoPan.write(PanInitPos);
+  servoTilt.write(TiltInitPos);	
 }
 
 void UnoRobotController::InitSaber()
@@ -101,4 +125,54 @@ void UnoRobotController::ProcessEncoders()
 {
     ReadEncoder(RightMotor - 1);
     ReadEncoder(LeftMotor - 1);
+}
+
+void UnoRobotController::MoveServoMotor(int PinNum, int POS)
+{
+	POS = CheckAngleValue(PinNum, POS);
+
+	if(PinNum == PAN)
+	{
+		servoPan.write(POS);
+	}
+	else if(PinNum == TILT)
+	{
+		servoTilt.write(POS);
+	}
+	else if(PinNum == ELBOW)
+	{
+		servoElbow.write(POS);
+	}
+	else if(PinNum == CLAW)
+	{
+		servoClaw.write(POS);
+	}
+	else if(PinNum == WRIST)
+	{
+		servoWrist.write(POS);
+	}
+}
+
+int UnoRobotController::CheckAngleValue(int PinNum, int POS)
+{
+	if(PinNum == TILT && POS > MaxTiltAngle)
+	{
+		return MaxTiltAngle;
+	}
+	else if(PinNum == ELBOW && POS > MaxElbowAngle)
+	{
+		return MaxElbowAngle;
+	}
+	else if(PinNum != TILT && POS > MaxOtherServoAngle)
+	{
+		return MaxOtherServoAngle;
+	}
+	else if(POS < MinServoAngle)
+	{
+		return MinServoAngle;
+	}
+	else
+	{
+		return POS;
+	}
 }
