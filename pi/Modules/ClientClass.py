@@ -47,12 +47,14 @@ class Client():
 		
 	# def SendDriveModeSpeeds(self):
 	# 	print 'we are here'
-	# 	self.__serial.write('H' + chr(self.__driveModeLeft) + chr(abs(self.__driveSpeedLeft)) + chr(self.__driveModeRight) + chr(abs(self.__driveSpeedRight)))
+		# self.__serial.write('H' + chr(self.__driveModeLeft) + chr(abs(self.__driveSpeedLeft)) + chr(self.__driveModeRight) + chr(abs(self.__driveSpeedRight)))
+		# self.__serial.write('H' + chr(self.__driveModeLeft) + chr(abs(self.__driveSpeedLeft)) + chr(self.__driveModeRight) + chr(abs(self.__driveSpeedRight))) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)
 
 	def ShowDriveModeInfo(self):
 		print 'Left Speed: ' + str(self.__driveSpeedLeft) + '   Right Speed: ' + str(self.__driveSpeedRight)
 		print 'Current Active Thread(s): ------------------>  ', self.__ListActiveDriveCmd
-		# self.__serial.write('H' + chr(self.__driveModeLeft) + chr(abs(self.__driveSpeedLeft)) + chr(self.__driveModeRight) + chr(abs(self.__driveSpeedRight)))        
+		# self.__serial.write('H' + chr(self.__driveModeLeft) + chr(abs(self.__driveSpeedLeft)) + chr(self.__driveModeRight) + chr(abs(self.__driveSpeedRight)))
+		# self.__serial.write('H' + chr(self.__driveModeLeft) + chr(abs(self.__driveSpeedLeft)) + chr(self.__driveModeRight) + chr(abs(self.__driveSpeedRight))) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)
 	
 	def Set_exploSpeed(self):
 		return gVar.Get_exploSpeed1()
@@ -278,37 +280,45 @@ class Client():
 		self.__driveSpeedLeft = initVar.Set2Zero()
 		self.__driveSpeedRight = initVar.Set2Zero()
 		# self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
+		# self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
 
 	def Switch2ExploreMode(self):
 		print 'Exploration mode'
 		self.__controlScheme = initVar.Set2Zero()		
 		self.__exploSpeed = gVar.Get_exploSpeed1();
-		# self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
+		# self.__serial.write('H' + chr(2) + chr(0) + chr(2)
+		# self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
 
 	def ForwardExplore(self):
 		print 'Move FORWARD'
 		# self.__serial.write('H' + chr(2) + chr(self.__exploSpeed) + chr(2) + chr(self.__exploSpeed))
+		# self.__serial.write('H' + chr(2) + chr(self.__exploSpeed) + chr(2) + chr(self.__exploSpeed)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
 
 	def BackwardExplore(self):
 		print 'Move BACKWARD'
 		# self.__serial.write('H' + chr(0) + chr(self.__exploSpeed) + chr(0) + chr(self.__exploSpeed))
+		# self.__serial.write('H' + chr(0) + chr(self.__exploSpeed) + chr(0) + chr(self.__exploSpeed)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
 	
 	def TurnLeftExplore(self):
 		print 'Turn LEFT'
 		# self.__serial.write('H' + chr(2) + chr(self.__exploSpeed) + chr(0) + chr(self.__exploSpeed))
+		# self.__serial.write('H' + chr(2) + chr(self.__exploSpeed) + chr(0) + chr(self.__exploSpeed)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
 
 	def TurnRightExplore(self):
 		print 'Turn RIGHT'
 		# self.__serial.write('H' + chr(0) + chr(self.__exploSpeed) + chr(2) + chr(self.__exploSpeed))
+		# self.__serial.write('H' + chr(0) + chr(self.__exploSpeed) + chr(2) + chr(self.__exploSpeed)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
 
 	def StopExplore(self):
 		print 'Stop movement'
 		self.__exploSpeed = self.Set_exploSpeed()
 		# self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
+		# self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
 
 	def SendHaltSignal(self):
 		print 'HALT'
 		# self.__serial.write(self.__HaltSignal)
+		# self.__serial.write(self.__HaltSignal) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
 
 	def ProcessToggleCommand(self):
 		print 'Toggling is disabled for now'
