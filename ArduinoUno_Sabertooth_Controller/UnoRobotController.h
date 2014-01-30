@@ -60,12 +60,12 @@ public:
 
 	void ProcessEncoders();
 	
-	void Set_ServoPos(); //(int val);
+	void Set_ServoPos();
 	int ValidateServoCurPos(int PinNum, int POS);
 	void ProcessServoCommand(int PinNum);
 	void UpdateServosPos();
 
-	void MoveServoMotor(int PinNum, int POS);	
+	void TestServos(int val);
 };
 
 #endif

@@ -154,7 +154,7 @@ void UnoRobotController::ProcessEncoders()
     ReadEncoder(LeftMotor - 1);
 }
 
-void UnoRobotController::Set_ServoPos()  //(int val)
+void UnoRobotController::Set_ServoPos()
 {
 	/* 
 	  data values:
@@ -164,27 +164,22 @@ void UnoRobotController::Set_ServoPos()  //(int val)
 	*/
 	Serialread();
 	PanFlag = data;
-	// PanFlag = val;
 	PanPos_Cur = PanPos_Cur + PanFlag;
 
 	Serialread();
 	TiltFlag = data;
-	// TiltFlag = val;
 	TiltPos_Cur = TiltPos_Cur + TiltFlag;
 	
 	Serialread();
 	ElbowFlag = data;
-	// ElbowFlag = val;
 	ElbowPos_Cur = ElbowPos_Cur + ElbowFlag;
 	
 	Serialread();
 	ClawFlag = data;
-	// ClawFlag = val;
 	ClawPos_Cur = ClawPos_Cur + ClawFlag;
 	
 	Serialread();
 	WristFlag = data;
-	// WristFlag = val;
 	WristPos_Cur = WristPos_Cur + WristFlag;	
 }
 
@@ -269,28 +264,26 @@ int UnoRobotController::ValidateServoCurPos(int PinNum, int POS)
 	}
 }
 
-void UnoRobotController::MoveServoMotor(int PinNum, int POS)
+void UnoRobotController::TestServos(int val)
 {
-	POS = ValidateServoCurPos(PinNum, POS);
+	/* 
+	  data values:
+	  0 : do othing
+	  1 : increment current position by one
+	  -1 : decrement current position by one
+	*/
+	PanFlag = val;
+	PanPos_Cur = PanPos_Cur + PanFlag;
 
-	if(PinNum == PanPin)
-	{
-		servoPan.write(POS);
-	}
-	else if(PinNum == TiltPin)
-	{
-		servoTilt.write(POS);
-	}
-	else if(PinNum == ElbowPin)
-	{
-		servoElbow.write(POS);
-	}
-	else if(PinNum == ClawPin)
-	{
-		servoClaw.write(POS);
-	}
-	else if(PinNum == WristPin)
-	{
-		servoWrist.write(POS);
-	}
+	TiltFlag = val;
+	TiltPos_Cur = TiltPos_Cur + TiltFlag;
+	
+	ElbowFlag = val;
+	ElbowPos_Cur = ElbowPos_Cur + ElbowFlag;
+	
+	ClawFlag = val;
+	ClawPos_Cur = ClawPos_Cur + ClawFlag;
+	
+	WristFlag = val;
+	WristPos_Cur = WristPos_Cur + WristFlag;	
 }

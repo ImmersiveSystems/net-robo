@@ -13,15 +13,19 @@
 #define CLAW_INIT 180
 #define WRIST_INIT 95
 
-#define PAN 5
-#define TILT 6
+#define PAN 6
+#define TILT 5
 #define PAN_INIT 90
 #define TILT_INIT 120
 
+#define LASER 7
+
 #define ServoDelayValue 15
+
 #define MaxTiltAngle 150
 #define MaxElbowAngle 140
 #define MaxOtherServoAngle 180
 #define MinServoAngle 30
 #define MinPanAngle 0
+
 #endif

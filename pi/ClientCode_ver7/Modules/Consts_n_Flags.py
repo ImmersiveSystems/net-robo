@@ -37,42 +37,9 @@ class GlobalVariables:
 		self.__driveTurnSpeed = 40
 		self.__MaxDriveSpeed = 100
 		self.__MinDriveSpeed = -100
-		self.__ServosIncrementRate = 1
-		self.__ServosDecrementRate = -1
-		self.__ServosStopSignal = 0
-		self.__PAN = 1
-		self.__TILT = 2
-		self.__ELBOW = 3
-		self.__CLAW = 4
-		self.__WRIST = 5
 
-	def Get_PanPin(self):
-		return self.__PAN
-
-	def Get_TiltPin(self):
-		return self.__TILT
-
-	def Get_ElbowPin(self):
-		return self.__ELBOW
-
-	def Get_ClawPin(self):
-		return self.__CLAW
-
-	def Get_WristPin(self):
-		return self.__WRIST
-		
-	def Get_ServosIncrementRate(self):
-		return self.__ServosIncrementRate
-
-	def Get_ServosDecrementRate(self):
-		return self.__ServosDecrementRate
-
-	def Get_ServosStopSignal(self):
-		return self.__ServosStopSignal
-		
 	def Get_exploSpeedRate(self):
 		return self.__exploSpeedRate
-
 	def Get_exploMinSpeed(self):
 		return self.__exploMinSpeed
 

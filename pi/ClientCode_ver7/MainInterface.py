@@ -10,6 +10,5 @@ Clnt.OpenSerialPort();
 Clnt.BatteryStatusThread();
 
 Clnt.DrivingThread();
-Clnt.ServosThread();
 
 Clnt.ListenIO();

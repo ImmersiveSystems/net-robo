@@ -32,27 +32,10 @@ class Client():
 		self.__ListActiveDriveCmd = []		
 		self.__ShiftCommands = ['shiftl', 'shiftr']
 
-		self.__ServoCommand = ''
-		self.__PanValue = gVar.Get_ServosStopSignal()
-		self.__TiltValue = gVar.Get_ServosStopSignal()
-		self.__ElbowValue = gVar.Get_ServosStopSignal()
-		self.__ClawValue = gVar.Get_ServosStopSignal()
-		self.__WristValue = gVar.Get_ServosStopSignal()
-		self.__ServosCommandDic = dict([('PanClk', self.IncrementServoValue(gVar.Get_PanPin())), ('PanCntrClk', self.DecrementServoValue(gVar.Get_PanPin())), ('TiltUp', self.IncrementServoValue(gVar.Get_TiltPin())), ('TiltDwn', self.DecrementServoValue(gVar.Get_TiltPin())), ('ElbowUp', self.IncrementServoValue(gVar.Get_ElbowPin())), ('ElbowDwn', self.DecrementServoValue(gVar.Get_ElbowPin())), ('ClawClk', self.IncrementServoValue(gVar.Get_ClawPin())), ('ClawCntrClk', self.DecrementServoValue(gVar.Get_ClawPin())), ('WristClk', self.IncrementServoValue(gVar.Get_WristPin())), ('WristCntrClk', self.DecrementServoValue(gVar.Get_WristPin()))])
-		self.__ServosStopCmdDic = dict([('PanClk', self.StopServo(gVar.Get_PanPin())), ('PanCntrClk', self.StopServo(gVar.Get_PanPin())), ('TiltUp', self.StopServo(gVar.Get_TiltPin())), ('TiltDwn', self.StopServo(gVar.Get_TiltPin())), ('ElbowUp', self.StopServo(gVar.Get_ElbowPin())), ('ElbowDwn', self.StopServo(gVar.Get_ElbowPin())), ('ClawClk', self.StopServo(gVar.Get_ClawPin())), ('ClawCntrClk', self.StopServo(gVar.Get_ClawPin())), ('WristClk', self.StopServo(gVar.Get_WristPin())), ('WristCntrClk', self.StopServo(gVar.Get_WristPin()))])
-		self.__ServosThreadsFlagDic = dict([('PanClk', True), ('PanCntrClk', True), ('TiltUp', True), ('TiltDwn', True), ('ElbowUp', True), ('ElbowDwn', True), ('ClawClk', True), ('ClawCntrClk', True), ('WristClk', True), ('WristCntrClk', True), ('-PanClk', False), ('-PanCntrClk', False), ('-TiltUp', False), ('-TiltDwn', False), ('-ElbowUp', False), ('-ElbowDwn', False), ('-ClawClk', False), ('-ClawCntrClk', False), ('-WristClk', False), ('-WristCntrClk', False)])
-		self.__ServosConflictingCommandsDic = {'PanClk':'PanCntrClk', 'PanCntrClk':'PanClk', 'TiltUp':'TiltDwn', 'TiltDwn':'TiltUp', 'ElbowUp':'ElbowDwn', 'ElbowDwn':'ElbowUp', 'ClawClk':'ClawCntrClk', 'ClawCntrClk':'ClawClk', 'WristClk':'WristCntrClk', 'WristCntrClk':'WristClk'}
-		self.__ServosCommandPairs = dict([('-PanClk', 'PanClk'), ('-PanCntrClk', 'PanCntrClk'), ('-TiltUp', 'TiltUp'), ('-TiltDwn', 'TiltDwn'), ('-ElbowUp', 'ElbowUp'), ('-ElbowDwn', 'ElbowDwn'), ('-ClawClk', 'ClawClk'), ('-ClawCntrClk', 'ClawCntrClk'), ('-WristClk', 'WristClk'), ('-WristCntrClk', 'WristCntrClk')])
-		self.__ServosListActiveCmd = []
-		
-	# def SendDriveModeSpeeds(self):
-	# 	print 'we are here'
-	# 	self.__serial.write('H' + chr(self.__driveModeLeft) + chr(abs(self.__driveSpeedLeft)) + chr(self.__driveModeRight) + chr(abs(self.__driveSpeedRight)))
-
 	def ShowDriveModeInfo(self):
 		print 'Left Speed: ' + str(self.__driveSpeedLeft) + '   Right Speed: ' + str(self.__driveSpeedRight)
 		print 'Current Active Thread(s): ------------------>  ', self.__ListActiveDriveCmd
-		# self.__serial.write('H' + chr(self.__driveModeLeft) + chr(abs(self.__driveSpeedLeft)) + chr(self.__driveModeRight) + chr(abs(self.__driveSpeedRight)))        
+		self.__serial.write('H' + chr(self.__driveModeLeft) + chr(abs(self.__driveSpeedLeft)) + chr(self.__driveModeRight) + chr(abs(self.__driveSpeedRight)))        
 	
 	def Set_exploSpeed(self):
 		return gVar.Get_exploSpeed1()
@@ -174,7 +157,6 @@ class Client():
 			print self.__driveCommand + "  and  " + self.__ConflictingCommandsDic[self.__driveCommand] + "  are Conflicting Commands"
 			print 'Removing The Old Conflicting Command:   ', self.__ConflictingCommandsDic[self.__driveCommand]
 			self.__ListActiveDriveCmd.remove(self.__ConflictingCommandsDic[self.__driveCommand])
-
 	def DrivingThread(self):	    
 		self.MonitorShiftCommand()
 		if self.__controlScheme == initVar.Set2One():
@@ -185,7 +167,6 @@ class Client():
 			self.ToggledDecelRight_NoTurning()
 			self.CheckDriveSpeed_Left()
 			self.CheckDriveSpeed_Right()
-			self.SendDriveModeSpeeds()
 			self.ShowDriveModeInfo()
 				
 		threading.Timer(0.1, self.DrivingThread).start()	    
@@ -225,19 +206,18 @@ class Client():
 				#print 'Timer: ', timer      
 
 	def OpenSerialPort(self):
-		print 'opened serial - Uncomment the function call'		
-		# self.__serial = serial.Serial("/dev/ttyACM1", 9600)
+		# print 'opened serial - Uncomment the function call'		
+		self.__serial = serial.Serial("/dev/ttyACM1", 9600)
 		# self.__serial = serial.Serial("COM4", 9600)
 
 	def BatteryStatusThread(self):
 		print 'Uncomment serial_port_threading'
-		# thread = threading.Thread(target = self.read_from_port, args = (self.__serial,))
-		# thread.start()
+		thread = threading.Thread(target = self.read_from_port, args = (self.__serial,))
+		thread.start()
 
 	def ListenIO(self):
 		# socketIO = SocketIO('192.168.1.33', 3000)		
-		# socketIO = SocketIO('192.168.1.223', 3000)		
-		socketIO = SocketIO('localhost', 3000)		
+		socketIO = SocketIO('192.168.1.223', 3000)		
 		socketIO.on('serverToPython', self.listener)
 		socketIO.emit('clientType', 'Python')
 		socketIO.wait(seconds = 6000)
@@ -277,38 +257,38 @@ class Client():
 		self.__controlScheme = initVar.Set2One()
 		self.__driveSpeedLeft = initVar.Set2Zero()
 		self.__driveSpeedRight = initVar.Set2Zero()
-		# self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
+		self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
 
 	def Switch2ExploreMode(self):
 		print 'Exploration mode'
 		self.__controlScheme = initVar.Set2Zero()		
 		self.__exploSpeed = gVar.Get_exploSpeed1();
-		# self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
+		self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
 
 	def ForwardExplore(self):
 		print 'Move FORWARD'
-		# self.__serial.write('H' + chr(2) + chr(self.__exploSpeed) + chr(2) + chr(self.__exploSpeed))
+		self.__serial.write('H' + chr(2) + chr(self.__exploSpeed) + chr(2) + chr(self.__exploSpeed))
 
 	def BackwardExplore(self):
 		print 'Move BACKWARD'
-		# self.__serial.write('H' + chr(0) + chr(self.__exploSpeed) + chr(0) + chr(self.__exploSpeed))
+		self.__serial.write('H' + chr(0) + chr(self.__exploSpeed) + chr(0) + chr(self.__exploSpeed))
 	
 	def TurnLeftExplore(self):
 		print 'Turn LEFT'
-		# self.__serial.write('H' + chr(2) + chr(self.__exploSpeed) + chr(0) + chr(self.__exploSpeed))
+		self.__serial.write('H' + chr(2) + chr(self.__exploSpeed) + chr(0) + chr(self.__exploSpeed))
 
 	def TurnRightExplore(self):
 		print 'Turn RIGHT'
-		# self.__serial.write('H' + chr(0) + chr(self.__exploSpeed) + chr(2) + chr(self.__exploSpeed))
+		self.__serial.write('H' + chr(0) + chr(self.__exploSpeed) + chr(2) + chr(self.__exploSpeed))
 
 	def StopExplore(self):
 		print 'Stop movement'
-		self.__exploSpeed = self.Set_exploSpeed()
-		# self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
+		#self.__exploSpeed = self.Set_exploSpeed()
+		self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
 
 	def SendHaltSignal(self):
 		print 'HALT'
-		# self.__serial.write(self.__HaltSignal)
+		self.__serial.write(self.__HaltSignal)
 
 	def ProcessToggleCommand(self):
 		print 'Toggling is disabled for now'
@@ -317,80 +297,8 @@ class Client():
 		# else:
 		# 	threading.Timer(0.1, self.Switch2DrivingMode).start()
 
-	def StopServo(self, PinNum):
-		if PinNum == gVar.Get_PanPin():
-			self.__PanValue = gVar.Get_ServosStopSignal()
-		elif PinNum == gVar.Get_TiltPin():
-			self.__PanValue = gVar.Get_ServosStopSignal()
-		elif PinNum == gVar.Get_ElbowPin():
-			self.__ElbowValue = gVar.Get_ServosStopSignal()
-		elif PinNum == gVar.Get_ClawPin():
-			self.__ClawValue = gVar.Get_ServosStopSignal()
-		elif PinNum == gVar.Get_WristPin():
-			self.__WristValue = gVar.Get_ServosStopSignal()
-
-	def IncrementServoValue(self, PinNum):
-		if PinNum == gVar.Get_PanPin():
-			self.__PanValue = gVar.Get_ServosIncrementRate()
-		elif PinNum == gVar.Get_TiltPin():
-			self.__PanValue = gVar.Get_ServosDecrementRate()
-		elif PinNum == gVar.Get_ElbowPin():
-			self.__ElbowValue = gVar.Get_ServosIncrementRate()
-		elif PinNum == gVar.Get_ClawPin():
-			self.__ClawValue = gVar.Get_ServosIncrementRate()
-		elif PinNum == gVar.Get_WristPin():
-			self.__WristValue = gVar.Get_ServosIncrementRate
-
-	def DecrementServoValue(self, PinNum):
-		if PinNum == gVar.Get_PanPin():
-			self.__PanValue = gVar.Get_ServosDecrementRate()
-		elif PinNum == gVar.Get_TiltPin():
-			self.__PanValue = gVar.Get_ServosDecrementRate()
-		elif PinNum == gVar.Get_ElbowPin():
-			self.__ElbowValue = gVar.Get_ServosDecrementRate()
-		elif PinNum == gVar.Get_ClawPin():
-			self.__ClawValue = gVar.Get_ServosDecrementRate()
-		elif PinNum == gVar.Get_WristPin():
-			self.__WristValue = gVar.Get_ServosDecrementRate()
-
-	def RunServosActiveThreads(self):		    
-		if self.__ServosListActiveCmd != []:
-			for Cmd in self.__ServosListActiveCmd:
-				threading.Timer(0.1, self.__ServosCommandDic[Cmd]).start()
-
-	def UpdateServosActiveCommandList(self):	    
-		if self.__ServoCommand != '' and self.__ServoCommand in self.__ServosThreadsFlagDic and self.__ServosThreadsFlagDic[self.__ServoCommand] == True:
-			if self.__ServoCommand not in self.__ServosListActiveCmd:
-				self.__ServosListActiveCmd.append(self.__ServoCommand)
-				self.ResolveServosCommandsConflict()
-
-	def CleanServosActiveCommandList(self):	    
-		if self.__ServoCommand != '' and self.__ServoCommand in self.__ServosThreadsFlagDic and self.__ServosThreadsFlagDic[self.__ServoCommand] == False:
-			print self.__ServoCommand
-			if self.__ServosListActiveCmd != [] and self.__ServosCommandPairs[self.__ServoCommand] in self.__ServosListActiveCmd:
-				print 'REMOVED:       ', self.__ServosCommandPairs[self.__ServoCommand]
-				self.__ServosListActiveCmd.remove(self.__ServosCommandPairs[self.__ServoCommand])
-				self.__ServosStopCmdDic[self.__ServosCommandPairs[self.__ServoCommand]]
-
-	def ResolveServosCommandsConflict(self):
-		if self.__ServoCommand in self.__ServosConflictingCommandsDic and self.__ServosConflictingCommandsDic[self.__ServoCommand] in self.__ServosListActiveCmd:
-			print self.__ServoCommand + "  and  " + self.__ServosConflictingCommandsDic[self.__ServoCommand] + "  are Conflicting Commands"
-			print 'Removing The Old Conflicting Command:   ', self.__ServosConflictingCommandsDic[self.__ServoCommand]
-			self.__ServosListActiveCmd.remove(self.__ServosConflictingCommandsDic[self.__ServoCommand])
-			self.__ServosStopCmdDic[self.__ServosConflictingCommandsDic[self.__ServoCommand]]
-	
-	def ServosThread(self):	    
-		# print 'Inside ServosThread Function'
-		self.UpdateActiveCommandList()	        
-		self.CleanActiveCommandList()
-				
-		threading.Timer(0.1, self.ServosThread).start()	    
-		self.RunServosActiveThreads()
-
 	def listener(self, *args):
 		if self.__controlScheme == initVar.Set2One():
 			self.__driveCommand = args[0]
 		if args[0] in self.__CommandsDic:
 			threading.Timer(0.1, self.__CommandsDic[args[0]]).start()
-		if args[0] in self.__ServosCommandDic:
-			self.__ServoCommand = args[0]
