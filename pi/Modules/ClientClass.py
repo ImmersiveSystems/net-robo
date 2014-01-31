@@ -32,6 +32,8 @@ class Client():
 		self.__ListActiveDriveCmd = []		
 		self.__ShiftCommands = ['shiftl', 'shiftr']
 
+		self.__ServosOnlyFlag = 1
+
 		self.__ServoCommand = ''
 		self.__PanValue = gVar.Get_ServosStopSignal()
 		self.__TiltValue = gVar.Get_ServosStopSignal()
@@ -291,32 +293,38 @@ class Client():
 
 	def ForwardExplore(self):
 		print 'Move FORWARD'
+		self.__ServosOnlyFlag = 0
 		# self.__serial.write('H' + chr(2) + chr(self.__exploSpeed) + chr(2) + chr(self.__exploSpeed))
 		# self.__serial.write('H' + chr(2) + chr(self.__exploSpeed) + chr(2) + chr(self.__exploSpeed)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
 
 	def BackwardExplore(self):
 		print 'Move BACKWARD'
+		self.__ServosOnlyFlag = 0
 		# self.__serial.write('H' + chr(0) + chr(self.__exploSpeed) + chr(0) + chr(self.__exploSpeed))
 		# self.__serial.write('H' + chr(0) + chr(self.__exploSpeed) + chr(0) + chr(self.__exploSpeed)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
 	
 	def TurnLeftExplore(self):
 		print 'Turn LEFT'
+		self.__ServosOnlyFlag = 0
 		# self.__serial.write('H' + chr(2) + chr(self.__exploSpeed) + chr(0) + chr(self.__exploSpeed))
 		# self.__serial.write('H' + chr(2) + chr(self.__exploSpeed) + chr(0) + chr(self.__exploSpeed)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
 
 	def TurnRightExplore(self):
 		print 'Turn RIGHT'
+		self.__ServosOnlyFlag = 0
 		# self.__serial.write('H' + chr(0) + chr(self.__exploSpeed) + chr(2) + chr(self.__exploSpeed))
 		# self.__serial.write('H' + chr(0) + chr(self.__exploSpeed) + chr(2) + chr(self.__exploSpeed)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
 
 	def StopExplore(self):
 		print 'Stop movement'
+		self.__ServosOnlyFlag = 1
 		self.__exploSpeed = self.Set_exploSpeed()
 		# self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
 		# self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
 
 	def SendHaltSignal(self):
 		print 'HALT'
+		self.__ServosOnlyFlag = 1
 		# self.__serial.write(self.__HaltSignal)
 		# self.__serial.write(self.__HaltSignal) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
 
@@ -393,6 +401,9 @@ class Client():
 		# print 'Inside ServosThread Function'
 		self.UpdateActiveCommandList()	        
 		self.CleanActiveCommandList()
+		if self.__ServosOnlyFlag == 1 and self.__ServosListActiveCmd != []:
+			print 'Only Servos Running'
+			self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)
 				
 		threading.Timer(0.1, self.ServosThread).start()	    
 		self.RunServosActiveThreads()
