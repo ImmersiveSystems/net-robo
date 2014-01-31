@@ -40,48 +40,27 @@ class GlobalVariables:
 		self.__ServosIncrementRate = 1
 		self.__ServosDecrementRate = -1
 		self.__ServosStopSignal = 0
-		self.__ELBOW_INIT = 95
-		self.__CLAW_INIT = 180
-		self.__WRIST_INIT = 95
-		self.__PAN_INIT = 90
-		self.__TILT_INIT = 210
+		self.__PAN = 1
+		self.__TILT = 2
+		self.__ELBOW = 3
+		self.__CLAW = 4
+		self.__WRIST = 5
 
-		# self.__PAN = 1
-		# self.__TILT = 2
-		# self.__ELBOW = 3
-		# self.__CLAW = 4
-		# self.__WRIST = 5
+	def Get_PanPin(self):
+		return self.__PAN
 
-	# def Get_PanPin(self):
-	# 	return self.__PAN
+	def Get_TiltPin(self):
+		return self.__TILT
 
-	# def Get_TiltPin(self):
-	# 	return self.__TILT
+	def Get_ElbowPin(self):
+		return self.__ELBOW
 
-	# def Get_ElbowPin(self):
-	# 	return self.__ELBOW
+	def Get_ClawPin(self):
+		return self.__CLAW
 
-	# def Get_ClawPin(self):
-	# 	return self.__CLAW
-
-	# def Get_WristPin(self):
-	# 	return self.__WRIST
-
-	def InitPan(self):
-		return self.__PAN_INIT
-
-	def InitTilt(self):
-		return self.__TILT_INIT
-	
-	def InitElbow(self):
-		return self.__ELBOW_INIT
-
-	def InitClaw(self):
-		return self.__CLAW_INIT
-
-	def InitWrist(self):
-		return self.__WRIST_INIT
-
+	def Get_WristPin(self):
+		return self.__WRIST
+		
 	def Get_ServosIncrementRate(self):
 		return self.__ServosIncrementRate
 

@@ -33,25 +33,19 @@ class Client():
 		self.__ShiftCommands = ['shiftl', 'shiftr']
 
 		self.__ServosOnlyFlag = 1
-		self.__PanValue = gVar.InitPan()
-		self.__TiltValue = gVar.InitTilt()
-		self.__ElbowValue = gVar.InitElbow()
-		self.__ClawValue = gVar.InitClaw()
-		self.__WristValue = gVar.InitWrist()
 
-
-		# self.__ServoCommand = ''
-		# self.__PanValue = gVar.Get_ServosStopSignal()
-		# self.__TiltValue = gVar.Get_ServosStopSignal()
-		# self.__ElbowValue = gVar.Get_ServosStopSignal()
-		# self.__ClawValue = gVar.Get_ServosStopSignal()
-		# self.__WristValue = gVar.Get_ServosStopSignal()
-		# self.__ServosCommandDic = dict([('PanClk', self.IncrementServoValue(gVar.Get_PanPin())), ('PanCntrClk', self.DecrementServoValue(gVar.Get_PanPin())), ('TiltUp', self.IncrementServoValue(gVar.Get_TiltPin())), ('TiltDwn', self.DecrementServoValue(gVar.Get_TiltPin())), ('ElbowUp', self.IncrementServoValue(gVar.Get_ElbowPin())), ('ElbowDwn', self.DecrementServoValue(gVar.Get_ElbowPin())), ('ClawClk', self.IncrementServoValue(gVar.Get_ClawPin())), ('ClawCntrClk', self.DecrementServoValue(gVar.Get_ClawPin())), ('WristClk', self.IncrementServoValue(gVar.Get_WristPin())), ('WristCntrClk', self.DecrementServoValue(gVar.Get_WristPin()))])
-		# self.__ServosStopCmdDic = dict([('PanClk', self.StopServo(gVar.Get_PanPin())), ('PanCntrClk', self.StopServo(gVar.Get_PanPin())), ('TiltUp', self.StopServo(gVar.Get_TiltPin())), ('TiltDwn', self.StopServo(gVar.Get_TiltPin())), ('ElbowUp', self.StopServo(gVar.Get_ElbowPin())), ('ElbowDwn', self.StopServo(gVar.Get_ElbowPin())), ('ClawClk', self.StopServo(gVar.Get_ClawPin())), ('ClawCntrClk', self.StopServo(gVar.Get_ClawPin())), ('WristClk', self.StopServo(gVar.Get_WristPin())), ('WristCntrClk', self.StopServo(gVar.Get_WristPin()))])
-		# self.__ServosThreadsFlagDic = dict([('PanClk', True), ('PanCntrClk', True), ('TiltUp', True), ('TiltDwn', True), ('ElbowUp', True), ('ElbowDwn', True), ('ClawClk', True), ('ClawCntrClk', True), ('WristClk', True), ('WristCntrClk', True), ('-PanClk', False), ('-PanCntrClk', False), ('-TiltUp', False), ('-TiltDwn', False), ('-ElbowUp', False), ('-ElbowDwn', False), ('-ClawClk', False), ('-ClawCntrClk', False), ('-WristClk', False), ('-WristCntrClk', False)])
-		# self.__ServosConflictingCommandsDic = {'PanClk':'PanCntrClk', 'PanCntrClk':'PanClk', 'TiltUp':'TiltDwn', 'TiltDwn':'TiltUp', 'ElbowUp':'ElbowDwn', 'ElbowDwn':'ElbowUp', 'ClawClk':'ClawCntrClk', 'ClawCntrClk':'ClawClk', 'WristClk':'WristCntrClk', 'WristCntrClk':'WristClk'}
-		# self.__ServosCommandPairs = dict([('-PanClk', 'PanClk'), ('-PanCntrClk', 'PanCntrClk'), ('-TiltUp', 'TiltUp'), ('-TiltDwn', 'TiltDwn'), ('-ElbowUp', 'ElbowUp'), ('-ElbowDwn', 'ElbowDwn'), ('-ClawClk', 'ClawClk'), ('-ClawCntrClk', 'ClawCntrClk'), ('-WristClk', 'WristClk'), ('-WristCntrClk', 'WristCntrClk')])
-		# self.__ServosListActiveCmd = []
+		self.__ServoCommand = ''
+		self.__PanValue = gVar.Get_ServosStopSignal()
+		self.__TiltValue = gVar.Get_ServosStopSignal()
+		self.__ElbowValue = gVar.Get_ServosStopSignal()
+		self.__ClawValue = gVar.Get_ServosStopSignal()
+		self.__WristValue = gVar.Get_ServosStopSignal()
+		self.__ServosCommandDic = dict([('PanClk', self.IncrementServoValue(gVar.Get_PanPin())), ('PanCntrClk', self.DecrementServoValue(gVar.Get_PanPin())), ('TiltUp', self.IncrementServoValue(gVar.Get_TiltPin())), ('TiltDwn', self.DecrementServoValue(gVar.Get_TiltPin())), ('ElbowUp', self.IncrementServoValue(gVar.Get_ElbowPin())), ('ElbowDwn', self.DecrementServoValue(gVar.Get_ElbowPin())), ('ClawClk', self.IncrementServoValue(gVar.Get_ClawPin())), ('ClawCntrClk', self.DecrementServoValue(gVar.Get_ClawPin())), ('WristClk', self.IncrementServoValue(gVar.Get_WristPin())), ('WristCntrClk', self.DecrementServoValue(gVar.Get_WristPin()))])
+		self.__ServosStopCmdDic = dict([('PanClk', self.StopServo(gVar.Get_PanPin())), ('PanCntrClk', self.StopServo(gVar.Get_PanPin())), ('TiltUp', self.StopServo(gVar.Get_TiltPin())), ('TiltDwn', self.StopServo(gVar.Get_TiltPin())), ('ElbowUp', self.StopServo(gVar.Get_ElbowPin())), ('ElbowDwn', self.StopServo(gVar.Get_ElbowPin())), ('ClawClk', self.StopServo(gVar.Get_ClawPin())), ('ClawCntrClk', self.StopServo(gVar.Get_ClawPin())), ('WristClk', self.StopServo(gVar.Get_WristPin())), ('WristCntrClk', self.StopServo(gVar.Get_WristPin()))])
+		self.__ServosThreadsFlagDic = dict([('PanClk', True), ('PanCntrClk', True), ('TiltUp', True), ('TiltDwn', True), ('ElbowUp', True), ('ElbowDwn', True), ('ClawClk', True), ('ClawCntrClk', True), ('WristClk', True), ('WristCntrClk', True), ('-PanClk', False), ('-PanCntrClk', False), ('-TiltUp', False), ('-TiltDwn', False), ('-ElbowUp', False), ('-ElbowDwn', False), ('-ClawClk', False), ('-ClawCntrClk', False), ('-WristClk', False), ('-WristCntrClk', False)])
+		self.__ServosConflictingCommandsDic = {'PanClk':'PanCntrClk', 'PanCntrClk':'PanClk', 'TiltUp':'TiltDwn', 'TiltDwn':'TiltUp', 'ElbowUp':'ElbowDwn', 'ElbowDwn':'ElbowUp', 'ClawClk':'ClawCntrClk', 'ClawCntrClk':'ClawClk', 'WristClk':'WristCntrClk', 'WristCntrClk':'WristClk'}
+		self.__ServosCommandPairs = dict([('-PanClk', 'PanClk'), ('-PanCntrClk', 'PanCntrClk'), ('-TiltUp', 'TiltUp'), ('-TiltDwn', 'TiltDwn'), ('-ElbowUp', 'ElbowUp'), ('-ElbowDwn', 'ElbowDwn'), ('-ClawClk', 'ClawClk'), ('-ClawCntrClk', 'ClawCntrClk'), ('-WristClk', 'WristClk'), ('-WristCntrClk', 'WristCntrClk')])
+		self.__ServosListActiveCmd = []
 		
 	# def SendDriveModeSpeeds(self):
 	# 	print 'we are here'
@@ -341,100 +335,83 @@ class Client():
 		# else:
 		# 	threading.Timer(0.1, self.Switch2DrivingMode).start()
 
-	# def StopServo(self, PinNum):
-	# 	if PinNum == gVar.Get_PanPin():
-	# 		self.__PanValue = gVar.Get_ServosStopSignal()
-	# 	elif PinNum == gVar.Get_TiltPin():
-	# 		self.__PanValue = gVar.Get_ServosStopSignal()
-	# 	elif PinNum == gVar.Get_ElbowPin():
-	# 		self.__ElbowValue = gVar.Get_ServosStopSignal()
-	# 	elif PinNum == gVar.Get_ClawPin():
-	# 		self.__ClawValue = gVar.Get_ServosStopSignal()
-	# 	elif PinNum == gVar.Get_WristPin():
-	# 		self.__WristValue = gVar.Get_ServosStopSignal()
+	def StopServo(self, PinNum):
+		if PinNum == gVar.Get_PanPin():
+			self.__PanValue = gVar.Get_ServosStopSignal()
+		elif PinNum == gVar.Get_TiltPin():
+			self.__PanValue = gVar.Get_ServosStopSignal()
+		elif PinNum == gVar.Get_ElbowPin():
+			self.__ElbowValue = gVar.Get_ServosStopSignal()
+		elif PinNum == gVar.Get_ClawPin():
+			self.__ClawValue = gVar.Get_ServosStopSignal()
+		elif PinNum == gVar.Get_WristPin():
+			self.__WristValue = gVar.Get_ServosStopSignal()
 
-	# def IncrementServoValue(self, PinNum):
-	# 	if PinNum == gVar.Get_PanPin():
-	# 		self.__PanValue = gVar.Get_ServosIncrementRate()
-	# 	elif PinNum == gVar.Get_TiltPin():
-	# 		self.__PanValue = gVar.Get_ServosDecrementRate()
-	# 	elif PinNum == gVar.Get_ElbowPin():
-	# 		self.__ElbowValue = gVar.Get_ServosIncrementRate()
-	# 	elif PinNum == gVar.Get_ClawPin():
-	# 		self.__ClawValue = gVar.Get_ServosIncrementRate()
-	# 	elif PinNum == gVar.Get_WristPin():
-	# 		self.__WristValue = gVar.Get_ServosIncrementRate
+	def IncrementServoValue(self, PinNum):
+		if PinNum == gVar.Get_PanPin():
+			self.__PanValue = gVar.Get_ServosIncrementRate()
+		elif PinNum == gVar.Get_TiltPin():
+			self.__PanValue = gVar.Get_ServosDecrementRate()
+		elif PinNum == gVar.Get_ElbowPin():
+			self.__ElbowValue = gVar.Get_ServosIncrementRate()
+		elif PinNum == gVar.Get_ClawPin():
+			self.__ClawValue = gVar.Get_ServosIncrementRate()
+		elif PinNum == gVar.Get_WristPin():
+			self.__WristValue = gVar.Get_ServosIncrementRate
 
-	# def DecrementServoValue(self, PinNum):
-	# 	if PinNum == gVar.Get_PanPin():
-	# 		self.__PanValue = gVar.Get_ServosDecrementRate()
-	# 	elif PinNum == gVar.Get_TiltPin():
-	# 		self.__PanValue = gVar.Get_ServosDecrementRate()
-	# 	elif PinNum == gVar.Get_ElbowPin():
-	# 		self.__ElbowValue = gVar.Get_ServosDecrementRate()
-	# 	elif PinNum == gVar.Get_ClawPin():
-	# 		self.__ClawValue = gVar.Get_ServosDecrementRate()
-	# 	elif PinNum == gVar.Get_WristPin():
-	# 		self.__WristValue = gVar.Get_ServosDecrementRate()
+	def DecrementServoValue(self, PinNum):
+		if PinNum == gVar.Get_PanPin():
+			self.__PanValue = gVar.Get_ServosDecrementRate()
+		elif PinNum == gVar.Get_TiltPin():
+			self.__PanValue = gVar.Get_ServosDecrementRate()
+		elif PinNum == gVar.Get_ElbowPin():
+			self.__ElbowValue = gVar.Get_ServosDecrementRate()
+		elif PinNum == gVar.Get_ClawPin():
+			self.__ClawValue = gVar.Get_ServosDecrementRate()
+		elif PinNum == gVar.Get_WristPin():
+			self.__WristValue = gVar.Get_ServosDecrementRate()
 
-	# def RunServosActiveThreads(self):		    
-	# 	if self.__ServosListActiveCmd != []:
-	# 		for Cmd in self.__ServosListActiveCmd:
-	# 			threading.Timer(0.1, self.__ServosCommandDic[Cmd]).start()
+	def RunServosActiveThreads(self):		    
+		if self.__ServosListActiveCmd != []:
+			for Cmd in self.__ServosListActiveCmd:
+				threading.Timer(0.1, self.__ServosCommandDic[Cmd]).start()
 
-	# def UpdateServosActiveCommandList(self):	    
-	# 	if self.__ServoCommand != '' and self.__ServoCommand in self.__ServosThreadsFlagDic and self.__ServosThreadsFlagDic[self.__ServoCommand] == True:
-	# 		if self.__ServoCommand not in self.__ServosListActiveCmd:
-	# 			self.__ServosListActiveCmd.append(self.__ServoCommand)
-	# 			self.ResolveServosCommandsConflict()
+	def UpdateServosActiveCommandList(self):	    
+		if self.__ServoCommand != '' and self.__ServoCommand in self.__ServosThreadsFlagDic and self.__ServosThreadsFlagDic[self.__ServoCommand] == True:
+			if self.__ServoCommand not in self.__ServosListActiveCmd:
+				self.__ServosListActiveCmd.append(self.__ServoCommand)
+				self.ResolveServosCommandsConflict()
 
-	# def CleanServosActiveCommandList(self):	    
-	# 	if self.__ServoCommand != '' and self.__ServoCommand in self.__ServosThreadsFlagDic and self.__ServosThreadsFlagDic[self.__ServoCommand] == False:
-	# 		print self.__ServoCommand
-	# 		if self.__ServosListActiveCmd != [] and self.__ServosCommandPairs[self.__ServoCommand] in self.__ServosListActiveCmd:
-	# 			print 'REMOVED:       ', self.__ServosCommandPairs[self.__ServoCommand]
-	# 			self.__ServosListActiveCmd.remove(self.__ServosCommandPairs[self.__ServoCommand])
-	# 			self.__ServosStopCmdDic[self.__ServosCommandPairs[self.__ServoCommand]]
+	def CleanServosActiveCommandList(self):	    
+		if self.__ServoCommand != '' and self.__ServoCommand in self.__ServosThreadsFlagDic and self.__ServosThreadsFlagDic[self.__ServoCommand] == False:
+			print self.__ServoCommand
+			if self.__ServosListActiveCmd != [] and self.__ServosCommandPairs[self.__ServoCommand] in self.__ServosListActiveCmd:
+				print 'REMOVED:       ', self.__ServosCommandPairs[self.__ServoCommand]
+				self.__ServosListActiveCmd.remove(self.__ServosCommandPairs[self.__ServoCommand])
+				self.__ServosStopCmdDic[self.__ServosCommandPairs[self.__ServoCommand]]
 
-	# def ResolveServosCommandsConflict(self):
-	# 	if self.__ServoCommand in self.__ServosConflictingCommandsDic and self.__ServosConflictingCommandsDic[self.__ServoCommand] in self.__ServosListActiveCmd:
-	# 		print self.__ServoCommand + "  and  " + self.__ServosConflictingCommandsDic[self.__ServoCommand] + "  are Conflicting Commands"
-	# 		print 'Removing The Old Conflicting Command:   ', self.__ServosConflictingCommandsDic[self.__ServoCommand]
-	# 		self.__ServosListActiveCmd.remove(self.__ServosConflictingCommandsDic[self.__ServoCommand])
-	# 		self.__ServosStopCmdDic[self.__ServosConflictingCommandsDic[self.__ServoCommand]]
+	def ResolveServosCommandsConflict(self):
+		if self.__ServoCommand in self.__ServosConflictingCommandsDic and self.__ServosConflictingCommandsDic[self.__ServoCommand] in self.__ServosListActiveCmd:
+			print self.__ServoCommand + "  and  " + self.__ServosConflictingCommandsDic[self.__ServoCommand] + "  are Conflicting Commands"
+			print 'Removing The Old Conflicting Command:   ', self.__ServosConflictingCommandsDic[self.__ServoCommand]
+			self.__ServosListActiveCmd.remove(self.__ServosConflictingCommandsDic[self.__ServoCommand])
+			self.__ServosStopCmdDic[self.__ServosConflictingCommandsDic[self.__ServoCommand]]
 	
-	# def ServosThread(self):	    
-	# 	# print 'Inside ServosThread Function'
-	# 	self.UpdateActiveCommandList()	        
-	# 	self.CleanActiveCommandList()
-	# 	if self.__ServosOnlyFlag == 1 and self.__ServosListActiveCmd != []:
-	# 	   print 'Only Servos Running'
-	# 	   self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)        
-	# 	threading.Timer(0.1, self.ServosThread).start()	    
-	# 	self.RunServosActiveThreads()
-
-	def MonitorServosCommand(self, *args):
-		Cmd = args[:2]
-		if Cmd.find("PAN"):
-			self.__PanValue = int(args[3:])
-		elif Cmd.find("TIL"):
-			self.__TiltValue = int(args[3:])
-		elif Cmd.find("ELW"):
-			self.__ElbowValue = int(args[3:])
-		elif Cmd.find("WRT"):
-			self.__WristValue = int(args[3:])
-		elif Cmd.find("CLW"):
-			self.__ClawValue = int(args[3:])
-
-		if self.__ServosOnlyFlag == 1:
-			self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)		
+	def ServosThread(self):	    
+		# print 'Inside ServosThread Function'
+		self.UpdateActiveCommandList()	        
+		self.CleanActiveCommandList()
+		if self.__ServosOnlyFlag == 1 and self.__ServosListActiveCmd != []:
+			print 'Only Servos Running'
+			self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)
+				
+		threading.Timer(0.1, self.ServosThread).start()	    
+		self.RunServosActiveThreads()
 
 	def listener(self, *args):
 		if self.__controlScheme == initVar.Set2One():
 			self.__driveCommand = args[0]
 		if args[0] in self.__CommandsDic:
 			threading.Timer(0.1, self.__CommandsDic[args[0]]).start()
-		# if args[0] in self.__ServosCommandDic:
-		# 	self.__ServoCommand = args[0]
-		elif len(args) > 3:
-			self.MonitorServosCommand(args)
+		if args[0] in self.__ServosCommandDic:
+			self.__ServoCommand = args[0]

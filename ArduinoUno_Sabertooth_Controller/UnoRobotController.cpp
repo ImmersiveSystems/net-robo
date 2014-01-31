@@ -164,27 +164,33 @@ void UnoRobotController::Set_ServoPos()
 	*/
 	Serialread();
 	PanFlag = data;
-	PanPos_Cur = PanPos_Cur + PanFlag;
+	PanPos_Cur = PanPos_Cur; //+ PanFlag;
 
 	Serialread();
 	TiltFlag = data;
-	TiltPos_Cur = TiltPos_Cur + TiltFlag;
+	TiltPos_Cur = TiltPos_Cur; //+ TiltFlag;
 	
 	Serialread();
 	ElbowFlag = data;
-	ElbowPos_Cur = ElbowPos_Cur + ElbowFlag;
+	ElbowPos_Cur = ElbowPos_Cur; //+ ElbowFlag;
 	
 	Serialread();
 	ClawFlag = data;
-	ClawPos_Cur = ClawPos_Cur + ClawFlag;
+	ClawPos_Cur = ClawPos_Cur; //+ ClawFlag;
 	
 	Serialread();
 	WristFlag = data;
-	WristPos_Cur = WristPos_Cur + WristFlag;	
+	WristPos_Cur = WristPos_Cur; //+ WristFlag;	
 }
 
 void UnoRobotController::UpdateServosPos()
 {
+	ProcessServoCommand(PanPin);	
+	ProcessServoCommand(TiltPin);
+	ProcessServoCommand(ElbowPin);
+	ProcessServoCommand(ClawPin);
+	ProcessServoCommand(WristPin);
+/*	
 	if(PanFlag != 0)
 	{
 		ProcessServoCommand(PanPin);
@@ -205,6 +211,7 @@ void UnoRobotController::UpdateServosPos()
 	{
 		ProcessServoCommand(WristPin);
 	}
+	*/
 }
 
 void UnoRobotController::ProcessServoCommand(int PinNum)
@@ -268,7 +275,7 @@ void UnoRobotController::TestServos(int val)
 {
 	/* 
 	  data values:
-	  0 : do othing
+	  0 : do nothing
 	  1 : increment current position by one
 	  -1 : decrement current position by one
 	*/
