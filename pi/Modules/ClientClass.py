@@ -414,20 +414,21 @@ class Client():
 	# 	self.RunServosActiveThreads()
 
 	def MonitorServosCommand(self, *args):
-		Cmd = args[:2]
-		if Cmd.find("PAN"):
-			self.__PanValue = int(args[3:])
-		elif Cmd.find("TIL"):
-			self.__TiltValue = int(args[3:])
-		elif Cmd.find("ELW"):
-			self.__ElbowValue = int(args[3:])
-		elif Cmd.find("WRT"):
-			self.__WristValue = int(args[3:])
-		elif Cmd.find("CLW"):
-			self.__ClawValue = int(args[3:])
+		if args:
+			Cmd = args[:2]
+			if Cmd.find("PAN"):
+				self.__PanValue = int(args[3:])
+			elif Cmd.find("TIL"):
+				self.__TiltValue = int(args[3:])
+			elif Cmd.find("ELW"):
+				self.__ElbowValue = int(args[3:])
+			elif Cmd.find("WRT"):
+				self.__WristValue = int(args[3:])
+			elif Cmd.find("CLW"):
+				self.__ClawValue = int(args[3:])
 
-		if self.__ServosOnlyFlag == 1:
-			self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)		
+			if self.__ServosOnlyFlag == 1:
+				self.__serial.write('H' + chr(2) + chr(0) + chr(2) + chr(0)) + chr(self.__PanValue) + chr(self.__TiltValue) + chr(self.__ElbowValue) + chr(self.__ClawValue) + chr(self.__WristValue)		
 
 	def listener(self, *args):
 		if self.__controlScheme == initVar.Set2One():
