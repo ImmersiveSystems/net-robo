@@ -32,12 +32,12 @@ protected:
 	static int PanPos_Cur;
 	static int TiltPos_Cur;
 
-	static int ElbowFlag;
-	static int ClawFlag;
-	static int WristFlag;
+	// static int ElbowFlag;
+	// static int ClawFlag;
+	// static int WristFlag;
 
-	static int PanFlag;
-	static int TiltFlag;
+	// static int PanFlag;
+	// static int TiltFlag;
 
 	Servo servoElbow;  // create servo object to control a servo (max. of eight objects)
 	Servo servoClaw;
