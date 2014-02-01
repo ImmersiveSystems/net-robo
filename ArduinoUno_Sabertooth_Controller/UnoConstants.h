@@ -16,7 +16,7 @@
 #define PAN 6
 #define TILT 5
 #define PAN_INIT 90
-#define TILT_INIT 120
+#define TILT_INIT 210
 
 #define LASER 7
 

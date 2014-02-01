@@ -18,12 +18,12 @@ int UnoRobotController::WristPos_Cur;
 int UnoRobotController::PanPos_Cur;
 int UnoRobotController::TiltPos_Cur;
 
-int UnoRobotController::ElbowFlag;
-int UnoRobotController::ClawFlag;
-int UnoRobotController::WristFlag;
+// int UnoRobotController::ElbowFlag;
+// int UnoRobotController::ClawFlag;
+// int UnoRobotController::WristFlag;
 
-int UnoRobotController::PanFlag;
-int UnoRobotController::TiltFlag;
+// int UnoRobotController::PanFlag;
+// int UnoRobotController::TiltFlag;
 
 UnoRobotController::UnoRobotController(): ElbowPin(ELBOW), ClawPin(CLAW), WristPin(WRIST), ElbowInitPos(ELBOW_INIT), ClawInitPos(CLAW_INIT), WristInitPos(WRIST_INIT), PanPin(PAN), TiltPin(TILT), PanInitPos(PAN_INIT), TiltInitPos(TILT_INIT)
 {
@@ -163,23 +163,23 @@ void UnoRobotController::Set_ServoPos()
 	  -1 : decrement current position by one
 	*/
 	Serialread();
-	PanFlag = data;
+	// PanFlag = data;
 	PanPos_Cur = PanPos_Cur; //+ PanFlag;
 
 	Serialread();
-	TiltFlag = data;
+	// TiltFlag = data;
 	TiltPos_Cur = TiltPos_Cur; //+ TiltFlag;
 	
 	Serialread();
-	ElbowFlag = data;
+	// ElbowFlag = data;
 	ElbowPos_Cur = ElbowPos_Cur; //+ ElbowFlag;
 	
 	Serialread();
-	ClawFlag = data;
+	// ClawFlag = data;
 	ClawPos_Cur = ClawPos_Cur; //+ ClawFlag;
 	
 	Serialread();
-	WristFlag = data;
+	// WristFlag = data;
 	WristPos_Cur = WristPos_Cur; //+ WristFlag;	
 }
 
@@ -279,18 +279,18 @@ void UnoRobotController::TestServos(int val)
 	  1 : increment current position by one
 	  -1 : decrement current position by one
 	*/
-	PanFlag = val;
-	PanPos_Cur = PanPos_Cur + PanFlag;
+	// PanFlag = val;
+	PanPos_Cur = PanPos_Cur + val;
 
-	TiltFlag = val;
-	TiltPos_Cur = TiltPos_Cur + TiltFlag;
+	// TiltFlag = val;
+	TiltPos_Cur = TiltPos_Cur + val;
 	
-	ElbowFlag = val;
-	ElbowPos_Cur = ElbowPos_Cur + ElbowFlag;
+	// ElbowFlag = val;
+	ElbowPos_Cur = ElbowPos_Cur + val;
 	
-	ClawFlag = val;
-	ClawPos_Cur = ClawPos_Cur + ClawFlag;
+	// ClawFlag = val;
+	ClawPos_Cur = ClawPos_Cur + val;
 	
-	WristFlag = val;
-	WristPos_Cur = WristPos_Cur + WristFlag;	
+	// WristFlag = val;
+	WristPos_Cur = WristPos_Cur + val;	
 }
