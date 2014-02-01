@@ -416,15 +416,15 @@ class Client():
 	def MonitorServosCommand(self, *args):
 		if args:
 			Cmd = args[:2]
-			if Cmd.find("PAN"):
+			if Cmd.find("pan"):
 				self.__PanValue = int(args[3:])
-			elif Cmd.find("TIL"):
+			elif Cmd.find("til"):
 				self.__TiltValue = int(args[3:])
-			elif Cmd.find("ELW"):
+			elif Cmd.find("elw"):
 				self.__ElbowValue = int(args[3:])
-			elif Cmd.find("WRT"):
+			elif Cmd.find("wrt"):
 				self.__WristValue = int(args[3:])
-			elif Cmd.find("CLW"):
+			elif Cmd.find("clw"):
 				self.__ClawValue = int(args[3:])
 
 			if self.__ServosOnlyFlag == 1:
