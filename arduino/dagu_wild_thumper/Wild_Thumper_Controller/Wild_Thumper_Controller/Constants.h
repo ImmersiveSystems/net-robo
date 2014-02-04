@@ -16,10 +16,10 @@
 #define DeccelRate 0.001
 
  // This is the nominal battery voltage reading. Peak charge can only occur above this voltage.
-#define batvolt 884 // 544 
+#define batvolt 544 
  // This is the voltage at which the speed controller goes into recharge mode.
-#define lowvolt 680 // 455
-#define peakvolt 918 // 571
+#define lowvolt 455
+#define peakvolt 571
 // If the battery voltage does not change in this number of milliseconds then stop charging.
 #define chargetimeout 300000 
 

@@ -3,18 +3,16 @@ from socketIO_client import SocketIO
 import serial
 import threading
 
-ser = serial.Serial("/dev/ttyACM0", 9600)
+ser = serial.Serial("/dev/ttyUSB0", 115200)
 print 'Opened serial'
 
-exploSpeed1 = 40
-exploSpeed2 = 60
-exploSpeed3 = 100
-exploSpeed = exploSpeed1
+exploSpeedMin = 40
+exploSpeedMax = 60
+exploSpeed = 30
 
 def listener(*args):
-    global exploSpeed1
-    global exploSpeed2
-    global exploSpeed3
+    global exploSpeedMin
+    global exploSpeedMax
     global exploSpeed
 
     if args[0] == 'forward':
@@ -36,19 +34,19 @@ def listener(*args):
         print 'HALT'
         ser.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
     elif args[0] == 'shiftr':
-        if exploSpeed == exploSpeed2:
-            print 'Speed increased'
-            exploSpeed = exploSpeed3;
-        elif exploSpeed == exploSpeed1:
-            print 'Speed increased'
-            exploSpeed = exploSpeed2;
+        if exploSpeed >= exploSpeedMax:
+            exploSpeed = exploSpeedMax
+            print 'Max speed reached'
+        else:
+            exploSpeed = exploSpeed + 5
+            print 'Speed increased to ' + str(exploSpeed)
     elif args[0] == 'shiftl':
-        if exploSpeed == exploSpeed2:
-            print 'Speed decreased'
-            exploSpeed = exploSpeed1;
-        elif exploSpeed == exploSpeed3:
-            print 'Speed decreased'
-            exploSpeed = exploSpeed2;
+        if exploSpeed <= exploSpeedMin:
+            exploSpeed = exploSpeedMin
+            print 'Min speed reached'
+        else:
+            exploSpeed = exploSpeed - 5
+            print 'Speed decreased to ' + str(exploSpeed)
     elif args[0].startswith('pan'):
         ser.write('P' + chr(int(args[0].strip('pan'))))
         print int(args[0].strip('pan'))
@@ -57,6 +55,6 @@ def listener(*args):
         print int(args[0].strip('tilt'))
 
 socketIO = SocketIO('192.168.1.33', 3000)
-socketIO.on('serverToPython', listener)
+socketIO.on('serverToThumper', listener)
 socketIO.emit('clientType', 'Python')
 socketIO.wait(seconds=6000)
