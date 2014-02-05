@@ -50,3 +50,70 @@ void UnoRobotEncoder::ReadEncoder(int Mode)
   }
   encoderPinA_Last[Mode] = encoderPinA_Cur[Mode];
 }
+
+// void doEncoder() {
+//   /* If pinA and pinB are both high or both low, it is spinning
+//    * forward. If they're different, it's going backward.
+//    *
+//    * For more information on speeding up this process, see
+//    * [Reference/PortManipulation], specifically the PIND register.
+//    */
+//   if (digitalRead(encoder0PinA) == digitalRead(encoder0PinB)) {
+//     encoder0Pos++;
+//   } else {
+//     encoder0Pos--;
+//   }
+
+//   Serial.println (encoder0Pos, DEC);
+// }
+
+// // Using both pins high/low to track the encoder changes
+// void doEncoderA(){
+
+//   // look for a low-to-high on channel A
+//   if (digitalRead(encoder0PinA) == HIGH) { 
+//     // check channel B to see which way encoder is turning
+//     if (digitalRead(encoder0PinB) == LOW) {  
+//       encoder0Pos = encoder0Pos + 1;         // CW
+//     } 
+//     else {
+//       encoder0Pos = encoder0Pos - 1;         // CCW
+//     }
+//   }
+//   else   // must be a high-to-low edge on channel A                                       
+//   { 
+//     // check channel B to see which way encoder is turning  
+//     if (digitalRead(encoder0PinB) == HIGH) {   
+//       encoder0Pos = encoder0Pos + 1;          // CW
+//     } 
+//     else {
+//       encoder0Pos = encoder0Pos - 1;          // CCW
+//     }
+//   }
+//   Serial.println (encoder0Pos, DEC);          
+//   // use for debugging - remember to comment out
+// }
+
+// void doEncoderB(){
+
+//   // look for a low-to-high on channel B
+//   if (digitalRead(encoder0PinB) == HIGH) {   
+//    // check channel A to see which way encoder is turning
+//     if (digitalRead(encoder0PinA) == HIGH) {  
+//       encoder0Pos = encoder0Pos + 1;         // CW
+//     } 
+//     else {
+//       encoder0Pos = encoder0Pos - 1;         // CCW
+//     }
+//   }
+//   // Look for a high-to-low on channel B
+//   else { 
+//     // check channel B to see which way encoder is turning  
+//     if (digitalRead(encoder0PinA) == LOW) {   
+//       encoder0Pos = encoder0Pos + 1;          // CW
+//     } 
+//     else {
+//       encoder0Pos = encoder0Pos - 1;          // CCW
+//     }
+//   }
+// }

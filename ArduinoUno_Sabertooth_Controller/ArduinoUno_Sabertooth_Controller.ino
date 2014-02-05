@@ -15,6 +15,7 @@ void setup()
   robot.InitServos();
   robot.InitSaber();
   robot.InitEncoderPins();
+  attachInterrupt(0, EnableEncodersInterrupts, CHANGE);
 }
 
 void loop()
@@ -32,7 +33,12 @@ void loop()
 	  delay(ServoDelayValue);
   }
   
-  robot.ProcessEncoders(); //inherited from UnoRobotEncoder class
+  // robot.ProcessEncoders(); //inherited from UnoRobotEncoder class
   robot.SerialCommunicate();
   // robot.UpdateServosPos();
+}
+
+void EnableEncodersInterrupts()
+{
+  robot.ProcessEncoders();
 }

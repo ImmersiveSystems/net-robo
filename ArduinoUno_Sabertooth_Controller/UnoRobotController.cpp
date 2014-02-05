@@ -150,7 +150,7 @@ void UnoRobotController::ProcessMotorCommand(int Mode, int MotorNum, int PWMVal)
 
 void UnoRobotController::ProcessEncoders()
 {
-    ReadEncoder(RightMotor - 1);
+	ReadEncoder(RightMotor - 1);
     ReadEncoder(LeftMotor - 1);
 }
 
