@@ -6,21 +6,21 @@
 #define LeftMotor 2
 #define StopSignal 0
 
-#define ELBOW 2
-#define CLAW 3
+#define ELBOW 5
+#define CLAW 6
 #define WRIST 4
 #define ELBOW_INIT 95
 #define CLAW_INIT 180
 #define WRIST_INIT 95
 
-#define PAN 6
-#define TILT 5
+#define PAN 11
+#define TILT 12
 #define PAN_INIT 90
 #define TILT_INIT 120
 
-#define LASER 7
+#define LASER 10
 
-#define ServoDelayValue 15
+#define ServoDelayValue 5
 
 #define MaxTiltAngle 150
 #define MaxElbowAngle 140

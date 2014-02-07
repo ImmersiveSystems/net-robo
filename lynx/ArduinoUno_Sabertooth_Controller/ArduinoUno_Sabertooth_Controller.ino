@@ -21,6 +21,19 @@ Sabertooth SaberTooth(128);
 #define ClawMax 180
 #define ClawMin 0
 
+const byte pin_0A =  2; // connect white wire here
+const byte pin_0B =  8; // connect black wire here
+const byte pin_1A =  3; // connect white wire here
+const byte pin_1B =  9; // connect black wire here
+
+int A0_set =         0;
+int B0_set =         0;
+long pulses0 =       0;
+
+int A1_set =         0;
+int B1_set =         0;
+long pulses1 =       0;
+
 int RightMotor = 1;
 int LeftMotor = 2;
 
@@ -30,11 +43,11 @@ int Rightmode = 0;
 int LeftPWM = 0;                                       
 int RightPWM = 0;
 
-int pinTilt = 5;
-int pinPan = 6;
-int pinElbow = 8;
-int pinClaw = 9;
-int pinWrist = 10;
+int pinTilt = 12;
+int pinPan = 11;
+int pinElbow = 5;
+int pinClaw = 6;
+int pinWrist = 4;
 
 
 int tilt = 120;
@@ -69,7 +82,25 @@ void setup()
   servoElbow.write(elbow);
   servoClaw.write(claw);
   servoWrist.write(wrist);
-  // delay(15);
+  
+  pinMode(pin_0A, INPUT);
+  digitalWrite(pin_0A, HIGH); // enables pull-up resistor
+  pinMode(pin_0B, INPUT);
+  digitalWrite(pin_0B, HIGH); // enables pull-up resistor  
+
+  A0_set = digitalRead(pin_0A);
+  B0_set = digitalRead(pin_0B);
+
+  pinMode(pin_1A, INPUT);
+  digitalWrite(pin_1A, HIGH); // enables pull-up resistor
+  pinMode(pin_1B, INPUT);
+  digitalWrite(pin_1B, HIGH); // enables pull-up resistor  
+
+  A1_set = digitalRead(pin_1A);
+  B1_set = digitalRead(pin_1B);
+  attachInterrupt(0, encoderPinChange_A, CHANGE); // pin 2
+  attachInterrupt(1, encoderPinChange_B, CHANGE); // pin 3
+  Serial.begin(9600);      
 }
 
 void loop()
@@ -217,4 +248,20 @@ int ValidateServoCurPos(int PinNum, int POS)
   {
     return POS;
   }
+}
+
+void encoderPinChange_A()
+{
+  A0_set = digitalRead(pin_0A) == HIGH;
+  pulses0 += (A0_set != B0_set) ? +1 : -1;
+  B0_set = digitalRead(pin_0B) == HIGH;
+  pulses0 += (A0_set == B0_set) ? +1 : -1;
+}
+
+void encoderPinChange_B()
+{
+  A1_set = digitalRead(pin_1A) == HIGH;
+  pulses1 += (A1_set != B1_set) ? -1 : +1;  
+  B1_set = digitalRead(pin_1B) == HIGH;
+  pulses1 += (A1_set == B1_set) ? -1 : +1;
 }

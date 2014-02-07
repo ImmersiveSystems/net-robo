@@ -101,8 +101,6 @@ void UnoRobotController::SerialCommunicate()
 	    Serial.flush();
 	  }
 	}
-    ReadEncoder(RightMotor - 1);
-    ReadEncoder(LeftMotor - 1);
 }
 
 void UnoRobotController::Set_PWM(int MotorNum)
@@ -148,11 +146,21 @@ void UnoRobotController::ProcessMotorCommand(int Mode, int MotorNum, int PWMVal)
 	}
 }
 
-void UnoRobotController::ProcessEncoders()
-{
-	ReadEncoder(RightMotor - 1);
-    ReadEncoder(LeftMotor - 1);
-}
+// void UnoRobotController::ProcessEncoders()
+// {
+// 	ReadEncoder(RightMotor - 1);
+//     ReadEncoder(LeftMotor - 1);
+// }
+
+// void UnoRobotController::ProcessRightEncoder()
+// {
+// 	ReadEncoder(RightMotor - 1);
+// }
+
+// void UnoRobotController::ProcessLeftEncoder()
+// {
+// 	ReadEncoder(LeftMotor - 1);
+// }
 
 void UnoRobotController::Set_ServoPos()
 {
@@ -282,7 +290,7 @@ void UnoRobotController::TestServos(int val)
 	// PanFlag = val;
 	PanPos_Cur = PanPos_Cur + val;
 
-	// TiltFlag = val;
+	// // TiltFlag = val;
 	TiltPos_Cur = TiltPos_Cur + val;
 	
 	// ElbowFlag = val;
@@ -291,6 +299,6 @@ void UnoRobotController::TestServos(int val)
 	// ClawFlag = val;
 	ClawPos_Cur = ClawPos_Cur + val;
 	
-	// WristFlag = val;
+	// // WristFlag = val;
 	WristPos_Cur = WristPos_Cur + val;	
 }

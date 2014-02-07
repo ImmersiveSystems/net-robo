@@ -6,15 +6,20 @@
 class UnoRobotEncoder
 {
 protected:	
-	int encoderPinA[2];
-	int encoderPinB[2];
-	int encoderPos[2];
-	int encoderPinA_Cur[2];
-	int encoderPinA_Last[2];
+	volatile int encoderPinA[2];
+	volatile int encoderPinA_Set[2];
+	volatile int encoderPinB[2];
+	volatile int encoderPinB_Set[2];
+	volatile int encoderPos[2];
+	// volatile int encoderPinA_Cur[2];
+	// volatile int encoderPinA_Last[2];
 public:
 	UnoRobotEncoder();
 	void InitEncoderPins();
-	void ReadEncoder(int Mode);
+	void EncoderPinChange_Left();
+	void EncoderPinChange_Right();
+	// void ReadEncoder(int Mode);
+	void ShowEncoderValue(int Mode);
 };
 
 #endif
