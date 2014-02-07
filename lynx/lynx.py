@@ -72,7 +72,7 @@ def listener(*args):
         ser.write('C') #+ chr(0))
         print 'claw close'
 
-socketIO = SocketIO('192.168.1.33', 3000)
+socketIO = SocketIO('192.168.1.223', 3000)
 socketIO.on('serverToThumper', listener)
 socketIO.emit('clientType', 'Python')
 socketIO.wait(seconds=6000)

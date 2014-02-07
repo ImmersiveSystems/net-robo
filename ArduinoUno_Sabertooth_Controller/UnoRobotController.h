@@ -59,9 +59,9 @@ public:
 	void Set_PWM(int MotorNum);	
 	void ProcessMotorCommand(int Mode, int MotorNum, int PWMVal);
 
-	void ProcessEncoders();
-	void ProcessLeftEncoder();
-	void ProcessRightEncoder();
+	// void ProcessEncoders();
+	// void ProcessLeftEncoder();
+	// void ProcessRightEncoder();
 	
 	void Set_ServoPos();
 	int ValidateServoCurPos(int PinNum, int POS);
