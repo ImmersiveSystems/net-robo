@@ -73,6 +73,6 @@ def listener(*args):
         print 'claw close'
 
 socketIO = SocketIO('192.168.1.223', 3000)
-socketIO.on('serverToLynx', listener)
+socketIO.on('serverToThumper', listener)
 socketIO.emit('clientType', 'Python')
 socketIO.wait(seconds=6000)

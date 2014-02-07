@@ -1,0 +1,63 @@
+Controller	KEYWORD1
+InitServos_IO_Pin	KEYWORD2
+InitServosDefaultPos	KEYWORD2
+SetServosPos	KEYWORD2
+SCmode	KEYWORD2
+I2Cmode	KEYWORD2
+RCmode	KEYWORD2
+SendPowerLevel	KEYWORD2
+MonitorBatteryVoltage	KEYWORD2
+RechargeBattery	KEYWORD2
+SelectOperationMode	KEYWORD2
+Serialread	KEYWORD2
+TurnOffMotors	KEYWORD2
+SetLeft_RightPWM	KEYWORD2
+MonitorRightPWM_HBridge	KEYWORD2
+RightMotor_MonitorCurrent	KEYWORD2
+ProcessRightMotorCommands	KEYWORD2
+RightMorotForward	KEYWORD2
+RightMotorBrake	KEYWORD2
+RightMotorBackward	KEYWORD2
+CheckRightPWM	KEYWORD2
+CheckRightPWM_Received	KEYWORD2
+AdjustRightPWM2Normal	KEYWORD2
+MonitorLeftPWM_HBridge	KEYWORD2
+LeftMotor_MonitorCurrent
+ProcessLeftMotorCommands
+LeftMorotForward
+LeftMotorBrake
+LeftMotorBackward
+CheckLeftPWM
+CheckLeftPWM_Received
+AdjustLeftPWM2Normal
+InitServos_IO_Pin
+InitServosDefaultPos
+SetServosPos
+SCmode
+I2Cmode
+RCmode
+SendPowerLevel
+MonitorBatteryVoltage
+RechargeBattery
+SelectOperationMode
+Serialread
+TurnOffMotors
+SetLeft_RightPWM
+MonitorRightPWM_HBridge
+RightMotor_MonitorCurrent
+ProcessRightMotorCommands
+RightMorotForward
+RightMotorBrake
+RightMotorBackward
+CheckRightPWM
+CheckRightPWM_Received
+AdjustRightPWM2Normal
+MonitorLeftPWM_HBridge
+LeftMotor_MonitorCurrent
+ProcessLeftMotorCommands
+LeftMorotForward
+LeftMotorBrake
+LeftMotorBackward
+CheckLeftPWM
+CheckLeftPWM_Received
+AdjustLeftPWM2Normal
