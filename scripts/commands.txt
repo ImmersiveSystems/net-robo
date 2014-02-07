@@ -412,6 +412,8 @@ gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true initial-bi
 gst-launch-1.0 v4l2src  ! "video/x-raw,width=640,height=480,framerate=15/1" ! omxh264enc target-bitrate=1000000 control-rate=variable ! video/x-h264,profile=high ! h264parse ! queue ! flvmux ! rtmpsink location=\"rtmp://192.168.0.104/live/test live=1\"
 =====
 
-./ffmpeg -f v4l2 -vcodec h264 -s 1280x720 -i /dev/video0 -vcodec copy -f flv rtmp://192.168.1.76/live/test
+./ffmpeg -f v4l2 -vcodec h264 -s 1280x720 -i /dev/video0 -vcodec copy -f flv rtmp://192.168.1.76/live/thumper
+./ffmpeg -f v4l2 -vcodec h264 -s 1280x720 -i /dev/video0 -vcodec copy -f flv rtmp://192.168.1.76/live/lynx
+
 
 sudo rpi-update 3758b164b3bc05c130d473fc23886aebfcb6349e
