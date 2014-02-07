@@ -1,0 +1,1 @@
+./ffmpeg -f v4l2 -vcodec h264 -s 1280x720 -i /dev/video0 -vcodec copy -f flv rtmp://192.168.1.76/live/thumper
