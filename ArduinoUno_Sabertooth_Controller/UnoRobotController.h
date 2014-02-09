@@ -33,13 +33,6 @@ protected:
 	static int PanPos_Cur;
 	static int TiltPos_Cur;
 
-	// static int ElbowFlag;
-	// static int ClawFlag;
-	// static int WristFlag;
-
-	// static int PanFlag;
-	// static int TiltFlag;
-
 	Servo servoElbow;  // create servo object to control a servo (max. of eight objects)
 	Servo servoClaw;
 	Servo servoWrist;
@@ -48,7 +41,7 @@ protected:
 	Servo servoTilt;
 
 public:
-	UnoRobotController(); //(int Pan_Pin, int Tilt_Pin, int Pan_Init_Pos, int Tilt_Init_Pos);
+	UnoRobotController();
 	void InitServosCurPos();
 	void InitSaber();
 	void InitServos();
@@ -59,14 +52,8 @@ public:
 	void Set_PWM(int MotorNum);	
 	void ProcessMotorCommand(int Mode, int MotorNum, int PWMVal);
 
-	// void ProcessEncoders();
-	// void ProcessLeftEncoder();
-	// void ProcessRightEncoder();
-	
-	void Set_ServoPos();
 	int ValidateServoCurPos(int PinNum, int POS);
 	void ProcessServoCommand(int PinNum);
-	void UpdateServosPos();
 
 	void TestServos(int val);
 };

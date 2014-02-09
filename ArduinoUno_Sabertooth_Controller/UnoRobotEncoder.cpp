@@ -22,7 +22,7 @@ UnoRobotEncoder::UnoRobotEncoder()
   encoderPinB_Set[1] = 0;
 }
 
-void UnoRobotEncoder::InitEncoderPins()
+void UnoRobotEncoder::SetLeftEncoder()
 {
   pinMode(encoderPinA[0], INPUT);
   digitalWrite(encoderPinA[0], HIGH); // enables pull-up resistor
@@ -30,35 +30,27 @@ void UnoRobotEncoder::InitEncoderPins()
   digitalWrite(encoderPinB[0], HIGH); // enables pull-up resistor  
 
   encoderPinA_Set[0] = digitalRead(encoderPinA[0]);
-  encoderPinB_Set[0] = digitalRead(encoderPinB[0]);
+  encoderPinB_Set[0] = digitalRead(encoderPinB[0]);  
+}
 
+void UnoRobotEncoder::SetRightEncoder()
+{
   pinMode(encoderPinA[1], INPUT);
   digitalWrite(encoderPinA[1], HIGH); // enables pull-up resistor
   pinMode(encoderPinB[1], INPUT);
   digitalWrite(encoderPinB[1], HIGH); // enables pull-up resistor  
 
   encoderPinA_Set[1] = digitalRead(encoderPinA[1]);
-  encoderPinB_Set[1] = digitalRead(encoderPinB[1]);
+  encoderPinB_Set[1] = digitalRead(encoderPinB[1]);  
+}
+void UnoRobotEncoder::InitEncoderPins()
+{
+  SetLeftEncoder();
+  SetRightEncoder();
   Serial.begin(9600);      
 }
 
-// void UnoRobotEncoder::ReadEncoder(int Mode)
-// {
-//   encoderPinA_Set[Mode] = digitalRead(encoderPinA[Mode]) == HIGH;
-//   encoderPinB_Set[Mode] = digitalRead(encoderPinB[Mode]) == HIGH;
-//   switch(Mode)
-//   {
-//     case 0:
-//       encoderPos[Mode] += (encoderPinA_Set[Mode] != encoderPinB_Set[Mode]) ? +1 : -1;      
-//       encoderPos[Mode] += (encoderPinA_Set[Mode] == encoderPinB_Set[Mode]) ? +1 : -1;    
-//       break;
-//     case 1:
-//       encoderPos[Mode] += (encoderPinA_Set[Mode] != encoderPinB_Set[Mode]) ? -1 : +1;
-//       encoderPos[Mode] += (encoderPinA_Set[Mode] == encoderPinB_Set[Mode]) ? -1 : +1;    
-//       break;
-//   }
-// }
-void UnoRobotEncoder::encoderPinChange_Left()
+void UnoRobotEncoder::MonitorLeftEncoder()
 {
   encoderPinA_Set[0] = digitalRead(encoderPinA[0]) == HIGH;
   encoderPos[0] += (encoderPinA_Set[0] != encoderPinB_Set[0]) ? +1 : -1;
@@ -66,7 +58,7 @@ void UnoRobotEncoder::encoderPinChange_Left()
   encoderPos[0] += (encoderPinA_Set[0] == encoderPinB_Set[0]) ? +1 : -1;
 }
 
-void UnoRobotEncoder::encoderPinChange_Right()
+void UnoRobotEncoder::MonitorRightEncoder()
 {
   encoderPinA_Set[1] = digitalRead(encoderPinA[1]) == HIGH;
   encoderPos[1] += (encoderPinA_Set[1] != encoderPinB_Set[1]) ? -1 : +1;

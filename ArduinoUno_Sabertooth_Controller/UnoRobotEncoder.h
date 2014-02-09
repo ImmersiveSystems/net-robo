@@ -12,9 +12,11 @@ protected:
 public:
 	UnoRobotEncoder();
 	void InitEncoderPins();
-	void encoderPinChange_Left();
-	void encoderPinChange_Right();
-	void ReadEncoder(int Mode);
+	void SetLeftEncoder();
+	void SetRightEncoder();	
+
+	void MonitorLeftEncoder();
+	void MonitorRightEncoder();
 	void ShowEncoderValue();
 };
 

@@ -2,7 +2,7 @@ import serial
 import sys
 
 
-ser = serial.Serial("COM3", 9600)
+ser = serial.Serial("COM4", 9600)
 
 
 for i in range(100):

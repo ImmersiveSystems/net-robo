@@ -1,7 +1,11 @@
 #ifndef UnoConstants_h
 #define UnoConstants_h
 
-#define SpeedScale 1.27
+#define PWMRate 1.27
+#define FORWARD 2
+#define STOP 1
+#define BACKWARD 0
+
 #define RightMotor 1
 #define LeftMotor 2
 #define StopSignal 0
@@ -13,6 +17,9 @@
 #define CLAW_INIT 180
 #define WRIST_INIT 95
 
+#define IntteruptPin_LeftEncoder 0
+#define InterruptPin_RightEncoder 1
+
 #define PAN 11
 #define TILT 12
 #define PAN_INIT 90
@@ -21,6 +28,8 @@
 #define LASER 10
 
 #define ServoDelayValue 5
+#define ServoAdjustRate 10
+#define ClawMin 0
 
 #define MaxTiltAngle 150
 #define MaxElbowAngle 140
