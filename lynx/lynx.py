@@ -6,8 +6,8 @@ import threading
 ser = serial.Serial("/dev/ttyUSB0", 115200)
 print 'Opened serial'
 
-exploSpeedMin = 40
-exploSpeedMax = 60
+exploSpeedMin = 30
+exploSpeedMax = 100
 exploSpeed = 30
 
 def listener(*args):
@@ -33,14 +33,14 @@ def listener(*args):
     elif args[0] == 'stop':
         print 'HALT'
         ser.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
-    elif args[0] == 'shiftr':
+    elif args[0] == 'speedup':
         if exploSpeed >= exploSpeedMax:
             exploSpeed = exploSpeedMax
             print 'Max speed reached'
         else:
             exploSpeed = exploSpeed + 5
             print 'Speed increased to ' + str(exploSpeed)
-    elif args[0] == 'shiftl':
+    elif args[0] == 'speeddown':
         if exploSpeed <= exploSpeedMin:
             exploSpeed = exploSpeedMin
             print 'Min speed reached'
@@ -49,28 +49,25 @@ def listener(*args):
             print 'Speed decreased to ' + str(exploSpeed)
     elif args[0].startswith('pan'):
         ser.write('P' + chr(int(args[0].strip('pan'))))
-        print 'pan'
+        print 'PANNING'
     elif args[0].startswith('tilt'):
         ser.write('T' + chr(int(args[0].strip('tilt'))))
-        print 'tilt'
-    elif args[0].startswith('elbowup'):
+        print 'TILTING'
+    elif args[0] == 'elbowup':
         ser.write('E' + chr(1))
-        print 'elbow up'
-    elif args[0].startswith('elbowdown'):
+        print 'Move ELBOW UP'
+    elif args[0] == 'elbowdown':
         ser.write('E' + chr(0))
-        print 'elbow down'
-    elif args[0].startswith('wristleft'):
+        print 'Move ELBOW DOWN'
+    elif args[0] == 'wristleft':
         ser.write('W' + chr(1))
-        print 'wrist left'
-    elif args[0].startswith('wristright'):
+        print 'Move WRIST LEFT'
+    elif args[0] == 'wristright':
         ser.write('W' + chr(0))
-        print 'wrist right'
-    elif args[0].startswith('clawopen'):
-        ser.write('C')# + chr(1))
-        print 'claw open'
-    elif args[0].startswith('clawclose'):
-        ser.write('C') #+ chr(0))
-        print 'claw close'
+        print 'Move WRIST RIGHT'
+    elif args[0] == 'claw':
+        ser.write('C')
+        print 'Use CLAW'
 
 socketIO = SocketIO('192.168.1.223', 3000)
 socketIO.on('serverToLynx', listener)
