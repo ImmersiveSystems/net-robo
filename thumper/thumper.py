@@ -52,7 +52,7 @@ def listener(*args):
 
         socketIO.emit('thumperToServer', str(exploSpeed))
 
-socketIO = SocketIO('localhost', 3000)
+socketIO = SocketIO('192.168.1.33', 3000)
 socketIO.on('serverToThumper', listener)
 socketIO.emit('clientType', 'Python')
 socketIO.wait(seconds=6000)

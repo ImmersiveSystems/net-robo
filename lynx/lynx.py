@@ -3,7 +3,7 @@ from socketIO_client import SocketIO
 import serial
 import threading
 
-ser = serial.Serial("/dev/ttyUSB0", 115200)
+ser = serial.Serial("/dev/ttyUSB0", 9600)
 print 'Opened serial'
 
 exploSpeedMin = 30
@@ -69,11 +69,11 @@ def listener(*args):
     elif args[0] == 'wristright':
         ser.write('W' + chr(0))
         print 'Move WRIST RIGHT'
-    elif args[0] == 'claw':
+    elif args[0] == 'grab':
         ser.write('C')
         print 'Use CLAW'
 
-socketIO = SocketIO('localhost', 3000)
+socketIO = SocketIO('192.168.1.33', 3000)
 socketIO.on('serverToLynx', listener)
 socketIO.emit('clientType', 'Python')
 socketIO.wait(seconds=6000)
