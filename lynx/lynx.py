@@ -8,7 +8,7 @@ print 'Opened serial'
 
 exploSpeedMin = 30
 exploSpeedMax = 100
-exploSpeed = 30
+exploSpeed = 60
 
 def listener(*args):
     global exploSpeedMin
