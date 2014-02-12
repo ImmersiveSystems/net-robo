@@ -40,6 +40,8 @@ def listener(*args):
         else:
             exploSpeed = exploSpeed + 5
             print 'Speed increased to ' + str(exploSpeed)
+
+        socketIO.emit('thumperToServer', str(exploSpeed))
     elif args[0] == 'speeddown':
         if exploSpeed <= exploSpeedMin:
             exploSpeed = exploSpeedMin
@@ -48,7 +50,9 @@ def listener(*args):
             exploSpeed = exploSpeed - 5
             print 'Speed decreased to ' + str(exploSpeed)
 
-socketIO = SocketIO('192.168.1.223', 3000)
+        socketIO.emit('thumperToServer', str(exploSpeed))
+
+socketIO = SocketIO('localhost', 3000)
 socketIO.on('serverToThumper', listener)
 socketIO.emit('clientType', 'Python')
 socketIO.wait(seconds=6000)

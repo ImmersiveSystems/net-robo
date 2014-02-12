@@ -40,6 +40,8 @@ def listener(*args):
         else:
             exploSpeed = exploSpeed + 5
             print 'Speed increased to ' + str(exploSpeed)
+
+        socketIO.emit('lynxToServer', str(exploSpeed))
     elif args[0] == 'speeddown':
         if exploSpeed <= exploSpeedMin:
             exploSpeed = exploSpeedMin
@@ -47,6 +49,8 @@ def listener(*args):
         else:
             exploSpeed = exploSpeed - 5
             print 'Speed decreased to ' + str(exploSpeed)
+
+        socketIO.emit('lynxToServer', str(exploSpeed))
     elif args[0].startswith('pan'):
         ser.write('P' + chr(int(args[0].strip('pan'))))
         print 'PANNING'
@@ -69,7 +73,7 @@ def listener(*args):
         ser.write('C')
         print 'Use CLAW'
 
-socketIO = SocketIO('192.168.1.223', 3000)
+socketIO = SocketIO('localhost', 3000)
 socketIO.on('serverToLynx', listener)
 socketIO.emit('clientType', 'Python')
 socketIO.wait(seconds=6000)
