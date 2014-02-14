@@ -5,7 +5,7 @@ import sys
 import wx
 
 RedrawRate = 90 # Refresh interval in milisecond
-
+xAxisMinValue = 0
 import matplotlib
 matplotlib.use('WXAgg')
 from matplotlib.figure import Figure
@@ -16,15 +16,10 @@ import numpy as np
 import pylab
 from matplotlib.pyplot import *
 
-#Data comes from here
 from ArduinoSerialData import SerialChannel as DataGen
 
 
 class BoundControlBox(wx.Panel):
-    """ A static box with a couple of radio buttons and a text
-        box. Allows to switch between an automatic mode and a 
-        manual mode with an associated value.
-    """
     def __init__(self, parent, ID, label, initval):
         wx.Panel.__init__(self, parent, ID)
         
@@ -36,29 +31,15 @@ class BoundControlBox(wx.Panel):
         self.SetSizer(sizer)
         sizer.Fit(self)
     
-    # def on_update_manual_text(self, event):
-    #     self.manual_text.Enable(self.radio_manual.GetValue())
-    
-    # def on_text_enter(self, event):
-    #     self.value = self.manual_text.GetValue()
-    
-    # def is_auto(self):
-    #     return self.radio_auto.GetValue()
-        
-    # def manual_value(self):
-    #     return self.value
-
 class GraphFrame(wx.Frame):
-    """ The main frame of the application
-    """
-    title = 'Lynx Robot - Encoder Values'
-    
+
+    title = 'Lynx Robot - Encoder Values'    
+
     def __init__(self):
         wx.Frame.__init__(self, None, -1, self.title)
         
         self.datagen = DataGen()
         tmp = self.datagen.next()
-        # print 'Values Received', tmp
         self.data = [tmp[0]]
         self.data2 = [tmp[1]]
         
@@ -127,7 +108,7 @@ class GraphFrame(wx.Frame):
 
     def UpdatePlot(self):
         xmax = max(len(self.data), len(self.data2)) if max(len(self.data), len(self.data2)) > 50 else 50
-        xmin = 0 #int(self.xmin_control.manual_value())            
+        xmin = xAxisMinValue
         
         ymax = round(max(self.data + self.data2)) + 10
         ymin = round(min(self.data + self.data2)) - 10
@@ -158,7 +139,6 @@ class GraphFrame(wx.Frame):
         if dlg.ShowModal() == wx.ID_OK:
             path = dlg.GetPath()
             self.canvas.print_figure(path, dpi = self.dpi)
-            # self.flash_status_message("Saved to %s" % path)
     
     def UpdatePlot_Timer(self, event):
         tmp = self.datagen.next()
@@ -171,9 +151,6 @@ class GraphFrame(wx.Frame):
     def on_exit(self, event):
         self.Destroy()
     
-    # def on_flash_status_off(self, event):
-    #     self.statusbar.SetStatusText('')
-
 if __name__ == '__main__':
     app = wx.App(False)
     app.frame = GraphFrame()
