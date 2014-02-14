@@ -205,7 +205,6 @@ void UnoRobotController::ProcessServoCommand(int PinNum)
 	{
 		PanPos_Cur = ValidateServoCurPos(PinNum, PanPos_Cur);
 		servoPan.write(PanPos_Cur);
-		Serial.println(PanPos_Cur);
 	}
 	else if(PinNum == TiltPin)
 	{

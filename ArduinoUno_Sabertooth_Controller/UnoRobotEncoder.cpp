@@ -66,10 +66,23 @@ void UnoRobotEncoder::MonitorRightEncoder()
   encoderPos[1] += (encoderPinA_Set[1] == encoderPinB_Set[1]) ? -1 : +1;
 }
 
-void UnoRobotEncoder::ShowEncoderValue()
+void UnoRobotEncoder::SendLeftEncoderValue()
 {
-  Serial.print("Left:   ");
   Serial.println(encoderPos[0]);
-  Serial.print("Right:   ");
-  Serial.println(encoderPos[1]);    
+}
+void UnoRobotEncoder::SendRightEncoderValue()
+{
+  Serial.println(encoderPos[1]);
+}
+
+void UnoRobotEncoder::ShowEncoderValue()
+{  
+  // Serial.print("Left:   ");
+  // Serial.println(encoderPos[0]);
+  // Serial.print("Right:   ");
+  // Serial.println(encoderPos[1]);
+  String left = String(encoderPos[0], DEC);    
+  String right = String(encoderPos[1], DEC);
+  String msg = left + ' ' + right;
+  Serial.println(msg);
 }

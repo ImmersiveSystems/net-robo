@@ -21,17 +21,19 @@ void setup()
 void loop()
 {
   robot.ShowEncoderValue();
+  // robot.SendLeftEncoderValue();
+  // robot.SendRightEncoderValue();
 
-  for(int pos = 0; pos < 180; pos++)
-  {
-  	robot.TestServos(1);
-	  delay(ServoDelayValue);
-  }
-  for(int pos = 180; pos >= 0; pos--)
-  {
-  	robot.TestServos(-1);
-	  delay(ServoDelayValue);
-  }
+  // for(int pos = 0; pos < 180; pos++)
+  // {
+  // 	robot.TestServos(1);
+	 //  delay(ServoDelayValue);
+  // }
+  // for(int pos = 180; pos >= 0; pos--)
+  // {
+  // 	robot.TestServos(-1);
+	 //  delay(ServoDelayValue);
+  // }
   robot.SerialCommunicate();
 }
 
