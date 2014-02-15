@@ -10,6 +10,10 @@
 #define LeftMotor 2
 #define StopSignal 0
 
+#define WHEEL_CERCUMFERENCE 34.5565 // Wheel Diameter = 11 in centimeter and PI = 3.1415
+#define VELOCITY_CALC_INTERVAL 1000 //ms
+#define TICK_COUNT_PER_REVOLUTION 12000
+
 #define ELBOW 5
 #define CLAW 6
 #define WRIST 4

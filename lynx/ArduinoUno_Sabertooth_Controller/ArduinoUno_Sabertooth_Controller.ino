@@ -169,6 +169,10 @@ void loop()
     }
 
   }
+  // Serial.print(RightPWM);
+  // Serial.print('  ');
+  // Serial.println(LeftPWM);
+
 }
 
 void Set_PWM(int MotorNum)

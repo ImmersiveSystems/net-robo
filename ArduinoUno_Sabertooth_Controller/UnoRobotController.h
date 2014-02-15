@@ -13,6 +13,12 @@ protected:
 	int Rightmode;
 	int LeftPWM;
 	int RightPWM;
+	static float LeftWheelVelocity;	
+	static float RightWheelVelocity;
+	static float RobotVelocity;
+
+	static unsigned long Timer_Cur;
+	static unsigned long Timer_Prev;
 
 	const int ElbowPin;
 	const int ClawPin;
@@ -51,6 +57,7 @@ public:
 
 	void Set_PWM(int MotorNum);	
 	void ProcessMotorCommand(int Mode, int MotorNum, int PWMVal);
+	void CalculateRobotVelocity();
 
 	int ValidateServoCurPos(int PinNum, int POS);
 	void ProcessServoCommand(int PinNum);

@@ -18,13 +18,32 @@ int UnoRobotController::WristPos_Cur;
 int UnoRobotController::PanPos_Cur;
 int UnoRobotController::TiltPos_Cur;
 
+float UnoRobotController::LeftWheelVelocity;	
+float UnoRobotController::RightWheelVelocity;
+float UnoRobotController::RobotVelocity;
+
+unsigned long UnoRobotController::Timer_Cur;
+unsigned long UnoRobotController::Timer_Prev;
+
 UnoRobotController::UnoRobotController(): ElbowPin(ELBOW), ClawPin(CLAW), WristPin(WRIST), ElbowInitPos(ELBOW_INIT), ClawInitPos(CLAW_INIT), WristInitPos(WRIST_INIT), PanPin(PAN), TiltPin(TILT), PanInitPos(PAN_INIT), TiltInitPos(TILT_INIT)
 {
-  int data = 0;
-  int Leftmode = 0;
-  int Rightmode = 0;
-  int LeftPWM = 0;                                       
-  int RightPWM = 0;
+  data = 0;
+  Leftmode = 0;
+  Rightmode = 0;
+  LeftPWM = 0;                                       
+  RightPWM = 0;
+
+  LeftWheelVelocity = 0.0;	
+  RightWheelVelocity = 0.0;
+  RobotVelocity = 0.0;
+
+  LeftWheelVelocity = 0.0;	
+  RightWheelVelocity = 0.0;
+  RobotVelocity = 0.0;
+
+
+  Timer_Cur = 0;  
+  Timer_Prev = 0;
 }
 
 void UnoRobotController::InitServosCurPos()
@@ -81,19 +100,6 @@ void UnoRobotController::Serialread()
 
 void UnoRobotController::SerialCommunicate()
 {	
- //  if (Serial.available() > 0)                                   // command available
- //  {
-	// if(Serial.read() == 'H')
-	// {
-	//   Set_PWM(RightMotor);
-	//   Set_PWM(LeftMotor);
-	//   Set_ServoPos();
-	// }
-	// else
-	// {
-	//   Serial.flush();
-	// }
- //  }
   if (Serial.available() > 0)                                   // command available
   {
     int command = Serial.read();
@@ -129,13 +135,13 @@ void UnoRobotController::SerialCommunicate()
       case 'C':
         if(ClawPos_Cur == 0)
         {
-          ClawPos_Cur = MaxOtherServoAngle; //ClawMax;
+          ClawPos_Cur = MaxOtherServoAngle;
         }
         else if(ClawPos_Cur == 180)
         {
           ClawPos_Cur = ClawMin;
         }
-        ProcessServoCommand(ClawPin);
+        servoClaw.write(ClawPos_Cur);
         break;
       case 'W':
         Serialread();
@@ -196,6 +202,27 @@ void UnoRobotController::ProcessMotorCommand(int Mode, int MotorNum, int PWMVal)
 	  case BACKWARD: //0: //Move Backward
 	    SaberTooth.motor(MotorNum, -1 * PWMVal);  
 	    break;
+	}
+}
+
+void UnoRobotController::CalculateRobotVelocity()
+{
+	Timer_Cur = millis();
+	if(Timer_Cur - Timer_Prev >= VELOCITY_CALC_INTERVAL)
+	{
+	  Timer_Prev = Timer_Cur;
+	  long RightWheel_DeltaTick = encoderPos[1] - encoderPos_Prev[1];
+	  encoderPos_Prev[1] = encoderPos[1];
+	  float RightWheelDistance = ((RightWheel_DeltaTick * WHEEL_CERCUMFERENCE) / TICK_COUNT_PER_REVOLUTION);
+	  RightWheelVelocity = RightWheelDistance / VELOCITY_CALC_INTERVAL;
+
+	  long LeftWheel_DeltaTick = encoderPos[0] - encoderPos_Prev[0];
+	  encoderPos_Prev[0] = encoderPos[0];
+	  float LeftWheelDistance = ((LeftWheel_DeltaTick * WHEEL_CERCUMFERENCE) / TICK_COUNT_PER_REVOLUTION);
+	  LeftWheelVelocity = LeftWheelDistance / VELOCITY_CALC_INTERVAL;
+
+	  RobotVelocity = sqrt(pow(LeftWheelVelocity, 2) + pow(RightWheelVelocity, 2));	
+	  Serial.println(RobotVelocity); //meter per sec
 	}
 }
 
