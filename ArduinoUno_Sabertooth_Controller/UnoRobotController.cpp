@@ -221,8 +221,10 @@ void UnoRobotController::CalculateRobotVelocity()
 	  float LeftWheelDistance = ((LeftWheel_DeltaTick * WHEEL_CERCUMFERENCE) / TICK_COUNT_PER_REVOLUTION);
 	  LeftWheelVelocity = LeftWheelDistance / VELOCITY_CALC_INTERVAL;
 
-	  RobotVelocity = sqrt(pow(LeftWheelVelocity, 2) + pow(RightWheelVelocity, 2));	
-	  Serial.println(RobotVelocity); //meter per sec
+	  RobotVelocity = sqrt(pow(LeftWheelVelocity, 2) + pow(RightWheelVelocity, 2));	 //meter per sec
+	  int Vel = (int)(RobotVelocity * 3600);
+	  String VelMsg = String(Vel, DEC);	  
+	  Serial.println(VelMsg); //meter per hour
 	}
 }
 
