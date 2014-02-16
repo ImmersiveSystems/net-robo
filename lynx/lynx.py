@@ -9,12 +9,29 @@ print 'Opened serial'
 exploSpeedMin = 30
 exploSpeedMax = 100
 exploSpeed = 60
+VelocityData = '0'
+
+def CurrentVelocity(self):
+    global VelocityData
+
+    VelocityData = VelocityData + ser.read(ser.inWaiting())
+    if '\n' in VelocityData:    
+        Vel = VelocityData.split('\n')
+        if Vel[-1]:
+           Value = Vel[-2]
+           socketIO.emit('lynxToServer', Value)
+        else:
+            socketIO.emit('lynxToServer', 'V0')
+        VelocityData = Vel[-1]
+        print VelocityData         
 
 def listener(*args):
     global exploSpeedMin
     global exploSpeedMax
     global exploSpeed
 
+    CurrentVelocity()
+    
     if args[0] == 'forward':
         print 'Move FORWARD'
         ser.write('H' + chr(2) + chr(exploSpeed) + chr(2) + chr(exploSpeed))

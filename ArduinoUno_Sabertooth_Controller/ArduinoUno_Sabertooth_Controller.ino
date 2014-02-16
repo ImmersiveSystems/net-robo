@@ -34,7 +34,7 @@ void loop()
 	 //  delay(ServoDelayValue);
   // }
   
-  robot.ShowEncoderValue();
+  // robot.ShowEncoderValue();
   robot.SerialCommunicate();
   robot.CalculateRobotVelocity();
 }

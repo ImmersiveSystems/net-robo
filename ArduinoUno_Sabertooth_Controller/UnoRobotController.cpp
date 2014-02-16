@@ -208,6 +208,7 @@ void UnoRobotController::ProcessMotorCommand(int Mode, int MotorNum, int PWMVal)
 void UnoRobotController::CalculateRobotVelocity()
 {
 	Timer_Cur = millis();
+	// int Vel = 0;
 	if(Timer_Cur - Timer_Prev >= VELOCITY_CALC_INTERVAL)
 	{
 	  Timer_Prev = Timer_Cur;
@@ -222,10 +223,10 @@ void UnoRobotController::CalculateRobotVelocity()
 	  LeftWheelVelocity = LeftWheelDistance / VELOCITY_CALC_INTERVAL;
 
 	  RobotVelocity = sqrt(pow(LeftWheelVelocity, 2) + pow(RightWheelVelocity, 2));	 //meter per sec
-	  int Vel = (int)(RobotVelocity * 3600);
-	  String VelMsg = String(Vel, DEC);	  
-	  Serial.println(VelMsg); //meter per hour
 	}
+	
+    String VelMsg = "V" + String((int)(RobotVelocity * 3600), DEC);
+    Serial.println(VelMsg);
 }
 
 void UnoRobotController::ProcessServoCommand(int PinNum)
