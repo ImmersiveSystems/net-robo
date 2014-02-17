@@ -10,6 +10,7 @@ protected:
 	volatile int encoderPinB_Set[2];
 	volatile long encoderPos[2];
 	static long encoderPos_Prev[2];
+	String EncoderValuesMsg;
 public:
 	UnoRobotEncoder();
 	void InitEncoderPins();
@@ -21,9 +22,7 @@ public:
 	void MonitorLeftEncoder();
 	void MonitorRightEncoder();
 
-	void ShowEncoderValue();
-	void SendLeftEncoderValue();
-	void SendRightEncoderValue();
+	void UpdateEncoderValues();
 };
 
 #endif

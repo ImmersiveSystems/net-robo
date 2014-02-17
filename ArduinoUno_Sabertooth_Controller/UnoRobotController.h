@@ -59,8 +59,12 @@ public:
 	void ProcessMotorCommand(int Mode, int MotorNum, int PWMVal);
 	void CalculateRobotVelocity();
 
+	void UpdateEncoderValuesMsg();
+	
 	int ValidateServoCurPos(int PinNum, int POS);
 	void ProcessServoCommand(int PinNum);
+
+	void SendVelocity_Encoders_Msg();
 
 	void TestServos(int val);
 };

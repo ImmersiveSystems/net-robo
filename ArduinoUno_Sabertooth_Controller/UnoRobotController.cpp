@@ -224,8 +224,9 @@ void UnoRobotController::CalculateRobotVelocity()
 
 	  RobotVelocity = sqrt(pow(LeftWheelVelocity, 2) + pow(RightWheelVelocity, 2));	 //meter per sec
 	}
-	
-    String VelMsg = "V" + String((int)(RobotVelocity * 3600), DEC);
+
+    String VelMsg = String((int)(RobotVelocity * 3600), DEC);
+    VelMsg = VelMsg + ' ' + EncoderValuesMsg;
     Serial.println(VelMsg);
 }
 
@@ -256,6 +257,12 @@ void UnoRobotController::ProcessServoCommand(int PinNum)
 		WristPos_Cur = ValidateServoCurPos(PinNum, WristPos_Cur);
 		servoWrist.write(WristPos_Cur);
 	}	
+}
+
+void UnoRobotController::SendVelocity_Encoders_Msg()
+{
+  UpdateEncoderValues();
+  CalculateRobotVelocity();	
 }
 
 int UnoRobotController::ValidateServoCurPos(int PinNum, int POS)

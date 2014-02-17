@@ -20,6 +20,8 @@ void setup()
 
 void loop()
 {   
+  robot.SerialCommunicate();
+  robot.SendVelocity_Encoders_Msg();  
   // robot.SendLeftEncoderValue();
   // robot.SendRightEncoderValue();
 
@@ -32,11 +34,7 @@ void loop()
   // {
   // 	robot.TestServos(-1);
 	 //  delay(ServoDelayValue);
-  // }
-  
-  // robot.ShowEncoderValue();
-  robot.SerialCommunicate();
-  robot.CalculateRobotVelocity();
+  // }    
 }
 
 void InterruptEnableLeftEncoder()

@@ -39,12 +39,12 @@ class SerialChannel(object):
         if not self.ser:
             print 'No Serial Connection Detected'
             sys.exit(0)
-        raw_line = [0.0, 0.0] 
+        encoders = [0.0, 0.0] 
         if lastDataReceived != '':
             raw_line = lastDataReceived.split(' ')
-            raw_line[0] = float(raw_line[0])
-            raw_line[1] = float(raw_line[1])
-        return raw_line #return zeros if no correct value receievd
+            encoders[0] = float(raw_line[1])
+            encoders[1] = float(raw_line[2])
+        return encoders #return zeros if no correct value receievd
 
     def __del__(self):
         if self.ser:
