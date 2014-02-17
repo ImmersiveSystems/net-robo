@@ -19,7 +19,7 @@ class SerialChannel(object):
     def __init__(self, init=50):
         try:
             self.ser = ser = serial.Serial(
-                port = '/dev/ttyUSB0', #'com4',
+                port = 'com4', #'/dev/ttyUSB0', #'com4',
                 baudrate = 9600,
                 bytesize = serial.EIGHTBITS,
                 parity = serial.PARITY_NONE,

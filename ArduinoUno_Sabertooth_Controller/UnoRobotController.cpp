@@ -159,6 +159,7 @@ void UnoRobotController::SerialCommunicate()
         Serial.flush();
     }
   }	
+  CheckRobotTrajectory(); // to ensure straight trajectory if robot is moving straight forward/bacward
 }
 
 void UnoRobotController::Set_PWM(int MotorNum)
@@ -202,6 +203,37 @@ void UnoRobotController::ProcessMotorCommand(int Mode, int MotorNum, int PWMVal)
 	  case BACKWARD: //0: //Move Backward
 	    SaberTooth.motor(MotorNum, -1 * PWMVal);  
 	    break;
+	}
+}
+
+void UnoRobotController::CheckRobotTrajectory()
+{
+	if(Leftmode == FORWARD && Rightmode == FORWARD)
+		MaintainStarightMotion(FORWARD);
+	else if(Leftmode == BACKWARD && Rightmode == BACKWARD)
+		MaintainStarightMotion(BACKWARD);
+}
+
+void UnoRobotController::MaintainStarightMotion(int DirFlag)
+{
+	float deltaLeft = encoderPos[0] - encoderPos_Prev[0];
+	float deltaRight = encoderPos[1] - encoderPos_Prev[1];
+	if(deltaLeft != deltaRight)
+	{
+		if(DirFlag == FORWARD)
+		{
+			if(deltaLeft > deltaRight)
+				RightPWM = RightPWM * abs(deltaLeft / deltaRight);
+			else
+				LeftPWM = LeftPWM * abs(deltaRight / deltaLeft);
+		}
+		else if(DirFlag == BACKWARD)
+		{
+			if(deltaLeft > deltaRight)
+				LeftPWM = LeftPWM * abs(deltaRight / deltaLeft);
+			else
+				RightPWM = RightPWM * abs(deltaLeft / deltaRight);
+		}
 	}
 }
 

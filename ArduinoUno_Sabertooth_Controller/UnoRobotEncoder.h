@@ -17,8 +17,6 @@ public:
 	void SetLeftEncoder();
 	void SetRightEncoder();	
 
-	void Long2Str();
-
 	void MonitorLeftEncoder();
 	void MonitorRightEncoder();
 

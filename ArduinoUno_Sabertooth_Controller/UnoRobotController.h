@@ -57,10 +57,12 @@ public:
 
 	void Set_PWM(int MotorNum);	
 	void ProcessMotorCommand(int Mode, int MotorNum, int PWMVal);
+	void CheckRobotTrajectory();
+	void MaintainStarightMotion(int DirFlag); // during the forward or backward motion only
 	void CalculateRobotVelocity();
 
 	void UpdateEncoderValuesMsg();
-	
+
 	int ValidateServoCurPos(int PinNum, int POS);
 	void ProcessServoCommand(int PinNum);
 

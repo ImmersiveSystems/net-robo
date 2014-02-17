@@ -76,10 +76,6 @@ void UnoRobotEncoder::MonitorRightEncoder()
 
 void UnoRobotEncoder::UpdateEncoderValues()
 {  
-  // Serial.print("Left:   ");
-  // Serial.println(encoderPos[0]);
-  // Serial.print("Right:   ");
-  // Serial.println(encoderPos[1]);
   String left = String(encoderPos[0], DEC);    
   String right = String(encoderPos[1], DEC);
   EncoderValuesMsg = left + ' ' + right;
