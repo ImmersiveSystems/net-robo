@@ -26,6 +26,8 @@ UnoRobotEncoder::UnoRobotEncoder()
   encoderPos[1] = 0;
   encoderPos_Prev[0] = 0;
   encoderPos_Prev[1] = 0;
+  encoderPos_TrackPrev[0] = 0;
+  encoderPos_TrackPrev[1] = 0;
 
   EncoderValuesMsg = "";
 }
@@ -51,6 +53,7 @@ void UnoRobotEncoder::SetRightEncoder()
   encoderPinA_Set[1] = digitalRead(encoderPinA[1]);
   encoderPinB_Set[1] = digitalRead(encoderPinB[1]);  
 }
+
 void UnoRobotEncoder::InitEncoderPins()
 {
   SetLeftEncoder();
@@ -63,6 +66,7 @@ void UnoRobotEncoder::MonitorLeftEncoder()
   encoderPinA_Set[0] = digitalRead(encoderPinA[0]) == HIGH;
   encoderPos[0] += (encoderPinA_Set[0] != encoderPinB_Set[0]) ? +1 : -1;
   encoderPinB_Set[0] = digitalRead(encoderPinB[0]) == HIGH;
+  encoderPos_TrackPrev[0] = encoderPos[0];
   encoderPos[0] += (encoderPinA_Set[0] == encoderPinB_Set[0]) ? +1 : -1;
 }
 
@@ -71,6 +75,7 @@ void UnoRobotEncoder::MonitorRightEncoder()
   encoderPinA_Set[1] = digitalRead(encoderPinA[1]) == HIGH;
   encoderPos[1] += (encoderPinA_Set[1] != encoderPinB_Set[1]) ? -1 : +1;
   encoderPinB_Set[1] = digitalRead(encoderPinB[1]) == HIGH;
+  encoderPos_TrackPrev[1] = encoderPos[1];
   encoderPos[1] += (encoderPinA_Set[1] == encoderPinB_Set[1]) ? -1 : +1;
 }
 

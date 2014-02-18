@@ -20,6 +20,10 @@ protected:
 	static unsigned long Timer_Cur;
 	static unsigned long Timer_Prev;
 
+	static long Robot_XCoord;
+	static long Robot_YCoord;
+	static float Robot_HeadingAngle;
+
 	const int ElbowPin;
 	const int ClawPin;
 	const int WristPin;
@@ -61,7 +65,8 @@ public:
 	void MaintainStarightMotion(int DirFlag); // during the forward or backward motion only
 	void CalculateRobotVelocity();
 
-	void UpdateEncoderValuesMsg();
+	void TrackRobot();
+	void AdjustHeadingAngle();
 
 	int ValidateServoCurPos(int PinNum, int POS);
 	void ProcessServoCommand(int PinNum);

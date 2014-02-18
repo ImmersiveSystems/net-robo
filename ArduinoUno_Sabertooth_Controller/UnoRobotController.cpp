@@ -25,6 +25,10 @@ float UnoRobotController::RobotVelocity;
 unsigned long UnoRobotController::Timer_Cur;
 unsigned long UnoRobotController::Timer_Prev;
 
+long UnoRobotController::Robot_XCoord;
+long UnoRobotController::Robot_YCoord;
+float UnoRobotController::Robot_HeadingAngle;
+
 UnoRobotController::UnoRobotController(): ElbowPin(ELBOW), ClawPin(CLAW), WristPin(WRIST), ElbowInitPos(ELBOW_INIT), ClawInitPos(CLAW_INIT), WristInitPos(WRIST_INIT), PanPin(PAN), TiltPin(TILT), PanInitPos(PAN_INIT), TiltInitPos(TILT_INIT)
 {
   data = 0;
@@ -41,6 +45,9 @@ UnoRobotController::UnoRobotController(): ElbowPin(ELBOW), ClawPin(CLAW), WristP
   RightWheelVelocity = 0.0;
   RobotVelocity = 0.0;
 
+  Robot_XCoord = 0;
+  Robot_YCoord = 0;
+  Robot_HeadingAngle = 0;
 
   Timer_Cur = 0;  
   Timer_Prev = 0;
@@ -218,6 +225,7 @@ void UnoRobotController::MaintainStarightMotion(int DirFlag)
 {
 	float deltaLeft = encoderPos[0] - encoderPos_Prev[0];
 	float deltaRight = encoderPos[1] - encoderPos_Prev[1];
+	
 	if(deltaLeft != deltaRight)
 	{
 		if(DirFlag == FORWARD)
@@ -246,20 +254,20 @@ void UnoRobotController::CalculateRobotVelocity()
 	  Timer_Prev = Timer_Cur;
 	  long RightWheel_DeltaTick = encoderPos[1] - encoderPos_Prev[1];
 	  encoderPos_Prev[1] = encoderPos[1];
-	  float RightWheelDistance = ((RightWheel_DeltaTick * WHEEL_CERCUMFERENCE) / TICK_COUNT_PER_REVOLUTION);
+	  float RightWheelDistance =  (float)(RightWheel_DeltaTick * DISTANCE_PER_COUNT);//((RightWheel_DeltaTick * WHEEL_CERCUMFERENCE) / TICK_COUNT_PER_REVOLUTION);
 	  RightWheelVelocity = RightWheelDistance / VELOCITY_CALC_INTERVAL;
 
 	  long LeftWheel_DeltaTick = encoderPos[0] - encoderPos_Prev[0];
 	  encoderPos_Prev[0] = encoderPos[0];
-	  float LeftWheelDistance = ((LeftWheel_DeltaTick * WHEEL_CERCUMFERENCE) / TICK_COUNT_PER_REVOLUTION);
+	  float LeftWheelDistance = (float)(LeftWheel_DeltaTick * DISTANCE_PER_COUNT);//((LeftWheel_DeltaTick * WHEEL_CERCUMFERENCE) / TICK_COUNT_PER_REVOLUTION);
 	  LeftWheelVelocity = LeftWheelDistance / VELOCITY_CALC_INTERVAL;
 
 	  RobotVelocity = sqrt(pow(LeftWheelVelocity, 2) + pow(RightWheelVelocity, 2));	 //meter per sec
 	}
 
-    String VelMsg = String((int)(RobotVelocity * 3600), DEC);
-    VelMsg = VelMsg + ' ' + EncoderValuesMsg;
-    Serial.println(VelMsg);
+    // String VelMsg = String((int)(RobotVelocity * 3600), DEC);
+    // VelMsg = VelMsg + ' ' + EncoderValuesMsg;
+    // Serial.println(VelMsg);
 }
 
 void UnoRobotController::ProcessServoCommand(int PinNum)
@@ -295,6 +303,10 @@ void UnoRobotController::SendVelocity_Encoders_Msg()
 {
   UpdateEncoderValues();
   CalculateRobotVelocity();	
+
+  String VelMsg = String((int)(RobotVelocity * 3600), DEC);
+  VelMsg = VelMsg + ' ' + EncoderValuesMsg;
+  Serial.println(VelMsg);
 }
 
 int UnoRobotController::ValidateServoCurPos(int PinNum, int POS)
@@ -322,6 +334,35 @@ int UnoRobotController::ValidateServoCurPos(int PinNum, int POS)
 	else
 	{
 		return POS;
+	}
+}
+
+void UnoRobotController::TrackRobot()
+{
+	long deltaLeftCnt = encoderPos[0] - encoderPos_TrackPrev[0];
+	long deltaRightCnt = encoderPos[1] - encoderPos_TrackPrev[1];
+	long deltaDistance = 0.5 * (deltaLeftCnt * deltaRightCnt) * DISTANCE_PER_COUNT;
+	
+	long deltaX = deltaDistance * cos(Robot_HeadingAngle);
+	long deltaY = deltaDistance * sin(Robot_HeadingAngle);
+	float deltaHeading = (float)((deltaLeftCnt - deltaRightCnt) * RADIAN_PER_COUNT);
+
+	Robot_XCoord = Robot_XCoord + deltaX;
+	Robot_YCoord = Robot_YCoord + deltaY;
+	Robot_HeadingAngle = Robot_HeadingAngle + deltaHeading;
+
+	AdjustHeadingAngle();
+}
+
+void UnoRobotController::AdjustHeadingAngle()
+{
+	if(Robot_HeadingAngle > PI)
+	{
+		Robot_HeadingAngle = Robot_HeadingAngle - (2 * PI);
+	}
+	else if(Robot_HeadingAngle <= PI)
+	{
+		Robot_HeadingAngle = Robot_HeadingAngle + (2 * PI);
 	}
 }
 

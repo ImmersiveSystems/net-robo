@@ -9,7 +9,9 @@ protected:
 	volatile int encoderPinB[2];
 	volatile int encoderPinB_Set[2];
 	volatile long encoderPos[2];
+	volatile long encoderPos_TrackPrev[2];	
 	static long encoderPos_Prev[2];
+
 	String EncoderValuesMsg;
 public:
 	UnoRobotEncoder();

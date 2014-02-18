@@ -21,6 +21,7 @@ void setup()
 void loop()
 {   
   robot.SerialCommunicate();
+  robot.TrackRobot();
   robot.SendVelocity_Encoders_Msg();  
   // robot.SendLeftEncoderValue();
   // robot.SendRightEncoderValue();
