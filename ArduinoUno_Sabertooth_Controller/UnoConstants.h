@@ -12,14 +12,16 @@
 
 #define PI 3.1415
 #define WHEEL_DIAMETER 11 // cm
-#define ROBOT_TRACK_WIDTH 20 // width of the robot based on the distance between the centers of left and right wheels
+#define ROBOT_TRACK_WIDTH 35 // width of the robot based on the distance between the centers of left and right wheels
 
 #define WHEEL_CERCUMFERENCE 34.5565 // Wheel Diameter = 11 in centimeter and PI = 3.1415
 #define VELOCITY_CALC_INTERVAL 1000 //ms
 #define TICK_COUNT_PER_REVOLUTION 12000
+#define CERCUMFERENCE_REVOLUTION_RATIO 0.0028
+#define HEADING_ANGLE_RATIO 0.0001 //((PI * (WHEEL_DIAMETER / ROBOT_TRACK_WIDTH)) / TICK_COUNT_PER_REVOLUTION)) = 0.00008227738
 
 // const long DISTANCE_PER_COUNT = WHEEL_CERCUMFERENCE / TICK_COUNT_PER_REVOLUTION;
-const long RADIAN_PER_COUNT = (PI * (WHEEL_DIAMETER / ROBOT_TRACK_WIDTH)) / TICK_COUNT_PER_REVOLUTION;
+// const long RADIAN_PER_COUNT = (PI * (WHEEL_DIAMETER / ROBOT_TRACK_WIDTH)) / TICK_COUNT_PER_REVOLUTION;
  // following gives the number of counts when robot rotates, in-place, a full circle i.e., 360 = 2 * pi
 const float TICK_COUNT_FULL_ROTATION = (ROBOT_TRACK_WIDTH / WHEEL_DIAMETER) * TICK_COUNT_PER_REVOLUTION;
 

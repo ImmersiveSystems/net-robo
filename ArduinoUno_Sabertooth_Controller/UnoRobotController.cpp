@@ -48,6 +48,7 @@ UnoRobotController::UnoRobotController(): ElbowPin(ELBOW), ClawPin(CLAW), WristP
   Robot_XCoord = 0;
   Robot_YCoord = 0;
   Robot_HeadingAngle = 0;
+  RobLoc_Msg = "";
 
   Timer_Cur = 0;  
   Timer_Prev = 0;
@@ -305,8 +306,8 @@ void UnoRobotController::SendVelocity_Encoders_Msg()
   CalculateRobotVelocity();	
 
   String VelMsg = String((int)(RobotVelocity * 3600), DEC);
-  VelMsg = VelMsg + ' ' + EncoderValuesMsg;
-  Serial.println(VelMsg);
+  VelMsg = VelMsg + ' ' + EncoderValuesMsg + ' ' + RobLoc_Msg;
+  // Serial.println(VelMsg);
 }
 
 int UnoRobotController::ValidateServoCurPos(int PinNum, int POS)
@@ -340,18 +341,30 @@ int UnoRobotController::ValidateServoCurPos(int PinNum, int POS)
 void UnoRobotController::TrackRobot()
 {
 	long deltaLeftCnt = encoderPos[0] - encoderPos_TrackPrev[0];
+	encoderPos_TrackPrev[0] = encoderPos[0];
 	long deltaRightCnt = encoderPos[1] - encoderPos_TrackPrev[1];
-	long deltaDistance = 0.5 * (deltaLeftCnt * deltaRightCnt) * (WHEEL_CERCUMFERENCE / TICK_COUNT_PER_REVOLUTION);//* DISTANCE_PER_COUNT;
+	encoderPos_TrackPrev[1] = encoderPos[1];
+	long deltaDistance = 0.5 * (deltaLeftCnt + deltaRightCnt) * CERCUMFERENCE_REVOLUTION_RATIO;//((long)WHEEL_CERCUMFERENCE / (long)TICK_COUNT_PER_REVOLUTION);//* DISTANCE_PER_COUNT;
 	
 	long deltaX = deltaDistance * cos(Robot_HeadingAngle);
 	long deltaY = deltaDistance * sin(Robot_HeadingAngle);
-	float deltaHeading = (float)((deltaLeftCnt - deltaRightCnt) * ((PI * (WHEEL_DIAMETER / ROBOT_TRACK_WIDTH)) / TICK_COUNT_PER_REVOLUTION));//* RADIAN_PER_COUNT);
+	float deltaHeading = (float)((deltaLeftCnt - deltaRightCnt) * HEADING_ANGLE_RATIO);//((PI * (WHEEL_DIAMETER / ROBOT_TRACK_WIDTH)) / TICK_COUNT_PER_REVOLUTION));//* RADIAN_PER_COUNT);
 
 	Robot_XCoord = Robot_XCoord + deltaX;
 	Robot_YCoord = Robot_YCoord + deltaY;
 	Robot_HeadingAngle = Robot_HeadingAngle + deltaHeading;
 
 	AdjustHeadingAngle();
+
+	Serial.print("X:  ");
+	Serial.print(Robot_XCoord);
+	Serial.print("  Y:  ");
+	Serial.print(Robot_YCoord);
+	Serial.print("  HEADING:  ");
+	Serial.println(Robot_HeadingAngle);
+
+	RobLoc_Msg = String(Robot_XCoord) + ' ' + String(Robot_YCoord) + ' ' + String((long)Robot_HeadingAngle);
+	// Serial.println(RobLoc_Msg);
 }
 
 void UnoRobotController::AdjustHeadingAngle()
@@ -360,7 +373,7 @@ void UnoRobotController::AdjustHeadingAngle()
 	{
 		Robot_HeadingAngle = Robot_HeadingAngle - (2 * PI);
 	}
-	else if(Robot_HeadingAngle <= PI)
+	else if(Robot_HeadingAngle <= (-1) * PI)
 	{
 		Robot_HeadingAngle = Robot_HeadingAngle + (2 * PI);
 	}

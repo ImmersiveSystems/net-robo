@@ -23,6 +23,7 @@ protected:
 	static long Robot_XCoord;
 	static long Robot_YCoord;
 	static float Robot_HeadingAngle;
+	String RobLoc_Msg;
 
 	const int ElbowPin;
 	const int ClawPin;

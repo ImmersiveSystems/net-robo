@@ -42,6 +42,7 @@ class SerialChannel(object):
         encoders = [0.0, 0.0] 
         if lastDataReceived != '':
             raw_line = lastDataReceived.split(' ')
+            print 'Entire Message:-->    ', raw_line
             encoders[0] = float(raw_line[1])
             encoders[1] = float(raw_line[2])
         return encoders #return zeros if no correct value receievd
