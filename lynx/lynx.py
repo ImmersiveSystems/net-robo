@@ -70,7 +70,7 @@ def listener(*args):
             # print 'Speed increased to ' + str(exploSpeed)
 
         Get_Encoders_Velcoity_Values()
-        # socketIO.emit('lynxToServer', str(exploSpeed))
+        socketIO.emit('lynxToServer', str(exploSpeed))
     elif args[0] == 'speeddown':
         if exploSpeed <= exploSpeedMin:
             exploSpeed = exploSpeedMin
@@ -80,7 +80,7 @@ def listener(*args):
             # print 'Speed decreased to ' + str(exploSpeed)
 
         Get_Encoders_Velcoity_Values()
-        # socketIO.emit('lynxToServer', str(exploSpeed))
+        socketIO.emit('lynxToServer', str(exploSpeed))
     elif args[0].startswith('pan'):
         ser.write('P' + chr(int(args[0].strip('pan'))))
         print 'PANNING'

@@ -415,9 +415,9 @@ gst-launch-1.0 v4l2src  ! "video/x-raw,width=640,height=480,framerate=15/1" ! om
 ./ffmpeg -f v4l2 -vcodec h264 -s 1280x720 -i /dev/video0 -vcodec copy -f flv rtmp://192.168.1.76/live/thumper
 ./ffmpeg -f v4l2 -vcodec h264 -s 1280x720 -i /dev/video0 -vcodec copy -f flv rtmp://192.168.1.76/live/lynx
 
-
 sudo rpi-update 3758b164b3bc05c130d473fc23886aebfcb6349e
-sudo rpi-update 2a483b91d2f682f900dbffacdfda479ae5961562
+sudo rpi-update 2a483b91d2f682f900dbffacdfda479ae5961562 May 26, 2013
+sudo rpi-update 0fc090e8fbae693fae12bdf26b59c812ba99e141 Apr 02, 2013
 
 ./ffmpeg -f v4l2 -vcodec h264 -s 1280x720 -i /dev/video0 -vcodec copy -f flv rtmp://ec2-54-213-207-66.us-west-2.compute.amazonaws.com/livepkgr/livestream?adbe-live-event=liveevent
 
@@ -430,3 +430,9 @@ rtmp://ec2-54-213-207-66.us-west-2.compute.amazonaws.com/livepkgr/livestream?adb
 ./ffmpeg -f v4l2 -vcodec h264 -s 800x448 -i /dev/video0 -vcodec copy -f flv rtmp://54.201.104.143/live/test
 
 gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=1000000 peak-bitrate=2000000 usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=800, height=448, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.201.104.143/live/lynx live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -r 20 -i /dev/video0 -vcodec copy -qscale 8 -r 20 -f flv rtmp://54.213.169.59/live/thumper
+
+v4l2-ctl --set-ctrl focus_auto=0
