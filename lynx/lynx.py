@@ -10,6 +10,9 @@ exploSpeedMin = 30
 exploSpeedMax = 100
 exploSpeed = 60
 SerialData = '0'
+goingForward = 0
+goingBackward = 0
+turningAngle = 80 # this is the difference between right and left speed
 
 def Get_Encoders_Velcoity_Values():
     global SerialData
@@ -34,83 +37,118 @@ def listener(*args):
     global exploSpeedMin
     global exploSpeedMax
     global exploSpeed
+    global goingForward
+    global goingBackward
 
-    Get_Encoders_Velcoity_Values()
+
+    # this is to calculate turning speed 
+    if exploSpeed > exploSpeedMax - int(turningAngle / 2):
+        topSpeed = exploSpeedMax
+        lowSpeed = exploSpeedMax - turningAngle
+    else:
+        topSpeed = exploSpeed + int(turningAngle / 2)
+        lowSpeed = exploSpeed - int(turningAngle / 2)        
 
     if args[0] == 'forward':
         print 'Move FORWARD'
         ser.write('H' + chr(2) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
-        Get_Encoders_Velcoity_Values()
-    elif (args[0] == '-forward') or (args[0] == '-right') or (args[0] == '-left') or (args[0] == '-backward'):
-        print 'Stop movement'
-        ser.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
-        Get_Encoders_Velcoity_Values()
+        goingForward = 1
     elif args[0] == 'backward':
         print 'Move BACKWARD'
         ser.write('H' + chr(0) + chr(exploSpeed) + chr(0) + chr(exploSpeed))
-        Get_Encoders_Velcoity_Values()
+        goingBackward = 1
+
+
+    elif (args[0] == '-forward') or (args[0] == '-right') or (args[0] == '-left') or (args[0] == '-backward'):
+        print 'Stop movement'
+
+        #stop turning but continue going forward/backward
+        if (args[0] == '-right' or args[0] == '-left') and goingForward:
+            ser.write('H' + chr(2) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
+        elif (args[0] == '-right' or args[0] == '-left') and goingBackward:
+            ser.write('H' + chr(0) + chr(exploSpeed) + chr(0) + chr(exploSpeed))
+        else:     
+            ser.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
+
+        if args[0] == '-forward':
+            goingForward = 0
+        elif args[0] == '-backward':
+            goingBackward = 0
+
     elif args[0] == 'right':
         print 'Turn RIGHT'
-        ser.write('H' + chr(0) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
-        Get_Encoders_Velcoity_Values()
+        if goingForward == 1:
+            ser.write('H' + chr(2) + chr(lowSpeed) + chr(2) + chr(topSpeed))
+        elif goingBackward == 1:
+            ser.write('H' + chr(0) + chr(lowSpeed) + chr(0) + chr(topSpeed))        
+        else:
+            ser.write('H' + chr(0) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
+
+
+
     elif args[0] == 'left':
         print 'Turn LEFT'
-        ser.write('H' + chr(2) + chr(exploSpeed) + chr(0) + chr(exploSpeed))
-        Get_Encoders_Velcoity_Values()
+        if goingForward == 1:
+            ser.write('H' + chr(2) + chr(topSpeed) + chr(2) + chr(lowSpeed))
+        elif goingBackward == 1:
+            ser.write('H' + chr(0) + chr(topSpeed) + chr(0) + chr(lowSpeed)) 
+        else:
+            ser.write('H' + chr(2) + chr(exploSpeed) + chr(0) + chr(exploSpeed))
+
+
+
     elif args[0] == 'stop':
         print 'HALT'
         ser.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
-        Get_Encoders_Velcoity_Values()
     elif args[0] == 'speedup':
         if exploSpeed >= exploSpeedMax:
             exploSpeed = exploSpeedMax
             print 'Max speed reached'
         else:
-            exploSpeed = exploSpeed + 5
+            exploSpeed = exploSpeed + 10
             # print 'Speed increased to ' + str(exploSpeed)
 
-        Get_Encoders_Velcoity_Values()
         socketIO.emit('lynxToServer', str(exploSpeed))
     elif args[0] == 'speeddown':
         if exploSpeed <= exploSpeedMin:
             exploSpeed = exploSpeedMin
             print 'Min speed reached'
         else:
-            exploSpeed = exploSpeed - 5
+            exploSpeed = exploSpeed - 10
             # print 'Speed decreased to ' + str(exploSpeed)
 
-        Get_Encoders_Velcoity_Values()
         socketIO.emit('lynxToServer', str(exploSpeed))
     elif args[0].startswith('pan'):
         ser.write('P' + chr(int(args[0].strip('pan'))))
         print 'PANNING'
-        Get_Encoders_Velcoity_Values()
+
     elif args[0].startswith('tilt'):
         ser.write('T' + chr(int(args[0].strip('tilt'))))
         print 'TILTING'
-        Get_Encoders_Velcoity_Values()
+
     elif args[0] == 'elbowup':
         ser.write('E' + chr(1))
         print 'Move ELBOW UP'
-        Get_Encoders_Velcoity_Values()
+
     elif args[0] == 'elbowdown':
         ser.write('E' + chr(0))
         print 'Move ELBOW DOWN'
-        Get_Encoders_Velcoity_Values()
+
     elif args[0] == 'wristleft':
         ser.write('W' + chr(1))
         print 'Move WRIST LEFT'
-        Get_Encoders_Velcoity_Values()
+
     elif args[0] == 'wristright':
         ser.write('W' + chr(0))
         print 'Move WRIST RIGHT'
-        Get_Encoders_Velcoity_Values()
+
     elif args[0] == 'grab':
         ser.write('C')
         print 'Use CLAW'
-        Get_Encoders_Velcoity_Values()
 
-socketIO = SocketIO('192.168.1.223', 3000)
+    Get_Encoders_Velcoity_Values()
+
+socketIO = SocketIO('http://54.213.169.59', 3000)
 socketIO.on('serverToLynx', listener)
 socketIO.emit('clientType', 'Python')
 socketIO.wait(seconds=6000)
