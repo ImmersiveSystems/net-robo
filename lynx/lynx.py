@@ -12,7 +12,12 @@ exploSpeed = 60
 SerialData = '0'
 goingForward = 0
 goingBackward = 0
-turningAngle = 80 # this is the difference between right and left speed
+turningR = 0
+turningL = 0
+turningAngle = 80 # this is the difference between the speed of right and left motors
+
+
+
 
 def Get_Encoders_Velcoity_Values():
     global SerialData
@@ -39,6 +44,8 @@ def listener(*args):
     global exploSpeed
     global goingForward
     global goingBackward
+    global turningR
+    global turningL
 
 
     # this is to calculate turning speed 
@@ -51,11 +58,23 @@ def listener(*args):
 
     if args[0] == 'forward':
         print 'Move FORWARD'
-        ser.write('H' + chr(2) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
+        if turningR:
+            ser.write('H' + chr(2) + chr(lowSpeed) + chr(2) + chr(topSpeed))
+        elif turningL:
+            ser.write('H' + chr(2) + chr(topSpeed) + chr(2) + chr(lowSpeed))
+        else:
+            ser.write('H' + chr(2) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
         goingForward = 1
+
     elif args[0] == 'backward':
         print 'Move BACKWARD'
-        ser.write('H' + chr(0) + chr(exploSpeed) + chr(0) + chr(exploSpeed))
+        if turningR:
+            ser.write('H' + chr(0) + chr(lowSpeed) + chr(0) + chr(topSpeed))
+        elif turningL:
+            ser.write('H' + chr(0) + chr(topSpeed) + chr(0) + chr(lowSpeed))
+        else:
+            ser.write('H' + chr(0) + chr(exploSpeed) + chr(0) + chr(exploSpeed))
+
         goingBackward = 1
 
 
@@ -74,6 +93,10 @@ def listener(*args):
             goingForward = 0
         elif args[0] == '-backward':
             goingBackward = 0
+        elif args[0] == '-right':
+            turningR = 0
+        elif args[0] == '-left':
+            turningL = 0
 
     elif args[0] == 'right':
         print 'Turn RIGHT'
@@ -83,8 +106,7 @@ def listener(*args):
             ser.write('H' + chr(0) + chr(lowSpeed) + chr(0) + chr(topSpeed))        
         else:
             ser.write('H' + chr(0) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
-
-
+        turningR = 1
 
     elif args[0] == 'left':
         print 'Turn LEFT'
@@ -94,6 +116,7 @@ def listener(*args):
             ser.write('H' + chr(0) + chr(topSpeed) + chr(0) + chr(lowSpeed)) 
         else:
             ser.write('H' + chr(2) + chr(exploSpeed) + chr(0) + chr(exploSpeed))
+        turningL = 1
 
 
 
