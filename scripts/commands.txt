@@ -459,4 +459,126 @@ $$$$$$$$$$$$$$$$$$$$$$
 
 ./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -i hw:1,0 -vcodec copy -qscale 8 -acodec libaacplus -ab 16k -ac 2 -ar 44100 -f flv rtmp://54.213.169.59/live/thumper
 
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -i hw:1,0 -vcodec copy -qscale 8 -acodec libaacplus -ab 16k -ac 2 -ar 44100 -f flv rtmp://54.213.169.59/live/lynx
+
 $$$$$$$$$$$$$$$$$$$$$$
+
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -vcodec copy -qscale 8 -f flv rtmp://54.213.169.59/live/lynx
+
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -ac 2 -ar 16000 -i hw:1,0 -vcodec copy -qscale 8 -acodec copy -f flv rtmp://54.213.169.59/live/lynx
+
+cvlc v4l2:///dev/video0:chroma=h264:width=1280:height=720 :input-slave="alsa://hw:1,0" --sout '#transcode{acodec=a52,ab=32}:file{dst=/home/pi/file.avi}' -vvv
+	
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -ac 2 -ar 16000 -i hw:1,0 -vcodec copy -qscale 8 -acodec copy out.avi
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! avenc_aac bitrate=11025 ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 alsasrc device=hw:1 ! audioresample ! audio/x-raw,rate=11025,channels=2 ! avenc_aac ! mux.mux
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! avenc_aac bitrate=11025 ! aacparse ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+--------------
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+--------------
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue ! audioresample ! queue ! audio/x-raw,rate=11025,channels=2 ! audioconvert ! avenc_aac bitrate=11025 compliance=-2 ! aacparse ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue ! audioresample ! queue ! audio/x-raw,rate=11025,channels=2 ! queue ! audioconvert ! queue ! avenc_aac bitrate=11025 compliance=-2 ! queue ! aacparse ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+**********
+
+./ffmpeg2 -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -i hw:1,0 -vcodec copy -qscale 8 -acodec libaacplus -ab 16k -ac 2 -ar 44100 -f flv rtmp://54.213.169.59/live/lynx
+
+ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -i hw:1,0 -vcodec copy -qscale 8 -acodec libfaac -f flv rtmp://54.213.169.59/live/lynx
+
+ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -vcodec copy -qscale 8 -f flv rtmp://54.213.169.59/live/lynx
+
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -vcodec copy -qscale 8 -f flv rtmp://54.213.169.59/live/lynx
+
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -i hw:1,0 -vcodec copy -qscale 8 -acodec libaacplus -ab 16k -ac 2 -ar 44100 -f flv rtmp://54.213.169.59/live/lynx
+
+ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -ar 11025 -i hw:1,0 -vcodec copy -qscale 8 -acodec copy -f flv rtmp://54.213.169.59/live/lynx
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 alsasrc device=plughw:1 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=2 ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 alsasrc device=hw:1 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=2 ! flvmux streamable=true name=mux ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 flvmux name=mux alsasrc device=hw:1 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch v4l2src device=/dev/video1 ! video/x-raw, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue2 ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue2 ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+./ffmpeg -f alsa -i hw:1,0 -acodec libaacplus -ab 16k -ac 2 -ar 44100 -f flv rtmp://54.213.169.59/live/lynx
+
+gst-launch-1.0 uvch264src device=/dev/video1 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! mux. mux. ! filesink location=test.mp4
+
+ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -i hw:1,0 -vcodec copy -acodec libmp3lame -ab 16k -ac 2 -ar 11025 -f flv rtmp://54.213.169.59/live/lynx
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+ALRIGHT ALRIGHT ALRIGHT
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue ! audioresample ! queue ! audio/x-raw,rate=11025,channels=2 ! queue ! lamemp3enc ! queue ! mpegaudioparse ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -vcodec copy -qscale 8 -f flv rtmp://54.213.169.59/live/mp4:lynx
+
+gst-launch-1.0 pulsesrc device="alsa_input.usb-046d_HD_Pro_Webcam_C920_4F9F2DAF-02-C920.analog-stereo" volume=1.0 ! alsasink
+
+./ffmpeg -f alsa -i hw:1,0 -acodec libaacplus -ab 16k -ac 2 -ar 44100 audio.flv
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux pulsesrc device="alsa_input.usb-046d_HD_Pro_Webcam_C920_4F9F2DAF-02-C920.analog-stereo" ! queue ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux audiotestsrc device=plughw:1 ! queue ! audioresample ! queue ! audio/x-raw,rate=11025,channels=2 ! queue ! lamemp3enc ! queue ! mpegaudioparse ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=hw:1 ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! audioconvert ! avenc_aac bitrate=11025 compliance=-2 ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+ffmpeg -f dshow -vcodec h264 -s 432x240 -i "video=HD Pro Webcam C920" -f dshow -i "audio=Microphone (HD Pro Webcam C920)" -vcodec copy -qscale 8 -acodec libmp3lame -ab 16k -ac 2 -ar 44100 -f flv rtmp://54.213.169.59/live/lynx
+
+ffmpeg -f dshow -vcodec h264 -s 432x240 -i "video=HD Pro Webcam C920" -f dshow -i "audio=Microphone (HD Pro Webcam C920)" -vcodec copy -acodec libmp3lame -ab 64k -ac 2 -ar 44100 -f flv rtmp://54.213.169.59/live/lynx
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -vcodec copy -qscale 8 -f flv rtmp://54.213.169.59/live/lynx
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux pulsesrc device="alsa_input.usb-046d_HD_Pro_Webcam_C920_4F9F2DAF-02-C920.analog-stereo"  ! queue ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 alsasrc device=hw:1 ! audioresample ! audio/x-raw,rate=11025,channels=2 ! audioconvert ! avenc_aac bitrate=11025 compliance=-2 ! filesink location=audio.flv
+
+./ffmpeg -f alsa -i hw:1,0 -acodec libaacplus -ab 16k -ac 2 -ar 44100 audio.flvmux
+
+gst-launch-1.0 alsasrc device=hw:1 ! audioresample ! audio/x-raw,rate=11025,channels=2 ! alsasink
+
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -i hw:1,0 -vcodec copy -qscale 8 -acodec libaacplus -ab 16k -ac 2 -ar 44100 -f flv rtmp://54.213.169.59/live/lynx
+
+ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -i hw:1,0 -vcodec copy -acodec libmp3lame -ab 8k -ac 1 -ar 11025 -f flv rtmp://54.213.169.59/live/lynx
+
+ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -vcodec copy -f flv rtmp://54.213.169.59/live/lynx
+
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -i hw:1,0 -vcodec copy -qscale 8 -acodec libaacplus -ab 16k -ac 1 -ar 44100 -f flv rtmp://54.213.169.59/live/lynx
+
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -vcodec copy -f flv rtmp://54.213.169.59/live/lynx
+
+arecord -f cd -D plughw:1,0 | ./ffmpeg -i - -acodec libaacplus -ab 16k -ac 1 -ar 44100 -f flv rtmp://54.213.169.59/live/lynx
+
+arecord -f cd -D plughw:1,0 | ./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -i - -vcodec copy -qscale 8 -acodec libaacplus -ab 16k -ac 1 -ar 44100 -f flv rtmp://54.213.169.59/live/lynx
+
+arecord -f cd -D plughw:1,0 | ./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -i - -vcodec copy -f flv rtmp://54.213.169.59/live/lynx
+
+arecord -f cd -D plughw:1,0 | gst-launch-1.0 -v fdsrc ! wavparse ! alsasink
+
+arecord -f cd -D plughw:1,0 | gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux fdsrc ! queue ! wavparse ! queue ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=1 ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -r 20 -i /dev/video0 -vcodec copy -qscale 8 -r 20 -f flv rtmp://54.213.169.59/live/lynx

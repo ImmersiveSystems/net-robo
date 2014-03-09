@@ -1,10 +1,4 @@
-#!/bin/bash -v     
-
-# Create a log file of the build as well as displaying the build on the tty as it runs
-exec > >(tee build_gstreamer_new.log)
-exec 2>&1
-
-################# COMPILE GSTREAMER 1.x ############    
+#!/bin/bash -v         
 
 sudo apt-get install -y build-essential autotools-dev automake autoconf \
                         libtool autopoint libxml2-dev zlib1g-dev libglib2.0-dev \
