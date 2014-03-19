@@ -581,4 +581,13 @@ arecord -f cd -D plughw:1,0 | gst-launch-1.0 uvch264src device=/dev/video0 name=
 
 gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=1 ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
 
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -r 20 -i /dev/video0 -vcodec copy -qscale 8 -r 20 -f flv rtmp://54.213.169.59/live/thumper
+
 ./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -r 20 -i /dev/video0 -vcodec copy -qscale 8 -r 20 -f flv rtmp://54.213.169.59/live/lynx
+
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -i hw:1,0 -vcodec copy -acodec libaacplus -ab 16k -ac 2 -ar 44100 -f flv rtmp://54.213.169.59/live/thumper
+
+sudo service mongodb start
+sudo service mongodb stop
+
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 3000
