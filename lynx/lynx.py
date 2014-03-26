@@ -49,15 +49,6 @@ def listener(*args):
 
 
     #checking for an obsticle ahead
-    incoming = ser.read()
-    if incoming == 'D':
-        distance = ser.read()
-        if int(distance) > 400:
-            stop = 1
-        else:
-            stop = 0
-    else:
-        pass
 
     # this is to calculate turning speed 
     if exploSpeed > exploSpeedMax - int(turningAngle / 2):
@@ -72,16 +63,14 @@ def listener(*args):
 
     if args[0] == 'forward':
         print 'Move FORWARD'
-        if stop:
-            pass
+
+        if turningR:
+            ser.write('H' + chr(2) + chr(lowSpeed) + chr(2) + chr(topSpeed))
+        elif turningL:
+            ser.write('H' + chr(2) + chr(topSpeed) + chr(2) + chr(lowSpeed))
         else:
-            if turningR:
-                ser.write('H' + chr(2) + chr(lowSpeed) + chr(2) + chr(topSpeed))
-            elif turningL:
-                ser.write('H' + chr(2) + chr(topSpeed) + chr(2) + chr(lowSpeed))
-            else:
-                ser.write('H' + chr(2) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
-            goingForward = 1
+            ser.write('H' + chr(2) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
+        goingForward = 1
 
     elif args[0] == 'backward':
         print 'Move BACKWARD'
@@ -159,11 +148,11 @@ def listener(*args):
 
         socketIO.emit('lynxToServer', str(exploSpeed))
     elif args[0].startswith('pan'):
-        ser.write('P' + chr(int(args[0].strip('pan'))))
+       # ser.write('P' + chr(int(args[0].strip('pan'))))
         print 'PANNING'
 
     elif args[0].startswith('tilt'):
-        ser.write('T' + chr(int(args[0].strip('tilt'))))
+       # ser.write('T' + chr(int(args[0].strip('tilt'))))
         print 'TILTING'
 
     elif args[0] == 'elbowup':
