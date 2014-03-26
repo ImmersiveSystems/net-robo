@@ -3,7 +3,7 @@ from socketIO_client import SocketIO
 import serial
 import threading
 
-ser = serial.Serial("/dev/ttyUSB0", 9600)
+ser = serial.Serial("/dev/ttyUSB1", 9600)
 print 'Opened serial'
 
 exploSpeedMin = 30
@@ -15,8 +15,38 @@ goingBackward = 0
 turningR = 0
 turningL = 0
 turningAngle = 80 # this is the difference between the speed of right and left motors
+dist = 1
+obstacle = 0
+stop = 0
+
+class myThread (threading.Thread):
+    def __init__(self):
+        threading.Thread.__init__(self)
+    def run(self):
+        global dist
+        global stop
+        firstEncounter = 1
+
+        while True:
+            data = ser.read()
+            if data == 'D':
+                dist = ser.readline()
+                if int(dist) > 250:
+                    stop = 1
+                    if firstEncounter:
+                        ser.write('H' + chr(0) + chr(0) + chr(0) + chr(0))
+                        firstEncounter = 0
+                    else:
+                        pass
+
+                else:
+                    stop = 0  
+                    firstEncounter = 1
 
 
+
+
+            
 
 
 def Get_Encoders_Velcoity_Values():
@@ -38,6 +68,9 @@ def Get_Encoders_Velcoity_Values():
         SerialData = RawData[-1]
             #print VelocityData         
 
+
+
+
 def listener(*args):
     global exploSpeedMin
     global exploSpeedMax
@@ -46,15 +79,16 @@ def listener(*args):
     global goingBackward
     global turningR
     global turningL
+    global dist
+    global stop
 
-
-    #checking for an obsticle ahead
+    print(dist)
 
     # this is to calculate turning speed 
     if exploSpeed > exploSpeedMax - int(turningAngle / 2):
         topSpeed = exploSpeedMax
         lowSpeed = exploSpeedMax - turningAngle
-    else if (exploSpeed - int(turningAngle / 2)) <= 0:
+    elif (exploSpeed - int(turningAngle / 2)) <= 0:
         lowSpeed = 0
         topSpeed = turningAngle
     else:
@@ -63,14 +97,16 @@ def listener(*args):
 
     if args[0] == 'forward':
         print 'Move FORWARD'
-
-        if turningR:
-            ser.write('H' + chr(2) + chr(lowSpeed) + chr(2) + chr(topSpeed))
-        elif turningL:
-            ser.write('H' + chr(2) + chr(topSpeed) + chr(2) + chr(lowSpeed))
+        if stop:
+            pass
         else:
-            ser.write('H' + chr(2) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
-        goingForward = 1
+            if turningR:
+                ser.write('H' + chr(2) + chr(lowSpeed) + chr(2) + chr(topSpeed))
+            elif turningL:
+                ser.write('H' + chr(2) + chr(topSpeed) + chr(2) + chr(lowSpeed))
+            else:
+                ser.write('H' + chr(2) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
+            goingForward = 1
 
     elif args[0] == 'backward':
         print 'Move BACKWARD'
@@ -177,7 +213,14 @@ def listener(*args):
 
     #Get_Encoders_Velcoity_Values()
 
+# Create new threads
+obstacleThread = myThread()
+# Start new Threads
+obstacleThread.start()
+
 socketIO = SocketIO('http://54.213.169.59', 3000)
 socketIO.on('serverToLynx', listener)
 socketIO.emit('clientType', 'Python')
 socketIO.wait(seconds=6000)
+
+

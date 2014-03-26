@@ -18,13 +18,17 @@ Sabertooth SaberTooth(128);
 #define BACKWARD 0
 
 #define ServoAdjustRate 10
-#define ClawMax 180
+#define ClawMax 170
 #define ClawMin 0
 
 const byte pin_0A =  2; // connect white wire here
 const byte pin_0B =  8; // connect black wire here
 const byte pin_1A =  3; // connect white wire here
 const byte pin_1B =  9; // connect black wire here
+
+int oldDistance = 1023; // distance measured by ir sensor 
+int newDistance = 1023;
+
 
 int A0_set =         0;
 int B0_set =         0;
@@ -48,12 +52,12 @@ int pinPan = 11;
 int pinElbow = 5;
 int pinClaw = 6;
 int pinWrist = 4;
-
+int pinDistSensor = 5;
 
 int tilt = 120;
 int pan = 90;
 int elbow = 95;
-int claw = 180;
+int claw = 170;
 int wrist = 95;
 
 
@@ -105,8 +109,19 @@ void setup()
 
 void loop()
 {
+  
+  newDistance = analogRead(pinDistSensor); 
+ // if (abs(newDistance - oldDistance) > 20){
+  Serial.write('D');
+  Serial.println(newDistance); 
+ // oldDistance = newDistance;
+//  } 
+  
   if (Serial.available() > 0)                                   // command available
   {
+    
+    
+    
     int command = Serial.read();
 
     switch(command)
