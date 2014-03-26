@@ -48,23 +48,40 @@ def listener(*args):
     global turningL
 
 
+    #checking for an obsticle ahead
+    incoming = ser.read()
+    if incoming == 'D':
+        distance = ser.read()
+        if int(distance) > 400:
+            stop = 1
+        else:
+            stop = 0
+    else:
+        pass
+
     # this is to calculate turning speed 
     if exploSpeed > exploSpeedMax - int(turningAngle / 2):
         topSpeed = exploSpeedMax
         lowSpeed = exploSpeedMax - turningAngle
+    else if (exploSpeed - int(turningAngle / 2)) <= 0:
+        lowSpeed = 0
+        topSpeed = turningAngle
     else:
         topSpeed = exploSpeed + int(turningAngle / 2)
         lowSpeed = exploSpeed - int(turningAngle / 2)        
 
     if args[0] == 'forward':
         print 'Move FORWARD'
-        if turningR:
-            ser.write('H' + chr(2) + chr(lowSpeed) + chr(2) + chr(topSpeed))
-        elif turningL:
-            ser.write('H' + chr(2) + chr(topSpeed) + chr(2) + chr(lowSpeed))
+        if stop:
+            pass
         else:
-            ser.write('H' + chr(2) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
-        goingForward = 1
+            if turningR:
+                ser.write('H' + chr(2) + chr(lowSpeed) + chr(2) + chr(topSpeed))
+            elif turningL:
+                ser.write('H' + chr(2) + chr(topSpeed) + chr(2) + chr(lowSpeed))
+            else:
+                ser.write('H' + chr(2) + chr(exploSpeed) + chr(2) + chr(exploSpeed))
+            goingForward = 1
 
     elif args[0] == 'backward':
         print 'Move BACKWARD'
@@ -169,7 +186,7 @@ def listener(*args):
         ser.write('C')
         print 'Use CLAW'
 
-    Get_Encoders_Velcoity_Values()
+    #Get_Encoders_Velcoity_Values()
 
 socketIO = SocketIO('http://54.213.169.59', 3000)
 socketIO.on('serverToLynx', listener)
