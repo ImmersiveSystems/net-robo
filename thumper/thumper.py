@@ -14,7 +14,7 @@ goingForward = 0
 goingBackward = 0
 turningR = 0
 turningL = 0
-turningAngle = 80 # this is the difference between the speed of right and left motors
+turningAngle = 50 # this is the difference between the speed of right and left motors
 
 def listener(*args):
     global exploSpeedMin
