@@ -13,11 +13,6 @@ void setup()
   robot.InitServos();
   robot.InitSaber();
   robot.InitEncoderPins();  
-  // Serial.println(WHEEL_CERCUMFERENCE);
-  // Serial.println(TICK_COUNT_PER_REVOLUTION);
-  // Serial.println(PI);
-  // Serial.println(WHEEL_DIAMETER);
-  // Serial.println(ROBOT_TRACK_WIDTH);
 
   attachInterrupt(IntteruptPin_LeftEncoder, InterruptEnableLeftEncoder, CHANGE); // pin 2
   attachInterrupt(InterruptPin_RightEncoder, InterruptEnableRightEncoder, CHANGE); // pin 3

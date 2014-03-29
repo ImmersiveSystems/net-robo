@@ -363,7 +363,7 @@ void UnoRobotController::TrackRobot()
 	Serial.print("  HEADING:  ");
 	Serial.println(Robot_HeadingAngle);
 
-	RobLoc_Msg = String(Robot_XCoord) + ' ' + String(Robot_YCoord) + ' ' + String((long)Robot_HeadingAngle);
+	// RobLoc_Msg = String(Robot_XCoord) + ' ' + String(Robot_YCoord) + ' ' + String((long)Robot_HeadingAngle);
 	// Serial.println(RobLoc_Msg);
 }
 
