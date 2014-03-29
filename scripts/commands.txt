@@ -591,3 +591,23 @@ sudo service mongodb start
 sudo service mongodb stop
 
 sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 3000
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=432, height=240, framerate=5/1 ! fakesink src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=1000000 peak-bitrate=2000000 usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=432, height=240, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+***
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true peak-bitrate=1000000 usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=432, height=240, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true peak-bitrate=2000000 usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=432, height=240, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+***
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=1 ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+./ffmpeg -f v4l2 -vcodec h264 -s 1280x720 -i /dev/video0 -vcodec copy -f flv rtmp://54.213.169.59/live/lynx
+
+*~*
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=512000 src.vfsrc ! queue ! video/x-raw, format=YUY2, width=432, height=240, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+*~*
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true peak-bitrate=512000 src.vfsrc ! queue ! video/x-raw, format=YUY2, width=432, height=240, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
