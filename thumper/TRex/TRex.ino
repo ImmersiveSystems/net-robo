@@ -11,6 +11,13 @@
 #define rmdirpin    10  // D10 - right motor direction    control    pin    HIGH = Forward   Low = Reverse
 #define rmpwmpin    11  // D11 - right motor pulse width  modulation pin    0 - 255          Speed and Brake 
 
+#define voltspin     3  //  A3 - battery voltage          1V = 33.57        30V = 1007
+#define axisxpin     0  //  A0 - accelerometer X-axis
+#define axisypin     1  //  A1 - accelerometer Y-axis
+#define axiszpin     2  //  A2 - accelerometer Z-axis
+
+#define voltspin     3  //  A3 - battery voltage          1V = 33.57        30V = 1007
+
 int data = 0;
 int Leftmode = 0;
 int Rightmode = 0;
@@ -18,7 +25,14 @@ int Rightmode = 0;
 byte lmbrake, rmbrake;
 int lmspeed, rmspeed;
 
+int xaxis,yaxis,zaxis;                                 // X, Y, Z accelerometer readings
+int deltx,delty,deltz;                                 // X, Y, Z impact readings 
+int magnitude;                                         // impact magnitude
+byte devibrate=50;                                     // number of 2mS intervals to wait after an impact has occured before a new impact can be recognized
+int sensitivity=50; 
 
+int volts; 
+unsigned long time;                                    // timer used to monitor accelerometer and encoders
 
 void setup()
 {
@@ -35,6 +49,9 @@ void setup()
 
 void loop()
 {
+  ReadSensors();
+  Serial.println(magnitude);
+  Serial.println(volts);
   
   if (Serial.available() > 0)                                   // command available
   {
@@ -86,6 +103,34 @@ void Motors()
   digitalWrite(rmdirpin,Rightmode==2);                     // if right speed>0 then right motor direction is forward else reverse
   analogWrite (rmpwmpin,abs(rmspeed));                  // set right PWM to absolute value of right speed - if brake is engaged then PWM controls braking
  }
+
+
+void ReadSensors()
+{
+  
+  
+  static byte alternate;                               // variable used to alternate between reading accelerometer and power analog inputs
+  
+  
+  
+  //----------------------------------------------------- Perform these functions every 1mS ---------------------------------------------- 
+  if(micros()-time>999)                       
+  {
+    time=micros();                                     // reset timer
+    alternate=alternate^1;                             // toggle alternate between 0 and 1
+
+    //--------------------------------------------------- These functions must alternate as they both take in excess of 780uS ------------    
+    if(alternate)
+    {
+      Accelerometer();                                 // monitor accelerometer every second millisecond                            
+    }
+    else 
+    {
+      volts=analogRead(voltspin)*10/3.357;             // read battery level and convert to volts with 2 decimal places (eg. 1007 = 10.07 V)
+    }
+  }
+}
+
 
 
 
