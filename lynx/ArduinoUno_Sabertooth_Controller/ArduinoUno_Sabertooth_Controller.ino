@@ -18,7 +18,7 @@ Sabertooth SaberTooth(128);
 #define BACKWARD 0
 
 #define ServoAdjustRate 10
-#define ClawMax 170
+#define ClawMax 180
 #define ClawMin 0
 
 const byte pin_0A =  2; // connect white wire here
@@ -57,7 +57,7 @@ int pinDistSensor = 5;
 int tilt = 120;
 int pan = 90;
 int elbow = 95;
-int claw = 170;
+int claw = ClawMax;
 int wrist = 95;
 
 
@@ -156,11 +156,11 @@ void loop()
         servoElbow.write(elbow);
         break;
       case 'C':
-        if(claw == 0)
+        if(claw == ClawMin)
         {
           claw = ClawMax;
         }
-        else if(claw == 180)
+        else if(claw == ClawMax)
         {
           claw = ClawMin;
         }
