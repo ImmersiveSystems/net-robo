@@ -611,3 +611,186 @@ gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true initial-bi
 *~*
 
 gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true peak-bitrate=512000 src.vfsrc ! queue ! video/x-raw, format=YUY2, width=432, height=240, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=512000 src.vfsrc ! queue ! video/x-raw, format=YUY2, width=432, height=240, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/test live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/test live=1\"
+
+ALRIGHT ALRIGHT ALRIGHT
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=hw:0 ! queue ! audioresample ! queue ! audio/x-raw,rate=11025,channels=2 ! queue ! lamemp3enc ! queue ! mpegaudioparse ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=hw:2 ! queue ! audioresample ! queue ! audio/x-raw,rate=11025,channels=2 ! queue ! lamemp3enc ! queue ! mpegaudioparse ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -i hw:0,0 -vcodec copy -acodec libaacplus -ab 16k -ac 2 -ar 44100 -f flv rtmp://54.213.169.59/live/thumper
+
+arecord -f cd -D plughw:2,0 | ./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -i - -vcodec copy -qscale 8 -acodec libaacplus -ab 16k -ac 1 -ar 44100 -f flv rtmp://54.213.169.59/live/thumper
+
+arecord -f cd -D plughw:2,0 | gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux fdsrc ! queue ! wavparse ! queue ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 alsasrc device=hw:0 ! "audio/x-raw,channels=2,rate=48000,depth=16" ! audioconvert ! flacenc ! filesink location="test.flac"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=hw:0 ! queue ! lamemp3enc ! queue ! mpegaudioparse ! queue ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -ar 44100 -f alsa -i hw:0,0 -vcodec copy -acodec copy -f flv rtmp://54.213.169.59/live/thumper
+
+arecord -f cd -D plughw:0,0 | ./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -i - -vcodec copy -qscale 8 -acodec libaacplus -ab 16k -ac 1 -ar 44100 -f flv rtmp://54.213.169.59/live/thumper
+
+./ffmpeg -re -loop 1 -i ocr_pi.png -r 10 -vcodec h264 -f mpeg4 rtmp://54.213.169.59/live/thumper
+
+/Video
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=512000 src.vfsrc ! queue ! video/x-raw, format=YUY2, width=432, height=240, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+/Pi
+gst-launch-1.0 -v alsasrc device=plughw:2,0 ! mulawenc ! rtppcmupay ! udpsink host=192.168.0.101 port=5001
+
+/Computer
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! autoaudiosink sync=false
+
+/Pi
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=512000 src.vfsrc ! queue ! video/x-raw, format=YUY2, width=432, height=240, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! rtph264pay pt=96 config-interval=5 ! udpsink host=192.168.0.106 port=5001
+
+/Computer
+gst-launch-1.0 -v tcpclientsrc host=192.168.0.106 port=5001 ! application/x-rtp, payload=96 ! rtpjitterbuffer ! rtph264depay ! avdec_h264 ! videoconvert ! autovideosink sync=false
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/lynx live=1\" ! flvdemux name=d d. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/test live=1\" ! flvdemux ! decodebin ! video/x-flv, width=432, height=240 ! flvmux ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/test live=1\" ! decodebin ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/test live=1\" ! decodebin ! videoconvert ! fakesink
+
+/Video
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=512000 src.vfsrc ! queue ! video/x-raw, format=YUY2, width=432, height=240, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+avconv -i "rtmp://54.213.169.59/live/test live=1" -vcodec copy -shortest -f flv -map 0:0 rtmp://54.213.169.59/live/thumper
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/test live=1\" ! flvdemux name=d d. ! queue ! decodebin ! fakesink
+
+RTMP RESTREAM
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/thumper live=1\" ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+VIDEO RESTREAM
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/thumper live=1\" ! flvdemux name=d d. ! queue ! h264parse ! flvmux streamable=true  ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 -v alsasrc device=plughw:2,0 ! mulawenc ! rtppcmupay ! udpsink host=192.168.0.101 port=5001
+
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! autoaudiosink sync=false
+
+AUDIO STREAM
+gst-launch-1.0 -v alsasrc device=plughw:2,0 ! mulawenc ! rtppcmupay ! udpsink host=54.213.169.59 port=5001
+
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! fakesink
+
+AUDIO CAPTURE
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! lamemp3enc ! filesink location=audio.mp3
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:2 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+arecord -f cd -D plughw:1,0 | gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true usage-type=realtime src.vfsrc ! queue ! video/x-raw, format=YUY2, width=160, height=120, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux fdsrc ! queue ! wavparse ! queue ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/thumper live=1\" ! flvdemux name=d d. ! queue ! h264parse ! flvmux streamable=true  ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/thumper live=1\" ! flvdemux name=d d. ! queue ! h264parse ! flvmux streamable=true name=mux udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+arecord -f cd -D plughw:2,0 | ./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -i - -vcodec copy -qscale 8 -acodec libaacplus -ab 16k -ac 1 -ar 44100 -f flv rtmp://54.213.169.59/live/thumper
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/test live=1\" ! flvdemux name=d d. ! queue ! h264parse ! flvmux streamable=true name=mux udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/test live=1\" ! flvdemux name=d d. ! queue ! h264parse ! flvmux streamable=true name=mux filesrc location="audio.mp3" ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! filesink location=audio.mp3
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/test live=1\" ! flvdemux name=d d. ! queue ! h264parse ! flvmux streamable=true name=mux udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse !  flvmux streamable=true name=mux rtmpsrc location=\"rtmp://54.213.169.59/live/test live=1\" ! flvdemux name=d d. ! queue ! h264parse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/test live=1\" ! flvdemux name=d d. ! queue ! h264parse ! flvmux streamable=true name=mux udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! voaacenc ! aacparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=hw:2 ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! audioconvert ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=hw:2 ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! audioconvert ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=hw:2 ! audioresample ! audio/x-raw,rate=11025,channels=2 ! audioconvert ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 -v alsasrc device=plughw:2,0 ! mulawenc ! rtppcmupay ! udpsink host=localhost port=5001
+
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! fakesink
+
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/test live=1\" ! flvdemux name=d d. ! queue ! h264parse ! flvmux streamable=true name=mux udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=512000 src.vfsrc ! queue ! video/x-raw, format=YUY2, width=432, height=240, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/test live=1\" 
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/thumper live=1\" ! flvdemux name=d d. ! queue ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/thumper live=1\" ! flvdemux name=d d. ! queue ! h264parse ! flvmux streamable=true  ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\"
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=512000 src.vfsrc ! queue ! video/x-raw, format=YUY2, width=432, height=240, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/test live=1\"
+
+gst-launch-1.0 -v alsasrc device=plughw:2,0 ! mulawenc ! rtppcmupay ! udpsink host=54.213.169.59 port=5001
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/test live=1\" ! flvdemux name=d d. ! queue ! h264parse ! flvmux streamable=true name=mux udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 rtmpsrc location=\"rtmp://54.213.169.59/live/test live=1\" ! flvdemux name=d d. ! queue ! h264parse ! flvmux streamable=true ! filesink location="party.flv"
+
+gst-launch-1.0 v4l2src device=/dev/video0 ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux udpsrc port=5001 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 -v alsasrc device=plughw:2,0 ! mulawenc ! rtppcmupay ! udpsink host=localhost port=5001
+
+VIDEO
+gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! rtph264pay pt=96 ! udpsink host=192.168.0.101 port=5001
+
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96, ssrc=(uint)2427606814, timestamp-offset=(uint)246203434, seqnum-offset=(uint)117" ! rtph264depay ! avdec_h264 ! autovideosink
+
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96, ssrc=(uint)2427606814, timestamp-offset=(uint)246203434, seqnum-offset=(uint)117" ! rtph264depay ! avdec_h264 ! filesink location=test.mp4
+
+gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! rtph264pay pt=96 ! udpsink host=54.213.169.59 port=5001
+
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96, ssrc=(uint)707373689, timestamp-offset=(uint)927037223, seqnum-offset=(uint)37294" ! rtph264depay ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+AUDIO
+gst-launch-1.0 -v alsasrc device=plughw:2,0 ! mulawenc ! rtppcmupay ! udpsink host=54.213.169.59 port=5002
+
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96, ssrc=(uint)707373689, timestamp-offset=(uint)927037223, seqnum-offset=(uint)37294" ! rtph264depay ! h264parse ! flvmux streamable=true name=mux udpsrc port=5002 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96, ssrc=(uint)707373689, timestamp-offset=(uint)927037223, seqnum-offset=(uint)37294" ! rtph264depay ! tee name=videoTee ! udpsrc port=5002 caps="application/x-rtp" ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! tee name=audioTee ! flvmux name=flvMux ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\" ! videoTee. ! queue ! flvMux. ! audioTee. ! queue ! flvMux.
+
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96, ssrc=(uint)707373689, timestamp-offset=(uint)927037223, seqnum-offset=(uint)37294" ! rtph264depay ! tee name=videoTee udpsrc port=5002 caps="application/x-rtp" ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! tee name=audioTee flvmux name=flvMux ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\" audioTee. ! queue ! flvMux. videoTee. ! queue ! flvMux.
+
+gst-launch-0.10 v4l2src ! videorate ! videoscale ! x264enc ! tee name=videoTee pulsesrc ! ffenc_aac ! tee name=audioTee flvmux name=flvMux ! filesink location=/tmp/foo.flv matroskamux name=mkvMux ! filesink location=/tmp/foo.mkv audioTee. ! queue ! flvMux. audioTee. ! queue ! mkvMux. videoTee. ! queue ! flvMux. videoTee. ! queue ! mkvMux.
+
+FAST!
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96, ssrc=(uint)1944737439, timestamp-offset=(uint)1943568642, seqnum-offset=(uint)27435" ! rtph264depay ! tee name=videoTee flvmux name=flvMux ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\" videoTee. ! queue ! flvMux.
+
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=512000 src.vfsrc ! queue ! video/x-raw, format=YUY2, width=432, height=240, framerate=5/1 ! fakesink silent=true . src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+AUDIO
+gst-launch-1.0 -v alsasrc device=plughw:2,0 ! mulawenc ! rtppcmupay ! udpsink host=54.213.169.59 port=5002
+
+VIDEO
+gst-launch-1.0 -v v4l2src device=/dev/video0 ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! rtph264pay pt=96 ! udpsink host=54.213.169.59 port=5001
+
+FUCK YES
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96, ssrc=(uint)1944737439, timestamp-offset=(uint)1943568642, seqnum-offset=(uint)27435" ! rtph264depay ! h264parse ! tee name=videoTee udpsrc port=5002 caps="application/x-rtp" ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! tee name=audioTee flvmux name=flvMux ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\" audioTee. ! queue ! flvMux. videoTee. ! queue ! flvMux.
+
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96, ssrc=(uint)1944737439, timestamp-offset=(uint)1943568642, seqnum-offset=(uint)27435" ! rtph264depay ! h264parse ! flvmux name=mux udpsrc port=5002 caps="application/x-rtp" ! queue ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+NO CAPS
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! tee name=videoTee udpsrc port=5002 caps="application/x-rtp" ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! tee name=audioTee flvmux name=flvMux ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\" audioTee. ! queue ! flvMux. videoTee. ! queue ! flvMux.
+
+FAST VIDEO NO AUDIO ON SERVER
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! tee name=videoTee flvmux name=flvMux ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\" videoTee. ! queue ! flvMux.
+
+VIDEO + AUDIO ON SERVER
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! tee name=videoTee udpsrc port=5002 caps="application/x-rtp" ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! tee name=audioTee flvmux name=flvMux ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\" audioTee. ! queue ! flvMux. videoTee. ! queue ! flvMux.
+
+VIDEO ON PI
+gst-launch-1.0 -v uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=1024000 src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! rtph264pay pt=96 ! udpsink host=54.213.169.59 port=5001
+
+AUDIO ON PI
+gst-launch-1.0 -v alsasrc device=plughw:2,0 ! mulawenc ! rtppcmupay ! udpsink host=54.213.169.59 port=5002
