@@ -793,4 +793,10 @@ VIDEO ON PI
 gst-launch-1.0 -v uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=1024000 src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! rtph264pay pt=96 ! udpsink host=54.213.169.59 port=5001
 
 AUDIO ON PI
-gst-launch-1.0 -v alsasrc device=plughw:2,0 ! mulawenc ! rtppcmupay ! udpsink host=54.213.169.59 port=5002
+gst-launch-1.0 -v alsasrc device=plughw:1,0 ! mulawenc ! rtppcmupay ! udpsink host=54.213.169.59 port=5002
+
+COMPARISON
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -f alsa -i hw:1,0 -vcodec copy -acodec libaacplus -ab 16k -ac 2 -ar 44100 -f flv rtmp://54.213.169.59/live/thumper
+
+COMPARISON 2
+gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=1024000 src.vidsrc ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
