@@ -4,6 +4,7 @@ import rospy
 import roslib
 
 from trex_robot_control.msg import TrexMotorCmds
+
 roslib.load_manifest('trex_robot_control')
 
 from socketIO_client import SocketIO
@@ -20,7 +21,7 @@ turningAngle = 50
 cmd_value = TrexMotorCmds()
 pub = rospy.Publisher('pi_trex_chatter', TrexMotorCmds)
 rospy.init_node('pi_trex_publisher')
-
+   
 def setCmdValues(cmdtype, msg, l_mode, l_speed, r_mode, r_speed):
     global cmd_value
     cmd_value.cmd_type = cmdtype
@@ -113,7 +114,8 @@ def pi_trex_publisher(*args):
             exploSpeed = exploSpeed + 5
             cmd_value.cmd_msg = "Speed Increased to %s" % exploSpeed
 
-        socketIO.emit('thumperToServer', str(exploSpeed))
+#        socketIO.emit('thumperToServer', str(exploSpeed))
+
     elif args[0] == 'speeddown':
         if exploSpeed <= exploSpeedMin:
             exploSpeed = exploSpeedMin
@@ -122,12 +124,13 @@ def pi_trex_publisher(*args):
             exploSpeed = exploSpeed - 5
             cmd_value.cmd_msg = "Speed Decreased to %s" % exploSpeed
 
-        socketIO.emit('thumperToServer', str(exploSpeed))
-        
+#        socketIO.emit('thumperToServer', str(exploSpeed))        
             
     if not rospy.is_shutdown():
 #        rospy.loginfo(cmd_value)
         pub.publish(cmd_value)
+    
+    socketIO.emit('thumperToServer', exploSpeed)
 
 
 if __name__ == '__main__':

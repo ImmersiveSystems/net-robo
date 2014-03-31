@@ -18,6 +18,7 @@
 
 #define voltspin     3  //  A3 - battery voltage          1V = 33.57        30V = 1007
 
+
 int data = 0;
 int Leftmode = 0;
 int Rightmode = 0;
@@ -55,27 +56,33 @@ void loop()
   
   if (Serial.available() > 0)                                   // command available
   {
-    int command = Serial.read();   
+    int command = 'H';//Serial.read();   
     switch(command)
     {
       case 'H':
-      Serialread();
-      Leftmode = data;
+      Leftmode = 2;
+      Rightmode = 2;
+      lmspeed = 60;
+      rmspeed = 60;
+      // Serialread();
+      // Leftmode = data;
       
-      Serialread();
-      lmspeed = data;
+      // Serialread();
+      // lmspeed = data;
       
-      Serialread();
-      Rightmode = data;
+      // Serialread();
+      // Rightmode = data;
       
-      Serialread();
-      rmspeed = data;
+      // Serialread();
+      // rmspeed = data;
       
       lmbrake = 0;
       rmbrake = 0;
   
       Motors();
 
+      case 'Z':
+        Shutdown();
       default:
         Serial.flush();
     }
@@ -133,7 +140,14 @@ void ReadSensors()
 
 
 
-
+void Shutdown()
+{
+  //================ Shutdown motors and servos when battery is flat ==============
+  
+  lmspeed=0;      // set left  motor speed to 0 (off)
+  rmspeed=0;      // set right motor speed to 0 (off)
+  Motors();       // update H bridges
+}
 
 
 

@@ -7,12 +7,15 @@
      <param name="port" value="/dev/ttyUSB0" /> 
      <param name="baud" value="57600" />
 </node>
+<!-- <node
+     pkg="trex_robot_control" type="pi_trex_Pwr_subscriber.py" name="pi_trex_Pwr_subscriber" output="screen">
+</node> -->
 <node 
      pkg="trex_robot_control" type="pi_trex_pwr_subscriber" name="pi_trex_pwr_subscriber" output="screen">
 </node>
-<node 
+<!-- <node 
      pkg="trex_robot_control" type="pi_trex_irange_subscriber" name="pi_trex_irange_subscriber" output="screen">
-</node>
+</node> -->
 <!-- <node 
      pkg="trex_robot_control" type="pi_trex_accel_subscriber" name="pi_trex_accel_subscriber" output="screen">
 </node> -->
