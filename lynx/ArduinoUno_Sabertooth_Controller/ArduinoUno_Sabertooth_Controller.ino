@@ -49,10 +49,10 @@ int RightPWM = 0;
 
 int pinTilt = 12;
 int pinPan = 11;
-int pinElbow = 5;
+int pinElbow = 4;
 int pinClaw = 6;
-int pinWrist = 4;
-int pinDistSensor = 5;
+int pinWrist = 5;
+int pinDistSensor = 7;
 
 int tilt = 120;
 int pan = 90;
