@@ -18,6 +18,8 @@ Sabertooth SaberTooth(128);
 #define BACKWARD 0
 
 #define ServoAdjustRate 10
+#define PanAdjustRate 2
+#define TiltAdjustRate 2
 #define ClawMax 180
 #define ClawMin 0
 
@@ -132,13 +134,29 @@ void loop()
         break;
       case 'P':
         Serialread();
-        pan = data;          
+        // pan = data;
+        if(data == 1)
+        {
+          pan = pan - PanAdjustRate;
+        }
+        else if(data == 0)
+        {
+          pan = pan + PanAdjustRate;
+        }                
         pan = ValidateServoCurPos(pinPan, pan);
         servoPan.write(pan);
         break;
       case 'T':
         Serialread();
-        tilt = data;          
+        // tilt = data;
+        if(data == 1)
+        {
+          tilt = tilt - TiltAdjustRate;
+        }
+        else if(data == 0)
+        {
+          tilt = tilt + TiltAdjustRate;
+        }          
         tilt = ValidateServoCurPos(pinTilt, tilt);
         servoTilt.write(tilt);
         break;

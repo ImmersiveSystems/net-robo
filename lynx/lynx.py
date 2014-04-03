@@ -184,11 +184,11 @@ def listener(*args):
 
         socketIO.emit('lynxToServer', str(exploSpeed))
     elif args[0].startswith('pan'):
-       # ser.write('P' + chr(int(args[0].strip('pan'))))
+        ser.write('P' + chr(int(args[0].strip('pan'))))
         print 'PANNING'
 
     elif args[0].startswith('tilt'):
-       # ser.write('T' + chr(int(args[0].strip('tilt'))))
+        ser.write('T' + chr(int(args[0].strip('tilt'))))
         print 'TILTING'
 
     elif args[0] == 'elbowup':
