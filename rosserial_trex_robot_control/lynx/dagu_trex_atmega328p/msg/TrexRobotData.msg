@@ -1,0 +1,10 @@
+float32 voltage_level
+int64 timer_msg
+int64 x_coord
+int64 y_coord
+int16 heading_angle
+float32 robot_velocity
+float32 robot_accel
+int16 irange_dist
+float64 left_encoder
+float64 right_encoder

@@ -1,0 +1,10 @@
+uint8 cmd_type
+string cmd_msg
+uint8 left_mode
+uint8 right_mode
+int32 left_speed
+int32 right_speed
+int32 pan_pos
+int32 tilt_pos
+int8 elbow_move
+int8 wrist_move

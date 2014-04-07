@@ -1,0 +1,37 @@
+<launch>
+<node 
+     pkg="dagu_trex_atmega328p" type="pi_trex_publisher.py" name="pi_trex_publisher" output="screen">
+</node>
+<node
+     pkg="rosserial_python" type="serial_node.py" name="serial_node" output="screen">
+     <param name="port" value="/dev/ttyUSB0" /> 
+     <param name="baud" value="57600" />
+</node>
+<node 
+     pkg="dagu_trex_atmega328p" type="pi_trex_pwr_subscriber" name="pi_trex_pwr_subscriber" output="screen">
+</node>
+<!-- <node 
+     pkg="dagu_trex_atmega328p" type="pi_trex_encoders_subscriber" name="pi_trex_encoders_subscriber" output="screen">
+</node> -->
+<!-- <node
+     pkg="dagu_trex_atmega328p" type="pi_trex_Pwr_subscriber.py" name="pi_trex_Pwr_subscriber" output="screen">
+</node> -->
+<!-- <node
+     pkg="dagu_trex_atmega328p" type="pi_trex_Velocity_subscriber.py" name="pi_trex_Velocity_subscriber" output="screen">
+</node> -->
+<!-- <node
+     pkg="dagu_trex_atmega328p" type="pi_trex_RobLoc_subscriber.py" name="pi_trex_RobLoc" output="screen">
+</node> -->
+<!-- <node 
+     pkg="dagu_trex_atmega328p" type="pi_trex_vel_subscriber" name="pi_trex_vel_subscriber" output="screen">
+</node> -->
+<!-- <node 
+     pkg="dagu_trex_atmega328p" type="pi_trex_rob_loc_subscriber" name="pi_trex_rob_loc_subscriber" output="screen">
+</node> -->
+<!-- <node 
+     pkg="dagu_trex_atmega328p" type="pi_trex_irange_subscriber" name="pi_trex_irange_subscriber" output="screen">
+</node> -->
+<!-- <node 
+     pkg="dagu_trex_atmega328p" type="pi_trex_accel_subscriber" name="pi_trex_accel_subscriber" output="screen">
+</node> -->
+</launch>
