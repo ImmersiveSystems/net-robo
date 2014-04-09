@@ -66,14 +66,14 @@ class RobotController
 		RobotController();
 		void InitMotorsPins();
 
-		void InitIRangeData(sensor_msgs::Range &range_msg);
-		void IRScan(dagu_trex_atmega328p::TrexRobotData &robPwr_msg);
+//		void InitIRangeData(sensor_msgs::Range &range_msg);
+		void IRScan(dagu_trex_atmega328p::TrexRobotData &robData_msg);
 	
 		void InitServos();
 		void InitServosCurPos();
 
 		void InitEncoders();
-		void UpdateEncoderValues(dagu_trex_atmega328p::TrexRobotData &robPwr_msg);
+		void UpdateEncoderValues(dagu_trex_atmega328p::TrexRobotData &robData_msg);
 
 		int CheckMsgValidity(const dagu_trex_atmega328p::TrexServoMotorCmds &nmc);
 		int SerialCommunicate(const dagu_trex_atmega328p::TrexServoMotorCmds &nmc);
@@ -86,12 +86,12 @@ class RobotController
 		
 		int ShutdownMotors();
 
-		void MonitorVoltageLevel(dagu_trex_atmega328p::TrexRobotData &robPwr_msg);
-		void CalculateRobotVelocity(dagu_trex_atmega328p::TrexRobotData &robPwr_msg);
-		void TrackRobot(dagu_trex_atmega328p::TrexRobotData &robPwr_msg);
+		void MonitorVoltageLevel(dagu_trex_atmega328p::TrexRobotData &robData_msg);
+		void CalculateRobotVelocity(dagu_trex_atmega328p::TrexRobotData &robData_msg);
+		void TrackRobot(dagu_trex_atmega328p::TrexRobotData &robData_msg);
 		void AdjustHeadingAngle();
 
-		void Accelerometer(dagu_trex_atmega328p::TrexRobotData &robPwr_msg);
+		void Accelerometer(dagu_trex_atmega328p::TrexRobotData &robData_msg);
 };
 
 #endif

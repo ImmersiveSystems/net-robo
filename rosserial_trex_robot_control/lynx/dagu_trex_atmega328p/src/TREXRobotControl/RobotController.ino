@@ -169,7 +169,7 @@ void RobotController::InitEncoders()
         RightEncoderReading_new = digitalRead(RIGHTMOTORENCODER_pin);
 }
 
-void RobotController::UpdateEncoderValues(dagu_trex_atmega328p::TrexRobotData &robPwr_msg)//(dagu_trex_atmega328p::TrexPowerMsg &encm)
+void RobotController::UpdateEncoderValues(dagu_trex_atmega328p::TrexRobotData &robData_msg)//(dagu_trex_atmega328p::TrexPowerMsg &encm)
 {	
 	LeftEncoderReading_old = LeftEncoderReading_new;
 	RightEncoderReading_old = RightEncoderReading_new;
@@ -200,11 +200,11 @@ void RobotController::UpdateEncoderValues(dagu_trex_atmega328p::TrexRobotData &r
         }
 	}
 
-	robPwr_msg.left_encoder = LeftMotorEncoderValue;
-	robPwr_msg.right_encoder = RightMotorEncoderValue;
+	robData_msg.left_encoder = LeftMotorEncoderValue;
+	robData_msg.right_encoder = RightMotorEncoderValue;
 }
 
-void RobotController::IRScan(dagu_trex_atmega328p::TrexRobotData &robPwr_msg)//(sensor_msgs::Range &range_msg)
+void RobotController::IRScan(dagu_trex_atmega328p::TrexRobotData &robData_msg)//(sensor_msgs::Range &range_msg)
 {
 	int sample;
         // Get data
@@ -212,12 +212,12 @@ void RobotController::IRScan(dagu_trex_atmega328p::TrexRobotData &robPwr_msg)//(
   	// if the ADC reading is too low, then we are really far away from anything
   	if(sample < SAMPLEUPPERBOUND)
   	{
-	    robPwr_msg.irange_dist = MAXRANGE;     // max range
+	    robData_msg.irange_dist = MAXRANGE;     // max range
             return;		
   	}   	
 
   	sample = 1309 / (sample - 3); // Magic numbers to get cm
-  	robPwr_msg.irange_dist =  (sample - 1) / 100; //convert to meters
+  	robData_msg.irange_dist =  (sample - 1) / 100; //convert to meters
 }
 
 int RobotController::ShutdownMotors()
@@ -411,7 +411,7 @@ int RobotController::ValidateServoCurPos(int PinNum, int POS)
 	}
 }
 
-void RobotController::MonitorVoltageLevel(dagu_trex_atmega328p::TrexRobotData &robPwr_msg)
+void RobotController::MonitorVoltageLevel(dagu_trex_atmega328p::TrexRobotData &robData_msg)
 {
 
 	// read  left motor current sensor and convert reading to mA
@@ -421,9 +421,9 @@ void RobotController::MonitorVoltageLevel(dagu_trex_atmega328p::TrexRobotData &r
 	// read battery level and convert to volts with 2 decimal places (eg. 1007 = 10.07 V)	
 	voltage = analogRead(VOLTAGE_pin) * 10 / 3.357;             
 	
-	robPwr_msg.voltage_level = voltage;
+	robData_msg.voltage_level = voltage;
 
-	robPwr_msg.timer_msg = millis();
+	robData_msg.timer_msg = millis();
 
 	if(voltage < LOWBAT) 
 	{
@@ -431,7 +431,7 @@ void RobotController::MonitorVoltageLevel(dagu_trex_atmega328p::TrexRobotData &r
 	}		
 }
 
-void RobotController::CalculateRobotVelocity(dagu_trex_atmega328p::TrexRobotData &robPwr_msg)
+void RobotController::CalculateRobotVelocity(dagu_trex_atmega328p::TrexRobotData &robData_msg)
 {	
 	float RightWheel_DeltaTick = RightMotorEncoderValue - RightMotorEncoderValue_prev;// encoderPos[1] - encoderPos_Prev[1];
 	RightMotorEncoderValue_prev = RightMotorEncoderValue;  //encoderPos_Prev[1] = encoderPos[1];
@@ -443,7 +443,7 @@ void RobotController::CalculateRobotVelocity(dagu_trex_atmega328p::TrexRobotData
 	float LeftWheelDistance = (float)((LeftWheel_DeltaTick * WHEEL_CERCUMFERENCE) / TICK_COUNT_PER_REVOLUTION); //(float)(LeftWheel_DeltaTick * DISTANCE_PER_COUNT);//
 	LeftWheelVelocity = LeftWheelDistance / VELOCITY_CALC_INTERVAL;
 
-	robPwr_msg.robot_velocity = sqrt(pow(LeftWheelVelocity, 2) + pow(RightWheelVelocity, 2));	 //meter per sec
+	robData_msg.robot_velocity = sqrt(pow(LeftWheelVelocity, 2) + pow(RightWheelVelocity, 2));	 //meter per sec
 }
 
 void RobotController::AdjustHeadingAngle()
@@ -458,7 +458,7 @@ void RobotController::AdjustHeadingAngle()
 	}
 }
 
-void RobotController::TrackRobot(dagu_trex_atmega328p::TrexRobotData &robPwr_msg)
+void RobotController::TrackRobot(dagu_trex_atmega328p::TrexRobotData &robData_msg)
 {
 	float deltaLeftCnt = LeftMotorEncoderValue - LeftMotorEncoderPos_TrackPrev; //encoderPos[0] - encoderPos_TrackPrev[0];
 	LeftMotorEncoderPos_TrackPrev = LeftMotorEncoderValue;  //encoderPos_TrackPrev[0] = encoderPos[0];
@@ -476,12 +476,12 @@ void RobotController::TrackRobot(dagu_trex_atmega328p::TrexRobotData &robPwr_msg
 
 	AdjustHeadingAngle();
 
-	robPwr_msg.x_coord = Robot_XCoord;
-	robPwr_msg.y_coord = Robot_YCoord;
-	robPwr_msg.heading_angle = Robot_HeadingAngle;
+	robData_msg.x_coord = Robot_XCoord;
+	robData_msg.y_coord = Robot_YCoord;
+	robData_msg.heading_angle = Robot_HeadingAngle;
 }
 
-void RobotController::Accelerometer(dagu_trex_atmega328p::TrexRobotData &robPwr_msg)
+void RobotController::Accelerometer(dagu_trex_atmega328p::TrexRobotData &robData_msg)
 {
 	static int X_prev, Y_prev, Z_prev, vibration;    // local variables used for impact detection
   // number of 2mS intervals to wait after an impact has occured before a new impact can be recognized
@@ -512,7 +512,7 @@ void RobotController::Accelerometer(dagu_trex_atmega328p::TrexRobotData &robPwr_
   	// magnitude of delta x,y,z using Pythagorus's Theorum  
   	magnitude = sqrt(sq(dX) + sq(dY) + sq(dZ));
 
- 	robPwr_msg.robot_accel = magnitude;
+ 	robData_msg.robot_accel = magnitude;
   
   	if (magnitude > sensitivity) // has a new impact occured
   	{

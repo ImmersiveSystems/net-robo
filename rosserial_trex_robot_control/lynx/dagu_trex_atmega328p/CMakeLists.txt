@@ -59,6 +59,7 @@ install(PROGRAMS
   scripts/pi_trex_Pwr_subscriber.py
   scripts/pi_trex_Velocity_subscriber.py
   scripts/pi_trex_RobLoc_subscriber.py
+  scripts/pi_trex_EncodersPlot_subscriber.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
