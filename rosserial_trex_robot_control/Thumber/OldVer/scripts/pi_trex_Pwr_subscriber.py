@@ -3,7 +3,7 @@
 import rospy
 import roslib
 
-from trex_robot_control.msg import TrexRobotData
+from trex_robot_control.msg import TrexPowerMsg
 
 roslib.load_manifest('trex_robot_control')
 
@@ -15,7 +15,7 @@ def trex_pi_PwrCb(data):
 
 def pi_trex_Pwr_Subscriber():
     rospy.init_node('pi_trex_Pwr_Subscriber', anonymous = True)
-    rospy.Subscriber("trex_pi_power_talkback", TrexRobotData, trex_pi_PwrCb)
+    rospy.Subscriber("trex_pi_power_talkback", TrexPowerMsg, trex_pi_PwrCb)
 
     rospy.spin()
     

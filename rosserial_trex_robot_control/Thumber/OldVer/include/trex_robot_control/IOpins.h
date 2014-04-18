@@ -18,5 +18,3 @@
 #define ZAXIS_pin     2  //  A2 - accelerometer Z-axis
 
 #define IR_pin 000
-
-#define ULTRASONIC_pin 13

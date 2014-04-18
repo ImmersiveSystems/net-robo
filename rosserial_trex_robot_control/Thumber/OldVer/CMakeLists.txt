@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
  add_message_files(
    FILES
    TrexMotorCmds.msg
-   TrexRobotData.msg
+   TrexPowerMsg.msg
  )
 
  generate_messages(
@@ -42,17 +42,13 @@ add_executable(pi_trex_irange_subscriber src/pi_trex_irange_subscriber.cpp)
 add_dependencies(pi_trex_irange_subscriber ${PROJECT_NAME}_gencpp)
 target_link_libraries(pi_trex_irange_subscriber ${catkin_LIBRARIES})
 
-add_executable(pi_trex_ultrasonic_subscriber src/pi_trex_ultrasonic_subscriber.cpp)
-add_dependencies(pi_trex_ultrasonic_subscriber ${PROJECT_NAME}_gencpp)
-target_link_libraries(pi_trex_ultrasonic_subscriber ${catkin_LIBRARIES})
-
 install(PROGRAMS
   scripts/pi_trex_publisher.py 
   scripts/pi_trex_Pwr_subscriber.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
- install(TARGETS pi_trex_pwr_subscriber pi_trex_accel_subscriber pi_trex_irange_subscriber pi_trex_ultrasonic_subscriber
+ install(TARGETS pi_trex_pwr_subscriber pi_trex_accel_subscriber pi_trex_irange_subscriber
    RUNTIME DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
  )
 

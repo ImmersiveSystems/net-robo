@@ -13,9 +13,6 @@
 <node 
      pkg="trex_robot_control" type="pi_trex_pwr_subscriber" name="pi_trex_pwr_subscriber" output="screen">
 </node>
-<node
-     pkg="trex_robot_control" type="pi_trex_ultrasonic_subscriber" name="pi_trex_ultrasonic_subscriber" output="screen">
-</node>
 <!-- <node 
      pkg="trex_robot_control" type="pi_trex_irange_subscriber" name="pi_trex_irange_subscriber" output="screen">
 </node> -->

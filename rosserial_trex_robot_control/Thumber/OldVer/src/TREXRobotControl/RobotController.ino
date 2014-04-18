@@ -10,21 +10,12 @@
 #include "trex_robot_control/IOpins.h"
 #include "trex_robot_control/Constants.h"
 
-#include <NewPing.h>
-
-// NOTE: To use the same Arduino pin for trigger and echo, specify the same pin for both values.
-NewPing sonar(ULTRASONIC_pin, ULTRASONIC_pin, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
-
 byte LeftMotorBrake;
 byte RightMotorBrake;
 
 unsigned long RobotController::VoltageTimer;
 unsigned long RobotController::AccelTimer;
 unsigned long RobotController::IRangeTimer;
-unsigned long RobotController::pingTimer;     // Holds the next ping time.
-
-long RobotController::sonarDistance;
-
 
 RobotController::RobotController()
 {
@@ -51,9 +42,6 @@ RobotController::RobotController()
 	VoltageTimer = 0;
 	AccelTimer = 0;
 	IRangeTimer = 0;
-
-  sonarDistance = 0;
-  pingTimer = millis(); // Start now.
 }
 
 void RobotController::InitPins()
@@ -66,7 +54,7 @@ void RobotController::InitPins()
   pinMode(RIGHTMOTORDIRECTION_pin,OUTPUT); // configure right motor direction pin for output
   pinMode(RIGHTMOTORBRAKE_pin,OUTPUT);     // configure right motor brake     pin for output	
 }
-/*
+
 void RobotController::InitIRangeData(sensor_msgs::Range &range_msg)
 {
 	char frameid[] = "/ir_ranger";
@@ -77,8 +65,8 @@ void RobotController::InitIRangeData(sensor_msgs::Range &range_msg)
   	range_msg.min_range = 0.03;
   	range_msg.max_range = 0.4;	
 }
-*/
-void RobotController::IRScan(trex_robot_control::TrexRobotData &robData_msg)
+
+void RobotController::IRScan(sensor_msgs::Range &range_msg)
 {
 	int sample;
         // Get data
@@ -86,74 +74,12 @@ void RobotController::IRScan(trex_robot_control::TrexRobotData &robData_msg)
   	// if the ADC reading is too low, then we are really far away from anything
   	if(sample < SAMPLEUPPERBOUND)
   	{
-	    robData_msg.irange_dist = MAXRANGE;     // max range
+	    range_msg.range = MAXRANGE;     // max range
             return;		
   	}   	
 
   	sample = 1309 / (sample - 3); // Magic numbers to get cm
-  	robData_msg.irange_dist =  (sample - 1) / 100; //convert to meters
-}
-
-long RobotController::MicroSecToInch(long microsec)
-{
-  return microsec / 74 / 2;
-}
-
-long RobotController::MicroSecToCentimeter(long microsec)
-{
-  return microsec / 29 / 2;
-}
-
-void RobotController::UltrasonicScan(int WhichMetric, trex_robot_control::TrexRobotData &robData_msg)
-{
-  long duration;
-  
-  pinMode(ULTRASONIC_pin, OUTPUT);
-  digitalWrite(ULTRASONIC_pin, LOW);
-  delayMicroseconds(2);
-  digitalWrite(ULTRASONIC_pin, HIGH);
-  delayMicroseconds(5);
-  digitalWrite(ULTRASONIC_pin, LOW);
-  
-  pinMode(ULTRASONIC_pin, INPUT);
-  duration = pulseIn(ULTRASONIC_pin, HIGH);
-  
-  if(WhichMetric == 0)
-  {
-  //  sonarDistance = MicroSecToCentimeter(duration);
-    robData_msg.ultrasonic_dist = MicroSecToCentimeter(duration);//sonarDistance;
-  }
-  else if(WhichMetric == 1)
-  {
-//    sonarDistance = MicroSecToInch(duration);
-    robData_msg.ultrasonic_dist = MicroSecToInch(duration); //sonarDistance;
-  }
-}
-
-void RobotController::UpdateSonarDistance()
-{
-  sonarDistance = sonar.ping_result / US_ROUNDTRIP_CM;
-}
-
-void echoCheck()//(RobotController &RobCntlObj) 
-{ // Timer2 interrupt calls this function every 24uS where you can check the ping status.
-  // Don't do anything here!
-  if (sonar.check_timer()) 
-  { // This is how you check to see if the ping was received.
-    UpdateSonarDistance();
-    // RobCntlObj.sonarDistance = sonar.ping_result / US_ROUNDTRIP_CM;
-  }
-  // Don't do anything here!
-}
-void RobotController::SonarScan(trex_robot_control::TrexRobotData &robData_msg)
-{// Notice how there's no delays in this sketch to allow you to do other processing in-line while doing distance pings.
-  if (millis() >= pingTimer) 
-  {   // pingSpeed milliseconds since last ping, do another ping.
-    pingTimer += pingSpeed;      // Set the next ping time.
-    sonar.ping_timer(echoCheck); // Send out the ping, calls "echoCheck" function every 24uS where you can check the ping status.
-    
-    robData_msg.ultrasonic_dist = sonarDistance; //sonar.ping_result / US_ROUNDTRIP_CM;
-  }  
+  	range_msg.range =  (sample - 1) / 100; //convert to meters
 }
 
 int RobotController::ShutdownMotors()
@@ -238,7 +164,7 @@ void RobotController::ProcessMotorCommand(int WhichMotor)
 	}
 }
 
-void RobotController::MonitorVoltageLevel(trex_robot_control::TrexRobotData &robData_msg)
+void RobotController::MonitorVoltageLevel(trex_robot_control::TrexPowerMsg &tpm)
 {
 
 	// read  left motor current sensor and convert reading to mA
@@ -248,21 +174,21 @@ void RobotController::MonitorVoltageLevel(trex_robot_control::TrexRobotData &rob
 	// read battery level and convert to volts with 2 decimal places (eg. 1007 = 10.07 V)	
 	voltage = analogRead(VOLTAGE_pin) * 10 / 3.357;             
 	
-	robData_msg.voltage_level = voltage;
-	robData_msg.timing_msg = millis();
+	tpm.voltage_level = voltage;
+	tpm.timing_msg = millis();
 
 	if(voltage < LOWBAT) 
 	{
-		robData_msg.power_msg = "Out of Charge";
+		tpm.power_msg = "Out of Charge";
 		ShutdownMotors();
 	}		
 	else
 	{
-		robData_msg.power_msg = "Charged";
+		tpm.power_msg = "Charged";
 	}
 }
 
-void RobotController::Accelerometer(trex_robot_control::TrexRobotData &robData_msg)
+void RobotController::Accelerometer(std_msgs::Int32 &accel_msg)
 {
   static int X_prev, Y_prev, Z_prev, vibration;    // local variables used for impact detection
   // number of 2mS intervals to wait after an impact has occured before a new impact can be recognized
@@ -293,7 +219,7 @@ void RobotController::Accelerometer(trex_robot_control::TrexRobotData &robData_m
   // magnitude of delta x,y,z using Pythagorus's Theorum  
   magnitude = sqrt(sq(dX) + sq(dY) + sq(dZ));
 
-  robData_msg.robot_accel = magnitude;
+  accel_msg.data = magnitude;
   
   if (magnitude > sensitivity) // has a new impact occured
   {

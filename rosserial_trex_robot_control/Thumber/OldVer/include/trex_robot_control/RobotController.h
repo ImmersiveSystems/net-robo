@@ -5,7 +5,7 @@
 #include <sensor_msgs/Range.h>
 
 #include "trex_robot_control/TrexMotorCmds.h"
-#include "trex_robot_control/TrexRobotData.h"
+#include "trex_robot_control/TrexPowerMsg.h"
 
 class RobotController 
 {
@@ -23,9 +23,6 @@ class RobotController
 		int dX,dY,dZ;    // X, Y, Z impact readings 
 		int magnitude;  // impact magnitude
 
-        static long sonarDistance;
-        static unsigned long pingTimer;     // Holds the next ping time.
-
 	public:
 		static unsigned long VoltageTimer;
 		static unsigned long AccelTimer;
@@ -34,16 +31,8 @@ class RobotController
 		RobotController();
 		void InitPins();
 
-//		void InitIRangeData(sensor_msgs::Range &range_msg);
-		void IRScan(trex_robot_control::TrexRobotData &robData_msg);//(sensor_msgs::Range &range_msg);
-
-		void UltrasonicScan(int WhichMetric, trex_robot_control::TrexRobotData &robData_msg);
-		long MicroSecToInch(long microsec);
-		long MicroSecToCentimeter(long microsec);
-
-		friend void echoCheck();
-		void UpdateSonarDistance();
-		void SonarScan(trex_robot_control::TrexRobotData &robData_msg);
+		void InitIRangeData(sensor_msgs::Range &range_msg);
+		void IRScan(sensor_msgs::Range &range_msg);		
 
 		int CheckMsgValidity(const trex_robot_control::TrexMotorCmds &nmc);
 		int SerialCommunicate(const trex_robot_control::TrexMotorCmds &nmc);
@@ -51,9 +40,9 @@ class RobotController
 		void ProcessMotorCommand(int WhichMotor);
 		int ShutdownMotors();
 
-		void MonitorVoltageLevel(trex_robot_control::TrexRobotData &robData_msg);
+		void MonitorVoltageLevel(trex_robot_control::TrexPowerMsg &tpm);		
 
-		void Accelerometer(trex_robot_control::TrexRobotData &robData_msg);//(std_msgs::Int32 &accel_msg);
+		void Accelerometer(std_msgs::Int32 &accel_msg);		
 };
 
 #endif
