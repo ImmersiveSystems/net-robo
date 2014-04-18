@@ -112,17 +112,12 @@ void setup()
 void loop()
 {
   
-  newDistance = analogRead(pinDistSensor); 
- // if (abs(newDistance - oldDistance) > 20){
+  newDistance = getSonar();
   Serial.write('D');
   Serial.println(newDistance); 
- // oldDistance = newDistance;
-//  } 
   
   if (Serial.available() > 0)                                   // command available
   {
-    
-    
     
     int command = Serial.read();
 
@@ -301,4 +296,22 @@ void encoderPinChange_B()
   pulses1 += (A1_set != B1_set) ? -1 : +1;  
   B1_set = digitalRead(pin_1B) == HIGH;
   pulses1 += (A1_set == B1_set) ? -1 : +1;
+}
+
+
+int getSonar()
+{
+  unsigned int duration, inches;
+  pinMode(pinDistSensor, OUTPUT);          // Set pin to OUTPUT
+  digitalWrite(pinDistSensor, LOW);        // Ensure pin is low
+  delayMicroseconds(2);    
+  digitalWrite(pinDistSensor, HIGH);       // Start ranging
+  delayMicroseconds(5);              //   with 5 microsecond burst
+  digitalWrite(pinDistSensor, LOW);        // End ranging
+  pinMode(pinDistSensor, INPUT);           // Set pin to INPUT
+  duration = pulseIn(pinDistSensor, HIGH); // Read echo pulse
+  inches = duration / 74 / 2;        // Convert to inches
+  //Serial.println(inches);            // Display result
+  delay(5);                // Short delay
+  return inches;
 }
