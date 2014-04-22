@@ -18,7 +18,7 @@
 #include <avr/interrupt.h>
 
 
-#include "NewPing.h"
+#include "trex_robot_control/NewPing.h"
 
 
 // ---------------------------------------------------------------------------
