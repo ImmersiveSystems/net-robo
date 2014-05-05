@@ -784,10 +784,10 @@ NO CAPS
 gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! tee name=videoTee udpsrc port=5002 caps="application/x-rtp" ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! tee name=audioTee flvmux name=flvMux ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\" audioTee. ! queue ! flvMux. videoTee. ! queue ! flvMux.
 
 FAST VIDEO NO AUDIO ON SERVER
-gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! tee name=videoTee flvmux name=flvMux ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\" videoTee. ! queue ! flvMux.
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! tee name=videoTee flvmux name=flvMux ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\" videoTee. ! queue ! flvMux.
 
 VIDEO + AUDIO ON SERVER
-gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! tee name=videoTee udpsrc port=5002 caps="application/x-rtp" ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! tee name=audioTee flvmux name=flvMux ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\" audioTee. ! queue ! flvMux. videoTee. ! queue ! flvMux.
+gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! tee name=videoTee udpsrc port=5002 caps="application/x-rtp" ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! tee name=audioTee flvmux name=flvMux ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\" audioTee. ! queue ! flvMux. videoTee. ! queue ! flvMux.
 
 VIDEO ON PI
 gst-launch-1.0 -v uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=1024000 src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! rtph264pay pt=96 ! udpsink host=54.213.169.59 port=5001
@@ -800,3 +800,9 @@ COMPARISON
 
 COMPARISON 2
 gst-launch-1.0 uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=1024000 src.vidsrc ! video/x-h264, width=432, height=240, framerate=30/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! flvmux streamable=true name=mux alsasrc device=plughw:1 ! queue ! audioresample ! audio/x-raw,rate=11025,channels=2 ! queue ! lamemp3enc ! mpegaudioparse ! mux. mux. ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+gst-launch-1.0 -v uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=256000 src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! rtph264pay pt=96 ! udpsink host=54.213.169.59 port=5001
+
+sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 3000
+
+207.23.187.87
