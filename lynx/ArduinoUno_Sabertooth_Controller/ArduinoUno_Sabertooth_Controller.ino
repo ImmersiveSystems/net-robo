@@ -1,6 +1,13 @@
 // ArduinoUno_Sabertooth_Controller.ino
 #include <Servo.h>
 #include <Sabertooth.h>
+#include <NewPing.h>
+
+#define TRIGGER_PIN  7  // Arduino pin tied to trigger pin on the ultrasonic sensor.
+#define ECHO_PIN     7  // Arduino pin tied to echo pin on the ultrasonic sensor.
+#define MAX_DISTANCE 200 // Maximum distance we want to ping for (in centimeters). Maximum sensor distance is rated at 400-500cm.
+NewPing sonar(TRIGGER_PIN, ECHO_PIN, MAX_DISTANCE); // NewPing setup of pins and maximum distance.
+
 
 Sabertooth SaberTooth(128);
 
@@ -20,7 +27,7 @@ Sabertooth SaberTooth(128);
 #define ServoAdjustRate 10
 #define PanAdjustRate 2
 #define TiltAdjustRate 2
-#define ClawMax 180
+#define ClawMax 170
 #define ClawMin 0
 
 const byte pin_0A =  2; // connect white wire here
@@ -54,7 +61,8 @@ int pinPan = 11;
 int pinElbow = 4;
 int pinClaw = 6;
 int pinWrist = 5;
-int pinDistSensor = 7;
+
+
 
 int tilt = 120;
 int pan = 90;
@@ -112,9 +120,11 @@ void setup()
 void loop()
 {
   
-  newDistance = getSonar();
-  Serial.write('D');
-  Serial.println(newDistance); 
+  delay(20);                      // Wait 50ms between pings (about 20 pings/sec). 29ms should be the shortest delay between pings.
+  unsigned int uS = sonar.ping(); // Send ping, get ping time in microseconds (uS).
+  Serial.print('D');
+  Serial.println(uS / US_ROUNDTRIP_CM); // Convert ping time to distance in cm and print result (0 = outside set distance range)
+
   
   if (Serial.available() > 0)                                   // command available
   {
@@ -298,7 +308,7 @@ void encoderPinChange_B()
   pulses1 += (A1_set == B1_set) ? -1 : +1;
 }
 
-
+/*
 int getSonar()
 {
   unsigned int duration, inches;
@@ -314,4 +324,4 @@ int getSonar()
   //Serial.println(inches);            // Display result
   delay(5);                // Short delay
   return inches;
-}
+}*/

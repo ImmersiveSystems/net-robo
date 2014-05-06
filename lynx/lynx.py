@@ -3,7 +3,7 @@ from socketIO_client import SocketIO
 import serial
 import threading
 
-ser = serial.Serial("/dev/ttyUSB1", 9600)
+ser = serial.Serial("/dev/ttyUSB0", 9600)
 print 'Opened serial'
 
 exploSpeedMin = 30
@@ -31,11 +31,14 @@ class myThread (threading.Thread):
             data = ser.read()
             if data == 'D':
                 dist = ser.readline()
-                if int(dist) > 250:
+                #print(dist)
+
+                if int(dist) < 70 and int(dist) != 0:
                     stop = 1
                     if firstEncounter:
                         ser.write('H' + chr(0) + chr(0) + chr(0) + chr(0))
                         firstEncounter = 0
+                        print('firstEncounter')
                     else:
                         pass
 
@@ -82,7 +85,6 @@ def listener(*args):
     global dist
     global stop
 
-    print(dist)
 
     # this is to calculate turning speed 
     if exploSpeed > exploSpeedMax - int(turningAngle / 2):
@@ -217,6 +219,10 @@ def listener(*args):
 obstacleThread = myThread()
 # Start new Threads
 obstacleThread.start()
+
+
+
+
 
 socketIO = SocketIO('http://54.213.169.59', 3000)
 socketIO.on('serverToLynx', listener)
