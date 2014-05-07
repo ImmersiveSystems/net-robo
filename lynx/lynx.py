@@ -33,7 +33,7 @@ class myThread (threading.Thread):
                 dist = ser.readline()
                 #print(dist)
 
-                if int(dist) < 70 and int(dist) != 0:
+                if int(dist) < 50 and int(dist) != 0:
                     stop = 1
                     if firstEncounter:
                         ser.write('H' + chr(0) + chr(0) + chr(0) + chr(0))

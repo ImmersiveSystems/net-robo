@@ -63,6 +63,10 @@ int pinClaw = 6;
 int pinWrist = 5;
 
 
+unsigned int uS = 0; //distance
+unsigned int olduS = 0; //old distance
+unsigned long time;                               
+
 
 int tilt = 120;
 int pan = 90;
@@ -119,12 +123,41 @@ void setup()
 
 void loop()
 {
-  
-  delay(20);                      // Wait 50ms between pings (about 20 pings/sec). 29ms should be the shortest delay between pings.
-  unsigned int uS = sonar.ping(); // Send ping, get ping time in microseconds (uS).
-  Serial.print('D');
-  Serial.println(uS / US_ROUNDTRIP_CM); // Convert ping time to distance in cm and print result (0 = outside set distance range)
 
+  if(millis()-time>100)                       
+  {
+    time=millis(); 
+
+
+
+    // long time1 = millis();
+   
+    uS = sonar.ping(); // Send ping, get ping time in microseconds (uS).
+    
+    // long time2 = millis() - time1;
+    // Serial.println("time for ping:");
+    // Serial.println(time2);
+
+    //if (uS != olduS){
+      // int time3 = millis();
+      Serial.print('D');
+      // int time4 = millis() - time3;
+      // Serial.println("time for print statement");
+      // Serial.println(time4);
+
+
+
+      // int time5 = millis();
+      Serial.println(uS / US_ROUNDTRIP_CM); // Convert ping time to distance in cm and print result (0 = outside set distance range)
+      // int time6 = millis() - time5;
+      // Serial.println("time for println statement");
+      // Serial.println(time6);
+
+
+    //}
+    
+    //olduS = uS;
+  }
   
   if (Serial.available() > 0)                                   // command available
   {
