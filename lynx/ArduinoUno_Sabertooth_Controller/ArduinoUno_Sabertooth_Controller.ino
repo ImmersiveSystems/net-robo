@@ -124,39 +124,14 @@ void setup()
 void loop()
 {
 
-  if(millis()-time>100)                       
+  if(millis()-time>100)   // measure distance every 100ms. Should not be less than 29ms                    
   {
     time=millis(); 
-
-
-
-    // long time1 = millis();
-   
+    
     uS = sonar.ping(); // Send ping, get ping time in microseconds (uS).
-    
-    // long time2 = millis() - time1;
-    // Serial.println("time for ping:");
-    // Serial.println(time2);
-
-    //if (uS != olduS){
-      // int time3 = millis();
-      Serial.print('D');
-      // int time4 = millis() - time3;
-      // Serial.println("time for print statement");
-      // Serial.println(time4);
-
-
-
-      // int time5 = millis();
-      Serial.println(uS / US_ROUNDTRIP_CM); // Convert ping time to distance in cm and print result (0 = outside set distance range)
-      // int time6 = millis() - time5;
-      // Serial.println("time for println statement");
-      // Serial.println(time6);
-
-
-    //}
-    
-    //olduS = uS;
+    //note for the future: measure distance several times (five is good) and take the medean as the distance. This improves the accuracy drastically  
+    Serial.print('D');
+    Serial.println(uS / US_ROUNDTRIP_CM); // Convert ping time to distance in cm and print result (0 = outside set distance range)
   }
   
   if (Serial.available() > 0)                                   // command available
