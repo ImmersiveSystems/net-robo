@@ -37,22 +37,23 @@ void loop()
     switch(command)
     {
       case 'H':
-      Serialread();
-      Leftmode = data;
-      
-      Serialread();
-      lmspeed = data;
-      
-      Serialread();
-      Rightmode = data;
-      
-      Serialread();
-      rmspeed = data;
-      
-      lmbrake = 0;
-      rmbrake = 0;
-  
-      Motors();
+        Serialread();
+        Leftmode = data;
+        
+        Serialread();
+        lmspeed = data;
+        
+        Serialread();
+        Rightmode = data;
+        
+        Serialread();
+        rmspeed = data;
+        
+        lmbrake = 0;
+        rmbrake = 0;
+    
+        Motors();
+        break;
 
       default:
         Serial.flush();

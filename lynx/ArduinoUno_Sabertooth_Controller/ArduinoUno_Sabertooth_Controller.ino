@@ -27,7 +27,7 @@ Sabertooth SaberTooth(128);
 #define ServoAdjustRate 10
 #define PanAdjustRate 2
 #define TiltAdjustRate 2
-#define ClawMax 170
+#define ClawMax 140
 #define ClawMin 0
 
 const byte pin_0A =  2; // connect white wire here

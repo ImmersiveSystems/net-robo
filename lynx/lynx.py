@@ -3,7 +3,7 @@ from socketIO_client import SocketIO
 import serial
 import threading
 
-ser = serial.Serial("/dev/ttyUSB0", 9600)
+ser = serial.Serial("/dev/ttyUSB1", 9600)
 print 'Opened serial'
 
 exploSpeedMin = 30
@@ -18,6 +18,7 @@ turningAngle = 80 # this is the difference between the speed of right and left m
 dist = 1
 obstacle = 0
 stop = 0
+sonarOn = 1;
 
 class myThread (threading.Thread):
     def __init__(self):
@@ -46,12 +47,6 @@ class myThread (threading.Thread):
                     stop = 0  
                     firstEncounter = 1
 
-
-
-
-            
-
-
 def Get_Encoders_Velcoity_Values():
     global SerialData
 
@@ -61,7 +56,7 @@ def Get_Encoders_Velcoity_Values():
         if RawData[-1]:
                Values = RawData[-2] 
                print Values
-               if Values != '':
+               if Get_Encoders_Velcoity_Valueses != '':
                    Vel_Encoders = Values.split(' ') 
                    socketIO.emit('lynxToServer', Vel_Encoders[0])
                else:
@@ -70,9 +65,6 @@ def Get_Encoders_Velcoity_Values():
             socketIO.emit('lynxToServer', '0')
         SerialData = RawData[-1]
             #print VelocityData         
-
-
-
 
 def listener(*args):
     global exploSpeedMin
@@ -84,7 +76,7 @@ def listener(*args):
     global turningL
     global dist
     global stop
-
+    global sonarOn
 
     # this is to calculate turning speed 
     if exploSpeed > exploSpeedMax - int(turningAngle / 2):
@@ -99,7 +91,7 @@ def listener(*args):
 
     if args[0] == 'forward':
         print 'Move FORWARD'
-        if stop:
+        if sonarOn and stop:
             pass
         else:
             if turningR:
@@ -162,8 +154,6 @@ def listener(*args):
             ser.write('H' + chr(2) + chr(exploSpeed) + chr(0) + chr(exploSpeed))
         turningL = 1
 
-
-
     elif args[0] == 'stop':
         print 'HALT'
         ser.write('H' + chr(2) + chr(0) + chr(2) + chr(0))
@@ -213,6 +203,14 @@ def listener(*args):
         ser.write('C')
         print 'Use CLAW'
 
+    elif args[0] == 'sonar':
+        if sonarOn:
+            sonarOn = 0
+            print 'Sonar is OFF'
+        elif not sonarOn:
+            sonarOn = 1
+            print 'Sonar is ON'
+
     #Get_Encoders_Velcoity_Values()
 
 # Create new threads
@@ -220,13 +218,7 @@ obstacleThread = myThread()
 # Start new Threads
 obstacleThread.start()
 
-
-
-
-
 socketIO = SocketIO('http://54.213.169.59', 3000)
 socketIO.on('serverToLynx', listener)
 socketIO.emit('clientType', 'Python')
-socketIO.wait(seconds=6000)
-
-
+socketIO.wait(seconds=600000)
