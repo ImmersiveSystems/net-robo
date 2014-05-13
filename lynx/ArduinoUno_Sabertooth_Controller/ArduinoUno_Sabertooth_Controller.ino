@@ -1,7 +1,7 @@
 // ArduinoUno_Sabertooth_Controller.ino
 #include <Servo.h>
-#include <Sabertooth.h>
-#include <NewPing.h>
+#include <Sabertooth.h>  // Sabertooth Packet Serial http://www.dimensionengineering.com/software/SabertoothArduinoLibrary/html/index.html
+#include <NewPing.h> // sonar library https://code.google.com/p/arduino-new-ping/
 
 #define TRIGGER_PIN  7  // Arduino pin tied to trigger pin on the ultrasonic sensor.
 #define ECHO_PIN     7  // Arduino pin tied to echo pin on the ultrasonic sensor.
