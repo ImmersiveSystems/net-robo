@@ -118,7 +118,9 @@ void setup()
   B1_set = digitalRead(pin_1B);
   attachInterrupt(0, encoderPinChange_A, CHANGE); // pin 2
   attachInterrupt(1, encoderPinChange_B, CHANGE); // pin 3
-  Serial.begin(9600);      
+  Serial.begin(9600); 
+
+  SaberTooth.command(14, 0);     
 }
 
 void loop()
