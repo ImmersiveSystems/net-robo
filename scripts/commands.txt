@@ -790,7 +790,7 @@ VIDEO + AUDIO ON SERVER
 gst-launch-1.0 -v udpsrc port=5001 caps="application/x-rtp, media=(string)video, clock-rate=(int)90000, encoding-name=(string)H264, payload=(int)96" ! rtph264depay ! tee name=videoTee udpsrc port=5002 caps="application/x-rtp" ! rtppcmudepay ! mulawdec ! audioconvert ! audioresample ! audio/x-raw,rate=44100,channels=2 ! lamemp3enc ! mpegaudioparse ! tee name=audioTee flvmux name=flvMux ! rtmpsink location=\"rtmp://54.213.169.59/live/lynx live=1\" audioTee. ! queue ! flvMux. videoTee. ! queue ! flvMux.
 
 VIDEO ON PI
-gst-launch-1.0 -v uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=1024000 src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! rtph264pay pt=96 ! udpsink host=54.213.169.59 port=5001
+gst-launch-1.0 -v uvch264src device=/dev/video0 name=src auto-start=true initial-bitrate=256000 src.vidsrc ! queue ! video/x-h264, width=432, height=240, framerate=20/1, profile=constrained-baseline, stream-format=byte-stream ! h264parse ! rtph264pay pt=96 ! udpsink host=54.213.169.59 port=5001
 
 AUDIO ON PI
 gst-launch-1.0 -v alsasrc device=plughw:1,0 ! mulawenc ! rtppcmupay ! udpsink host=54.213.169.59 port=5002
@@ -805,4 +805,12 @@ gst-launch-1.0 -v uvch264src device=/dev/video0 name=src auto-start=true initial
 
 sudo iptables -t nat -A PREROUTING -p tcp --dport 80 -j REDIRECT --to-ports 3000
 
-207.23.187.87
+./ffmpeg -f v4l2 -vcodec h264 -s 432x240 -i /dev/video0 -vcodec copy -f flv rtmp://54.213.169.59/live/thumper
+
+raspivid -t 1000 -hf -vf  -h 720  -w 1280 -fps 25 -b 2000000 -o - |
+./ffmpeg -i - -vcodec copy  -an -f flv rtmp://54.213.169.59/live/thumper
+
+raspivid -t 1000 -vf -hf -h 720 -w 1280 -fps 25 -b 2000000 -o - | gst-launch-1.0 -v fdsrc ! h264parse ! flvmux ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
+
+raspivid -o - -t 100000000 -fps 25 -b 1000000  |
+gst-launch-1.0 -v fdsrc ! h264parse ! flvmux ! rtmpsink location=\"rtmp://54.213.169.59/live/thumper live=1\"
