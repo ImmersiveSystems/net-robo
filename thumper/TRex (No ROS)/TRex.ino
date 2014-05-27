@@ -7,13 +7,11 @@
 #define rmpwmpin    11  // D11 - right motor pulse width  modulation pin    0 - 255          Speed and Brake 
 
 int data = 0;
-int Leftmode = 0;
-int Rightmode = 0;
+int Leftmode = 0;                                      // mode to control direction of robot, 0=reverse, 2=forward
+int Rightmode = 0;                                     // mode to control direction of robot, 0=reverse, 2=forward
 
-byte lmbrake, rmbrake;
-int lmspeed, rmspeed;
-
-
+byte lmbrake, rmbrake;                                 // if left or right brake>0 then engage electronic braking for left motor or riht motor
+int lmspeed, rmspeed;                                  // PWM or speed of the motors, goes from 0 to 255
 
 void setup()
 {
@@ -31,28 +29,28 @@ void setup()
 void loop()
 {
   
-  if (Serial.available() > 0)                                   // command available
+  if (Serial.available() > 0)                         // if characters are available in the stream
   {
-    int command = Serial.read();   
-    switch(command)
+    int command = Serial.read();                      // read the first character
+    switch(command)                                   // conditional switch statement
     {
-      case 'H':
-        Serialread();
-        Leftmode = data;
+      case 'H':                                       // if 'H' is received, move the motors
+        Serialread();                                 // read the first byte
+        Leftmode = data;                              // set left mode to the value of that byte
         
-        Serialread();
-        lmspeed = data;
+        Serialread();                                 // read the second byte
+        lmspeed = data;                               // set left speed to the value of that byte
         
-        Serialread();
-        Rightmode = data;
+        Serialread();                                 // read the third byte
+        Rightmode = data;                             // set right mode to the value of that byte
         
-        Serialread();
-        rmspeed = data;
+        Serialread();                                 // read the fourth byte
+        rmspeed = data;                               // set right speed to the value of that byte
         
-        lmbrake = 0;
+        lmbrake = 0;                                  // not braking
         rmbrake = 0;
-    
-        Motors();
+      
+        Motors();                                     // write values to motors
         break;
 
       default:
@@ -66,7 +64,7 @@ void Serialread()
 {
   do
   {
-    data = Serial.read();  
+    data = Serial.read();                           // read byte from serial buffer
   }
   while (data < 0);
 }
